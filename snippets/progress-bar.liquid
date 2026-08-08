@@ -1,0 +1,22 @@
+{% comment %}
+  Renders a progress bar
+  Accepts:
+  - value: {Number} Current value
+  - max: {Number} Maximum value
+  - label: {String} Optional label
+  - min_label: {String} Min label
+  - max_label: {String} Max label
+{% endcomment %}
+
+<div class="progress-bar" data-progress-bar>
+  <div class="progress-bar__track">
+    <div
+      class="progress-bar__fill"
+      style="width: {{ value | times: 100 | divided_by: max }}%;"
+      data-progress-bar-fill
+    ></div>
+  </div>
+  {% if label %}
+    <span class="progress-bar__label">{{ label }}</span>
+  {% endif %}
+</div>

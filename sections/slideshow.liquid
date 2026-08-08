@@ -1,0 +1,260 @@
+{% schema %}
+{
+  "name": "Slideshow",
+  "tag": "section",
+  "class": "section-slideshow",
+  "enabled_on": {
+    "groups": [
+      "*"
+    ]
+  },
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "select",
+      "id": "slide_height",
+      "label": "Slide height",
+      "default": "adapt",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to first image"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_text_box",
+      "label": "Show text box",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay speed",
+      "default": 5,
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "seconds"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": ""
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link",
+          "default": ""
+        },
+        {
+          "type": "checkbox",
+          "id": "show_text_box",
+          "label": "Show text box",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slideshow",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-slideshow {
+  padding: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.section-slideshow .section__header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-slideshow .section__heading {
+  font-size: calc(var(--font-size-h2) * 1px);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text);
+}
+
+.section-slideshow .section__subheading {
+  color: var(--color-text-subdued);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-slideshow .container {
+  max-width: calc(var(--container-max-width) * 1px);
+  margin: 0 auto;
+  padding: 0 calc(var(--content-padding) * 1px);
+}
+{% endstylesheet %}
+
+<section
+  id="section-{{ section.id }}"
+  class="section-slideshow"
+  style="
+    {% if section.settings.background_color %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+    {% if section.settings.top_padding %}
+      padding-top: {{ section.settings.top_padding }}px;
+    {% endif %}
+    {% if section.settings.bottom_padding %}
+      padding-bottom: {{ section.settings.bottom_padding }}px;
+    {% endif %}
+  "
+>
+  <div class="container">
+    {% if section.settings.heading %}
+      <div class="section__header">
+        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
+        {% if section.settings.subheading %}
+          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="blocks blocks--slideshow">
+      {% for block in section.blocks %}
+        <div
+          class="block block--{{ block.type }}"
+          style="
+            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
+          "
+        >
+          {% case block.type %}
+{%- when 'slide' -%}
+  <div class="block__content">
+    {% if block.settings.content %}
+      {{ block.settings.content }}
+    {% else %}
+      Slide
+    {% endif %}
+  </div>
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class SlideshowSection extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    // Section initialization logic
+  }
+
+  onBlockSelect(evt) {
+    // Block selected in editor
+  }
+
+  onBlockDeselect(evt) {
+    // Block deselected in editor
+  }
+}
+
+if (!customElements.get('section-slideshow')) {
+  customElements.define('section-slideshow', SlideshowSection);
+}
+{% endjavascript %}

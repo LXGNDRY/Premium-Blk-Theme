@@ -1,0 +1,212 @@
+{% schema %}
+{
+  "name": "Image with text",
+  "tag": "section",
+  "class": "section-image-with-text",
+  "enabled_on": {
+    "groups": [
+      "*"
+    ]
+  },
+  "max_blocks": 1,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Image with text"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Tell your story here."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button text",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "default": "/pages/about"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "image_first",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "Image first"
+        },
+        {
+          "value": "text_first",
+          "label": "Text first"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_width",
+      "label": "Image width",
+      "default": "medium",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        },
+        {
+          "value": "accent-1",
+          "label": "Accent 1"
+        }
+      ]
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Image with text",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-image-with-text {
+  padding: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.section-image-with-text .section__header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-image-with-text .section__heading {
+  font-size: calc(var(--font-size-h2) * 1px);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text);
+}
+
+.section-image-with-text .section__subheading {
+  color: var(--color-text-subdued);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-image-with-text .container {
+  max-width: calc(var(--container-max-width) * 1px);
+  margin: 0 auto;
+  padding: 0 calc(var(--content-padding) * 1px);
+}
+{% endstylesheet %}
+
+<section
+  id="section-{{ section.id }}"
+  class="section-image-with-text"
+  style="
+    {% if section.settings.background_color %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+    {% if section.settings.top_padding %}
+      padding-top: {{ section.settings.top_padding }}px;
+    {% endif %}
+    {% if section.settings.bottom_padding %}
+      padding-bottom: {{ section.settings.bottom_padding }}px;
+    {% endif %}
+  "
+>
+  <div class="container">
+    {% if section.settings.heading %}
+      <div class="section__header">
+        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
+        {% if section.settings.subheading %}
+          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="blocks blocks--image-with-text">
+      {% for block in section.blocks %}
+        <div
+          class="block block--{{ block.type }}"
+          style="
+            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
+          "
+        >
+          {% case block.type %}
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class ImageWithTextSection extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    // Section initialization logic
+  }
+
+  onBlockSelect(evt) {
+    // Block selected in editor
+  }
+
+  onBlockDeselect(evt) {
+    // Block deselected in editor
+  }
+}
+
+if (!customElements.get('section-image-with-text')) {
+  customElements.define('section-image-with-text', ImageWithTextSection);
+}
+{% endjavascript %}

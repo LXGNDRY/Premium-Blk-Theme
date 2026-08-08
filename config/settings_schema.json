@@ -1,0 +1,353 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Dawn",
+    "theme_author": "Shopify",
+    "theme_version": "13.0.0",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand colors"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary",
+        "default": "#F6F6F6"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent",
+        "default": "#000000"
+      },
+      {
+        "type": "header",
+        "content": "Surface colors"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Surface",
+        "default": "#F6F6F6"
+      },
+      {
+        "type": "header",
+        "content": "Text colors"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Body text",
+        "default": "#1C1C1C"
+      },
+      {
+        "type": "color",
+        "id": "color_text_subdued",
+        "label": "Subdued text",
+        "default": "#6B6B6B"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Borders",
+        "default": "#E5E5E5"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Fonts"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Headings",
+        "default": "system-ui, -apple-system, sans-serif_400"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body text",
+        "default": "system-ui, -apple-system, sans-serif_400"
+      },
+      {
+        "type": "header",
+        "content": "Sizes"
+      },
+      {
+        "type": "range",
+        "id": "font_size_base",
+        "label": "Base font size",
+        "default": 16,
+        "min": 12,
+        "max": 22,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "font_heading_scale",
+        "label": "Heading scale",
+        "default": 1.25,
+        "min": 1.1,
+        "max": 1.6,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Container"
+      },
+      {
+        "type": "range",
+        "id": "container_max_width",
+        "label": "Max width",
+        "default": 1200,
+        "min": 960,
+        "max": 1600,
+        "step": 20,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "content_padding",
+        "label": "Side padding",
+        "default": 40,
+        "min": 10,
+        "max": 60,
+        "step": 2,
+        "unit": "px"
+      },
+      {
+        "type": "header",
+        "content": "Spacing"
+      },
+      {
+        "type": "range",
+        "id": "spacing_unit",
+        "label": "Base unit",
+        "default": 8,
+        "min": 4,
+        "max": 16,
+        "step": 1,
+        "unit": "px"
+      }
+    ]
+  },
+  {
+    "name": "Buttons",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Appearance"
+      },
+      {
+        "type": "select",
+        "id": "button_style",
+        "label": "Style",
+        "options": [
+          {
+            "value": "solid",
+            "label": "Solid"
+          },
+          {
+            "value": "outline",
+            "label": "Outline"
+          },
+          {
+            "value": "text",
+            "label": "Text only"
+          }
+        ],
+        "default": "solid"
+      },
+      {
+        "type": "range",
+        "id": "button_radius",
+        "label": "Border radius",
+        "default": 0,
+        "min": 0,
+        "max": 40,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "button_padding_y",
+        "label": "Vertical padding",
+        "default": 12,
+        "min": 4,
+        "max": 24,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "button_padding_x",
+        "label": "Horizontal padding",
+        "default": 24,
+        "min": 12,
+        "max": 48,
+        "step": 2,
+        "unit": "px"
+      }
+    ]
+  },
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Layout"
+      },
+      {
+        "type": "select",
+        "id": "header_layout",
+        "label": "Layout",
+        "options": [
+          {
+            "value": "left",
+            "label": "Logo left"
+          },
+          {
+            "value": "center",
+            "label": "Logo center"
+          },
+          {
+            "value": "split",
+            "label": "Split layout"
+          }
+        ],
+        "default": "center"
+      },
+      {
+        "type": "checkbox",
+        "id": "header_sticky",
+        "label": "Enable sticky header",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "header_transparent",
+        "label": "Transparent on home",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Layout"
+      },
+      {
+        "type": "select",
+        "id": "footer_layout",
+        "label": "Layout style",
+        "options": [
+          {
+            "value": "multi-column",
+            "label": "Multi-column"
+          },
+          {
+            "value": "simple",
+            "label": "Simple centered"
+          },
+          {
+            "value": "minimal",
+            "label": "Minimal"
+          }
+        ],
+        "default": "multi-column"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_show_newsletter",
+        "label": "Show newsletter signup",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_show_social",
+        "label": "Show social icons",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Logo & brand"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 50,
+        "max": 400,
+        "step": 5,
+        "unit": "px",
+        "default": 120
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Animations",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "animation_enable",
+        "label": "Enable animations",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "animation_duration",
+        "label": "Animation speed",
+        "default": 0.3,
+        "min": 0.1,
+        "max": 1.0,
+        "step": 0.05,
+        "unit": "s"
+      }
+    ]
+  }
+]

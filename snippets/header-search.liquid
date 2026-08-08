@@ -1,0 +1,54 @@
+{% comment %}
+  Renders the header search form / predictive search trigger
+  Accepts:
+  - section_id: {String} Section ID
+{% endcomment %}
+
+<div class="header__search search">
+  <details-modal>
+    <details>
+      <summary class="header__icon header__icon--search header__icon--summary link focus-inset">
+        <span class="visually-hidden">{{ 'general.search' | t }}</span>
+        {% render 'icon-search' %}
+      </summary>
+      <div class="search-modal">
+        <div class="search-modal__content">
+          <form
+            class="search-form"
+            action="{{ routes.search_url }}"
+            method="get"
+            role="search"
+          >
+            <div class="field">
+              <input
+                type="search"
+                name="q"
+                class="search__input field__input"
+                placeholder="{{ 'general.search.placeholder' | t }}"
+                value="{{ search.terms | escape }}"
+                autocomplete="off"
+                aria-label="{{ 'general.search' | t }}"
+                data-search-input
+              >
+              <button
+                type="submit"
+                class="search__button field__button"
+                aria-label="{{ 'general.search' | t }}"
+              >
+                {% render 'icon-search' %}
+              </button>
+            </div>
+          </form>
+
+          <div class="predictive-search" data-predictive-search hidden>
+            <div class="predictive-search__loading hidden" data-predictive-search-loading>
+              <div class="loading-overlay__spinner"></div>
+            </div>
+            <div class="predictive-search__results" data-predictive-search-results></div>
+            <div class="predictive-search__status" role="status" data-predictive-search-status></div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </details-modal>
+</div>

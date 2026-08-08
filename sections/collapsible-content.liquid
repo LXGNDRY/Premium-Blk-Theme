@@ -1,0 +1,210 @@
+{% schema %}
+{
+  "name": "Collapsible content",
+  "tag": "section",
+  "class": "section-collapsible-content",
+  "enabled_on": {
+    "groups": [
+      "*"
+    ]
+  },
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Collapsible content"
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon position",
+      "default": "right",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon style",
+      "default": "plus",
+      "options": [
+        {
+          "value": "plus",
+          "label": "Plus/minus"
+        },
+        {
+          "value": "chevron",
+          "label": "Chevron"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "background-2",
+          "label": "Background 2"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collapsible_row",
+      "name": "Row",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Section"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Content",
+          "default": "Content goes here."
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collapsible content",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-collapsible-content {
+  padding: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.section-collapsible-content .section__header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-collapsible-content .section__heading {
+  font-size: calc(var(--font-size-h2) * 1px);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text);
+}
+
+.section-collapsible-content .section__subheading {
+  color: var(--color-text-subdued);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-collapsible-content .container {
+  max-width: calc(var(--container-max-width) * 1px);
+  margin: 0 auto;
+  padding: 0 calc(var(--content-padding) * 1px);
+}
+{% endstylesheet %}
+
+<section
+  id="section-{{ section.id }}"
+  class="section-collapsible-content"
+  style="
+    {% if section.settings.background_color %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+    {% if section.settings.top_padding %}
+      padding-top: {{ section.settings.top_padding }}px;
+    {% endif %}
+    {% if section.settings.bottom_padding %}
+      padding-bottom: {{ section.settings.bottom_padding }}px;
+    {% endif %}
+  "
+>
+  <div class="container">
+    {% if section.settings.heading %}
+      <div class="section__header">
+        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
+        {% if section.settings.subheading %}
+          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="blocks blocks--collapsible-content">
+      {% for block in section.blocks %}
+        <div
+          class="block block--{{ block.type }}"
+          style="
+            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
+          "
+        >
+          {% case block.type %}
+{%- when 'collapsible_row' -%}
+  <div class="block__content">
+    {% if block.settings.content %}
+      {{ block.settings.content }}
+    {% else %}
+      Row
+    {% endif %}
+  </div>
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class CollapsibleContentSection extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    // Section initialization logic
+  }
+
+  onBlockSelect(evt) {
+    // Block selected in editor
+  }
+
+  onBlockDeselect(evt) {
+    // Block deselected in editor
+  }
+}
+
+if (!customElements.get('section-collapsible-content')) {
+  customElements.define('section-collapsible-content', CollapsibleContentSection);
+}
+{% endjavascript %}

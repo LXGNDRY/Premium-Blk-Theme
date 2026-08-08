@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "Image banner": {
+      "type": "image-banner",
+      "settings": {}
+    },
+    "Featured collection": {
+      "type": "featured-collection",
+      "settings": {}
+    },
+    "Rich text": {
+      "type": "rich-text",
+      "settings": {}
+    },
+    "Email signup banner": {
+      "type": "email-signup-banner",
+      "settings": {}
+    }
+  },
+  "order": [
+    "Image banner",
+    "Featured collection",
+    "Rich text",
+    "Email signup banner"
+  ]
+}

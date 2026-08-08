@@ -1,0 +1,56 @@
+{
+  "current": {
+    "settings": {
+      "color_primary": "#000000",
+      "color_secondary": "#F6F6F6",
+      "color_accent": "#000000",
+      "color_background": "#FFFFFF",
+      "color_surface": "#F6F6F6",
+      "color_text": "#1C1C1C",
+      "color_text_subdued": "#6B6B6B",
+      "color_border": "#E5E5E5",
+      "font_heading": "system-ui, -apple-system, sans-serif_400",
+      "font_body": "system-ui, -apple-system, sans-serif_400",
+      "font_size_base": 16,
+      "font_heading_scale": 1.25,
+      "container_max_width": 1200,
+      "content_padding": 40,
+      "spacing_unit": 8,
+      "button_style": "solid",
+      "button_radius": 0,
+      "button_padding_y": 12,
+      "button_padding_x": 24,
+      "header_layout": "center",
+      "header_sticky": true,
+      "header_transparent": false,
+      "footer_layout": "multi-column",
+      "footer_show_newsletter": true,
+      "footer_show_social": true,
+      "animation_enable": true,
+      "animation_duration": 0.3
+    },
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {}
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    },
+    "content_for_index": [
+      "hero_banner",
+      "featured_collection",
+      "featured_text",
+      "testimonials"
+    ]
+  },
+  "presets": {
+    "Default": {
+      "settings": {},
+      "sections": {},
+      "content_for_index": []
+    }
+  }
+}

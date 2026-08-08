@@ -1,0 +1,55 @@
+{% comment %}
+  Renders product price
+  Accepts:
+  - product: {Object} Product object
+  - show_badges: {Boolean} Show sale badge
+  - price_class: {String} Additional CSS class
+{% endcomment %}
+
+<div class="price
+  {% if product.available == false %} price--sold-out{% endif %}
+  {% if product.compare_at_price > product.price %} price--on-sale{% endif %}
+  {{ price_class }}"
+  data-product-price
+>
+  {% if product.available %}
+    <div class="price__container">
+      {% if product.compare_at_price > product.price %}
+        <span class="price__badge price__badge--sale">
+          {{ 'products.product.sale' | t }}
+        </span>
+      {% endif %}
+
+      <span class="price-item price-item--regular">
+        {{ product.price | money }}
+      </span>
+
+      {% if product.compare_at_price > product.price %}
+        <span class="price-item price-item--regular price-item--compare">
+          <s>{{ product.compare_at_price | money }}</s>
+        </span>
+      {% endif %}
+
+      {% if product.unit_price %}
+        <span class="price__unit">
+          {{ product.unit_price | money }} / {{ product.unit_price_measurement.reference_unit }}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if show_badges and product.compare_at_price > product.price %}
+      <span class="badge price__badge-sale color-{{ settings.sales_badge_color_scheme }}">
+        {% capture compare_price %}{{ product.compare_at_price | divided_by: 100.0 }}{% endcapture %}
+        {% capture current_price %}{{ product.price | divided_by: 100.0 }}{% endcapture %}
+        {% assign savings = compare_price | minus: current_price %}
+        {% assign savings_percent = savings | divided_by: compare_price | times: 100 | round %}
+        -{{ savings_percent }}%
+      </span>
+    {% endif %}
+
+  {% else %}
+    <span class="price-item price-item--sold-out">
+      {{ 'products.product.sold_out' | t }}
+    </span>
+  {% endif %}
+</div>

@@ -1,0 +1,136 @@
+{% schema %}
+{
+  "name": "Article",
+  "tag": "section",
+  "class": "section-main-article",
+  "enabled_on": {
+    "groups": [
+      "*"
+    ]
+  },
+  "max_blocks": 16,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "app",
+      "name": "App",
+      "limit": 16,
+      "settings": []
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article",
+      "category": "Article"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-main-article {
+  padding: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.section-main-article .section__header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-main-article .section__heading {
+  font-size: calc(var(--font-size-h2) * 1px);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text);
+}
+
+.section-main-article .section__subheading {
+  color: var(--color-text-subdued);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-main-article .container {
+  max-width: calc(var(--container-max-width) * 1px);
+  margin: 0 auto;
+  padding: 0 calc(var(--content-padding) * 1px);
+}
+{% endstylesheet %}
+
+<section
+  id="section-{{ section.id }}"
+  class="section-main-article"
+  style="
+    {% if section.settings.background_color %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+    {% if section.settings.top_padding %}
+      padding-top: {{ section.settings.top_padding }}px;
+    {% endif %}
+    {% if section.settings.bottom_padding %}
+      padding-bottom: {{ section.settings.bottom_padding }}px;
+    {% endif %}
+  "
+>
+  <div class="container">
+    {% if section.settings.heading %}
+      <div class="section__header">
+        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
+        {% if section.settings.subheading %}
+          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="blocks blocks--main-article">
+      {% for block in section.blocks %}
+        <div
+          class="block block--{{ block.type }}"
+          style="
+            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
+          "
+        >
+          {% case block.type %}
+{%- when 'app' -%}
+  <div class="block__content">
+    {% if block.settings.content %}
+      {{ block.settings.content }}
+    {% else %}
+      App
+    {% endif %}
+  </div>
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class MainArticleSection extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    // Section initialization logic
+  }
+
+  onBlockSelect(evt) {
+    // Block selected in editor
+  }
+
+  onBlockDeselect(evt) {
+    // Block deselected in editor
+  }
+}
+
+if (!customElements.get('section-main-article')) {
+  customElements.define('section-main-article', MainArticleSection);
+}
+{% endjavascript %}

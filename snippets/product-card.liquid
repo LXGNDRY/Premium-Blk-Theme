@@ -1,0 +1,52 @@
+{%- comment -%}
+  Renders a product card.
+  Usage: {% render 'product-card', product: product, show_vendor: true %}
+{%- endcomment -%}
+
+<div class="product-card" data-product-id="{{ product.id }}">
+  <a href="{{ product.url | within: collection }}" class="product-card__link">
+    <div class="product-card__media">
+      {% if product.featured_image %}
+        {{
+          product.featured_image
+          | image_url: width: 500, height: 600, crop: 'center'
+          | image_tag:
+            alt: product.featured_image.alt | default: product.title,
+            class: 'product-card__image',
+            widths: '200, 400, 600, 800',
+            loading: 'lazy'
+        }}
+      {% else %}
+        {{ 'product' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+
+      {% if product.images.size > 1 %}
+        <div class="product-card__secondary-image">
+          {{
+            product.images[1]
+            | image_url: width: 500, height: 600, crop: 'center'
+            | image_tag:
+              alt: product.images[1].alt | default: product.title,
+              class: 'product-card__image',
+              widths: '200, 400, 600, 800',
+              loading: 'lazy'
+          }}
+        </div>
+      {% endif %}
+
+      {% if product.compare_at_price and product.compare_at_price > product.price %}
+        <span class="product-card__badge product-card__badge--sale">
+          {{ product.compare_at_price | minus: product.price | divided_by: product.compare_at_price | times: 100 | round: 0 }}% OFF
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="product-card__info">
+      {% if show_vendor and product.vendor %}
+        <p class="product-card__vendor">{{ product.vendor }}</p>
+      {% endif %}
+      <h3 class="product-card__title">{{ product.title }}</h3>
+      {% render 'price', product: product %}
+    </div>
+  </a>
+</div>

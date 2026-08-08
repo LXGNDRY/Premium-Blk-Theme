@@ -1,0 +1,154 @@
+{% schema %}
+{
+  "name": "Predictive search",
+  "tag": "section",
+  "class": "section-predictive-search",
+  "enabled_on": {
+    "groups": [
+      "*"
+    ]
+  },
+  "max_blocks": 1,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_product_vendor",
+      "label": "Show product vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_price",
+      "label": "Show product price",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "show_options",
+      "label": "Show",
+      "default": "products_and_collections_and_pages_and_articles",
+      "options": [
+        {
+          "value": "products_and_collections_and_pages_and_articles",
+          "label": "All"
+        },
+        {
+          "value": "products",
+          "label": "Products only"
+        },
+        {
+          "value": "products_and_collections",
+          "label": "Products + collections"
+        }
+      ]
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Predictive search",
+      "category": "Utility"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-predictive-search {
+  padding: var(--spacing-xl) 0;
+  position: relative;
+}
+
+.section-predictive-search .section__header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-predictive-search .section__heading {
+  font-size: calc(var(--font-size-h2) * 1px);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text);
+}
+
+.section-predictive-search .section__subheading {
+  color: var(--color-text-subdued);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-predictive-search .container {
+  max-width: calc(var(--container-max-width) * 1px);
+  margin: 0 auto;
+  padding: 0 calc(var(--content-padding) * 1px);
+}
+{% endstylesheet %}
+
+<section
+  id="section-{{ section.id }}"
+  class="section-predictive-search"
+  style="
+    {% if section.settings.background_color %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+    {% if section.settings.top_padding %}
+      padding-top: {{ section.settings.top_padding }}px;
+    {% endif %}
+    {% if section.settings.bottom_padding %}
+      padding-bottom: {{ section.settings.bottom_padding }}px;
+    {% endif %}
+  "
+>
+  <div class="container">
+    {% if section.settings.heading %}
+      <div class="section__header">
+        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
+        {% if section.settings.subheading %}
+          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="blocks blocks--predictive-search">
+      {% for block in section.blocks %}
+        <div
+          class="block block--{{ block.type }}"
+          style="
+            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
+          "
+        >
+          {% case block.type %}
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class PredictiveSearchSection extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    // Section initialization logic
+  }
+
+  onBlockSelect(evt) {
+    // Block selected in editor
+  }
+
+  onBlockDeselect(evt) {
+    // Block deselected in editor
+  }
+}
+
+if (!customElements.get('section-predictive-search')) {
+  customElements.define('section-predictive-search', PredictiveSearchSection);
+}
+{% endjavascript %}

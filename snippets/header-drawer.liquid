@@ -1,0 +1,71 @@
+{% comment %}
+  Renders the mobile header drawer menu
+  Accepts:
+  - menu: {Object} Linklist object
+  - section_id: {String} Section ID
+{% endcomment %}
+
+<menu-drawer>
+  <div class="menu-drawer-container">
+    <button
+      type="button"
+      class="header__icon header__icon--close close-button"
+      aria-label="{{ 'general.close' | t }}"
+      data-close-button
+    >
+      {% render 'icon-close' %}
+    </button>
+
+    <div class="menu-drawer__inner">
+      <nav class="menu-drawer__navigation" aria-label="Main menu">
+        <ul class="menu-drawer__menu list-menu" role="list">
+          {% for link in menu.links %}
+            <li class="menu-drawer__menu-item list-menu__item">
+              <a
+                href="{{ link.url }}"
+                class="menu-drawer__menu-item link"
+                {% if link.active %}aria-current="page"{% endif %}
+              >
+                {{ link.title }}
+              </a>
+              {% if link.links.size > 0 %}
+                <button
+                  type="button"
+                  class="menu-drawer__submenu-toggle"
+                  aria-expanded="false"
+                  data-submenu-toggle
+                >
+                  {% render 'icon-caret' %}
+                </button>
+                <ul class="menu-drawer__submenu" data-submenu>
+                  {% for sublink in link.links %}
+                    <li class="menu-drawer__menu-item list-menu__item">
+                      <a
+                        href="{{ sublink.url }}"
+                        class="menu-drawer__menu-item link"
+                      >
+                        {{ sublink.title }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="menu-drawer__footer">
+      {% if settings.show_account %}
+        <a href="{{ routes.account_url }}" class="menu-drawer__account">
+          {% render 'icon-account' %}
+          {{ 'general.account' | t }}
+        </a>
+      {% endif %}
+      <div class="menu-drawer__currency">
+        {{ form | currency_selector }}
+      </div>
+    </div>
+  </div>
+</menu-drawer>

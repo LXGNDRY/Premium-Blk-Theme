@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "Collections": {
+      "type": "main-list-collections",
+      "settings": {}
+    }
+  },
+  "order": [
+    "Collections"
+  ]
+}

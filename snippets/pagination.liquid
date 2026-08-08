@@ -1,0 +1,61 @@
+{% comment %}
+  Renders pagination
+  Accepts:
+  - paginate: {Object} Pagination object
+{% endcomment %}
+
+{% if paginate.pages > 1 %}
+  <nav class="pagination" role="navigation" aria-label="Pagination">
+    {% if paginate.previous %}
+      <a
+        href="{{ paginate.previous.url }}"
+        class="pagination__item pagination__item--prev"
+        rel="prev"
+      >
+        {% render 'icon-arrow' %}
+        <span class="visually-hidden">{{ 'general.pagination.previous' | t }}</span>
+      </a>
+    {% else %}
+      <span class="pagination__item pagination__item--prev pagination__item--disabled">
+        {% render 'icon-arrow' %}
+        <span class="visually-hidden">{{ 'general.pagination.previous' | t }}</span>
+      </span>
+    {% endif %}
+
+    <ol class="pagination__list">
+      {% for part in paginate.parts %}
+        <li class="pagination__item">
+          {% if part.is_link %}
+            <a href="{{ part.url }}" class="pagination__item-link">
+              {{ part.title }}
+            </a>
+          {% else %}
+            {% if part.title == '...' %}
+              <span class="pagination__item-ellipsis">...</span>
+            {% else %}
+              <span class="pagination__item-current">
+                {{ part.title }}
+              </span>
+            {% endif %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+
+    {% if paginate.next %}
+      <a
+        href="{{ paginate.next.url }}"
+        class="pagination__item pagination__item--next"
+        rel="next"
+      >
+        {% render 'icon-arrow' %}
+        <span class="visually-hidden">{{ 'general.pagination.next' | t }}</span>
+      </a>
+    {% else %}
+      <span class="pagination__item pagination__item--next pagination__item--disabled">
+        {% render 'icon-arrow' %}
+        <span class="visually-hidden">{{ 'general.pagination.next' | t }}</span>
+      </span>
+    {% endif %}
+  </nav>
+{% endif %}

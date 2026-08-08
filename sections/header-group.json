@@ -1,0 +1,33 @@
+{
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Free shipping on orders over $75",
+        "text_alignment": "center",
+        "sticky": false
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu_type": "drawer",
+        "show_search": true,
+        "show_cart": true,
+        "show_account": false,
+        "logo_position": "center",
+        "enable_sticky_header": true
+      },
+      "blocks": [
+        {
+          "type": "menu",
+          "id": "menu-1",
+          "settings": {
+            "menu": "main-menu"
+          }
+        }
+      ]
+    }
+  },
+  "order": ["announcement-bar", "header"]
+}

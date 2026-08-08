@@ -1,0 +1,52 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content",
+      "open_menu": "Open menu",
+      "close_menu": "Close menu",
+      "search": "Search"
+    },
+    "meta": {
+      "tagged_html": " tagged with '{}'"
+    },
+    "404": {
+      "title": "Page not found",
+      "subtext": "The page you are looking for does not exist."
+    },
+    "search": {
+      "title": "Search results",
+      "placeholder": "Search...",
+      "no_results": "No results found"
+    },
+    "cart": {
+      "title": "Your cart",
+      "empty": "Your cart is empty",
+      "total": "Total",
+      "checkout": "Check out"
+    }
+  },
+  "sections": {
+    "header": {
+      "cart": "Cart",
+      "search": "Search",
+      "menu": "Menu"
+    },
+    "footer": {
+      "newsletter_title": "Newsletter",
+      "newsletter_placeholder": "Your email",
+      "newsletter_submit": "Subscribe",
+      "follow_us": "Follow us",
+      "copyright": "\u00a9 {{ year }} {{ shop_name }}"
+    }
+  },
+  "templates": {
+    "contact": {
+      "title": "Contact",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send message",
+      "success": "Thanks! Your message has been sent."
+    }
+  }
+}

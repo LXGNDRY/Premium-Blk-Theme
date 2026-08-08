@@ -1,0 +1,54 @@
+{% comment %}
+  Renders product media gallery with thumbnails
+  Accepts:
+  - product: {Object} Product object
+  - thumbnail_position: {String} bottom | left
+{% endcomment %}
+
+<div class="product__media-gallery" data-product-gallery>
+  <div class="product__media-list" data-product-images>
+    {% for media in product.media %}
+      <div class="product__media-item product__media-item--{{ media.media_type }}">
+        {% if media.media_type == 'image' %}
+          <img
+            src="{{ media | image_url: width: 800 }}"
+            alt="{{ media.alt | escape }}"
+            loading="lazy"
+            width="800"
+            height="800"
+          >
+        {% elsif media.media_type == 'video' %}
+          <video
+            src="{{ media | file_url }}"
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          ></video>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if product.media.size > 1 %}
+    <div class="product__thumbnails product__thumbnails--{{ thumbnail_position | default: 'bottom' }}" data-product-thumbnails>
+      {% for media in product.media %}
+        <button
+          type="button"
+          class="product__thumbnail"
+          data-thumbnail
+          data-index="{{ forloop.index0 }}"
+          aria-label="{{ media.alt | default: 'Image ' | append: forloop.index }}"
+        >
+          <img
+            src="{{ media | image_url: width: 100 }}"
+            alt="{{ media.alt | escape }}"
+            width="100"
+            height="100"
+            loading="lazy"
+          >
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

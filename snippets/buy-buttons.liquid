@@ -1,0 +1,32 @@
+{% comment %}
+  Renders buy buttons (add to cart + dynamic checkout)
+  Accepts:
+  - product: {Object} Product object
+  - show_payment_buttons: {Boolean} Show dynamic checkout buttons
+  - is_quick_add: {Boolean} Quick add variant
+{% endcomment %}
+
+<div class="product-form__buttons" data-product-form-buttons>
+  <button
+    type="submit"
+    name="add"
+    class="product-form__submit button button--full-width{% if product.available == false %} button--sold-out{% endif %}"
+    data-add-to-cart
+    {% if product.available == false %}disabled{% endif %}
+  >
+    <span class="label">
+      {% if product.available %}
+        {{ 'products.product.add_to_cart' | t }}
+      {% else %}
+        {{ 'products.product.sold_out' | t }}
+      {% endif %}
+    </span>
+    <div class="loading-overlay__spinner"></div>
+  </button>
+
+  {% if show_payment_buttons and product.available %}
+    <div class="product-form__payment-buttons">
+      {{ form | payment_button }}
+    </div>
+  {% endif %}
+</div>

@@ -1,0 +1,23 @@
+{%- comment -%}
+  Renders form status messages (errors, success).
+  Usage: {% render 'form-status', form: form %}
+{%- endcomment -%}
+
+{%- if form -%}
+  {%- if form.errors -%}
+    <div class="form-status form-status--error" role="alert">
+      <h3 class="form-status__title">{{ 'general.forms.error.title' | t }}</h3>
+      <ul class="form-status__list">
+        {%- for field in form.errors -%}
+          <li class="form-status__item">{{ field | capitalize }} {{ form.errors.messages[field] }}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+
+  {%- if form.posted_successfully? -%}
+    <div class="form-status form-status--success" role="status">
+      {{ 'general.forms.success' | t }}
+    </div>
+  {%- endif -%}
+{%- endif -%}

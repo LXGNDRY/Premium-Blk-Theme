@@ -1,0 +1,127 @@
+<!doctype html>
+<html class="no-js" lang="{{ shop.locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_background }}">
+  <title>{% if page_title %}{{ page_title }} - {% endif %}{{ shop.name }}</title>
+
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | truncate: 160 }}">
+  {%- endif -%}
+
+  {%- if canonical_url -%}
+    <link rel="canonical" href="{{ canonical_url }}">
+  {%- endif -%}
+
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.shopifycdn.com">
+
+  {{ 'base.css' | asset_url | stylesheet_tag }}
+  {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
+  {{ 'component-list-payment.css' | asset_url | stylesheet_tag }}
+  {{ 'component-menu-drawer.css' | asset_url | stylesheet_tag }}
+  {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+  {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
+  {{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}
+  {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
+  {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+  {{ 'section-image-banner.css' | asset_url | stylesheet_tag }}
+  {{ 'section-featured-product.css' | asset_url | stylesheet_tag }}
+  {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+  {{ 'section-footer.css' | asset_url | stylesheet_tag }}
+  {{ 'template-collection.css' | asset_url | stylesheet_tag }}
+  {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
+  {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+  {{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
+  {{ 'collage.css' | asset_url | stylesheet_tag }}
+  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
+  {{ 'component-slider.css' | asset_url | stylesheet_tag }}
+  {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
+
+  {%- style -%}
+    :root {
+      --color-background: {{ settings.color_background }};
+      --color-foreground: {{ settings.color_primary }};
+      --color-border: {{ settings.color_border }};
+      --color-base-text: {{ settings.color_primary }};
+      --color-base-text--inverse: {{ settings.color_background }};
+      --color-base-background-1: {{ settings.color_background }};
+      --color-base-background-2: {{ settings.color_secondary }};
+      --color-base-accent-1: {{ settings.color_primary }};
+      --color-base-button-label: {{ settings.color_background }};
+      --color-base-button-background: {{ settings.color_primary }};
+      --font-body-family: {{ settings.font_body }};
+      --font-heading-family: {{ settings.font_heading }};
+      --spacing-unit: {{ settings.spacing_unit }}px;
+      --page-width: {{ settings.container_max_width }}px;
+      --page-gutter: {{ settings.content_padding }}px;
+    }
+  {%- endstyle -%}
+</head>
+<body class="gradient template--{{ template.name }} {{ settings.page_width }}"
+      data-type="{{ template.type | replace: '404', '404' }}"
+      data-theme-motion="{{ settings.animations_reduce | default: false | json }}">
+
+  <a href="#MainContent" class="skip-to-content-link">
+    Skip to content
+  </a>
+
+  <div class="announcement-bar-section">
+    {% sections 'announcement-bar' %}
+  </div>
+
+  <div class="header-wrapper">
+    {% sections 'header-group' %}
+  </div>
+
+  <div class="template">
+    <main id="MainContent" class="content-for-layout focus-none" tabindex="-1" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+  </div>
+
+  <div class="cart-notification-wrapper">
+    {% section 'cart-notification-product' %}
+    {% section 'cart-notification-button' %}
+  </div>
+
+  {% section 'cart-drawer' %}
+  {% section 'predictive-search' %}
+  {% section 'cart-icon-bubble' %}
+  {% section 'cart-live-region-text' %}
+
+  <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'components.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'disclosures.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'share.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'customer.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'main-search.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+
+  {{ content_for_header }}
+</body>
+</html>

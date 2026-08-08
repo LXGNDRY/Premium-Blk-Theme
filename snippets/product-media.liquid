@@ -1,0 +1,37 @@
+{% comment %}
+  Renders product media (images, videos, 3D models)
+  Accepts:
+  - product: {Object} Product object
+  - media_size: {String} Media size (small | medium | large)
+  - thumbnail_position: {String} Thumbnail position (bottom | left)
+  - enable_video_looping: {Boolean} Enable video autoplay
+  - enable_image_zoom: {Boolean} Enable image zoom
+{% endcomment %}
+
+<div class="product__media-wrapper media-wrapper media-wrapper--{{ media_size | default: 'medium' }}">
+  <div class="product__media media media--transparent" data-product-media>
+    <product-modal id="ProductModal-{{ section.id }}" data-modal>
+      <button type="button" class="product__modal-opener product__modal-opener--video" data-modal-opener>
+        {% if product.featured_image %}
+          <img
+            src="{{ product.featured_image | image_url: width: 900 }}"
+            alt="{{ product.featured_image.alt | escape }}"
+            class="product__modal-opener-media"
+            loading="lazy"
+            width="900"
+            height="900"
+          >
+        {% endif %}
+        <div class="product__media-icon motion-reduce">
+          {% render 'icon-zoom' %}
+        </div>
+      </button>
+
+      <div class="product__media-info">
+        <span class="product__media-info-badge">
+          {{ 'products.product.media' | t }}
+        </span>
+      </div>
+    </product-modal>
+  </div>
+</div>

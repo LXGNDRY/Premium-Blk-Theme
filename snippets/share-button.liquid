@@ -1,0 +1,56 @@
+{% comment %}
+  Renders social share buttons
+  Accepts:
+  - title: {String} Page title
+  - url: {String} Share URL
+{% endcomment %}
+
+<div class="share-button">
+  <span class="share-button__label">{{ 'general.share' | t }}</span>
+  <ul class="share-button__list">
+    <li>
+      <a
+        href="https://www.facebook.com/sharer/sharer.php?u={{ url | url_encode }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="share-button__link"
+        aria-label="Facebook"
+      >
+        {% render 'icon-facebook' %}
+      </a>
+    </li>
+    <li>
+      <a
+        href="https://twitter.com/intent/tweet?text={{ title | url_encode }}&url={{ url | url_encode }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="share-button__link"
+        aria-label="Twitter"
+      >
+        {% render 'icon-twitter' %}
+      </a>
+    </li>
+    <li>
+      <a
+        href="https://pinterest.com/pin/create/button/?url={{ url | url_encode }}&description={{ title | url_encode }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="share-button__link"
+        aria-label="Pinterest"
+      >
+        {% render 'icon-pinterest' %}
+      </a>
+    </li>
+    <li>
+      <button
+        type="button"
+        class="share-button__link share-button__copy"
+        data-share-copy
+        data-url="{{ url }}"
+        aria-label="{{ 'general.copy_link' | t }}"
+      >
+        {% render 'icon-link' %}
+      </button>
+    </li>
+  </ul>
+</div>

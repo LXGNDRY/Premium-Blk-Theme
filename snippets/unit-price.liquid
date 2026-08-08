@@ -1,0 +1,18 @@
+{% comment %}
+  Renders unit price display
+  Accepts:
+  - product: {Object} Product object
+  - variant: {Object} Variant object
+{% endcomment %}
+
+{% if product.unit_price_measurement %}
+  <div class="unit-price">
+    <span class="unit-price__amount">
+      {{ product.selected_or_first_available_variant.unit_price | money }}
+    </span>
+    <span class="unit-price__reference">
+      / {{ product.unit_price_measurement.reference_value }}
+      {{ product.unit_price_measurement.reference_unit }}
+    </span>
+  </div>
+{% endif %}

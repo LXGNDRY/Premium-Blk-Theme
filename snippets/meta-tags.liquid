@@ -1,0 +1,29 @@
+{% comment %}
+  Renders SEO meta tags
+  Accepts:
+  - page_title: {String} Page title
+  - page_description: {String} Page description
+  - featured_image: {String} OG image URL
+{% endcomment %}
+
+{%- if page_title -%}
+  <title>{{ page_title }}</title>
+  <meta property="og:title" content="{{ page_title }}">
+  <meta name="twitter:title" content="{{ page_title }}">
+{%- endif -%}
+
+{%- if page_description -%}
+  <meta name="description" content="{{ page_description | truncate: 160 }}">
+  <meta property="og:description" content="{{ page_description | truncate: 160 }}">
+  <meta name="twitter:description" content="{{ page_description | truncate: 160 }}">
+{%- endif -%}
+
+{%- if featured_image -%}
+  <meta property="og:image" content="{{ featured_image | image_url: width: 1200 }}">
+  <meta name="twitter:image" content="{{ featured_image | image_url: width: 1200 }}">
+  <meta name="twitter:card" content="summary_large_image">
+{%- endif -%}
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ canonical_url }}">

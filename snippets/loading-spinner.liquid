@@ -1,0 +1,11 @@
+{% comment %}
+  Renders a loading spinner
+  Accepts:
+  - size: {String} Size (small | medium | large)
+{% endcomment %}
+
+<div class="loading-overlay__spinner loading-overlay__spinner--{{ size | default: 'small' }}">
+  <svg class="spinner" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle class="path" cx="50" cy="50" r="45" fill="none" stroke-width="6"></circle>
+  </svg>
+</div>

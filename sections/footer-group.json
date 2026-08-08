@@ -1,0 +1,34 @@
+{
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "show_social_icons": true,
+        "show_payment_icons": true,
+        "show_country_selector": false,
+        "show_language_selector": false,
+        "newsletter_label": "Newsletter",
+        "menu_design": "Default"
+      },
+      "blocks": [
+        {
+          "type": "link_list",
+          "id": "menu-1",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "main-menu"
+          }
+        },
+        {
+          "type": "link_list",
+          "id": "menu-2",
+          "settings": {
+            "heading": "Company",
+            "menu": "footer-menu"
+          }
+        }
+      ]
+    }
+  },
+  "order": ["footer"]
+}

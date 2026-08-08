@@ -1,0 +1,44 @@
+{%- comment -%}
+  Renders social sharing buttons.
+  Usage: {% render 'social-sharing', title: product.title, url: product.url %}
+{%- endcomment -%}
+
+<div class="social-sharing">
+  <span class="social-sharing__label">{{ 'general.social.share' | t }}</span>
+  <div class="social-sharing__buttons">
+    <a
+      href="https://www.facebook.com/sharer/sharer.php?u={{ url | url_encode }}"
+      class="social-sharing__button"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="{{ 'general.social.share_on' | t: platform: 'Facebook' }}"
+    >
+      {% render 'icon-facebook' %}
+    </a>
+    <a
+      href="https://twitter.com/intent/tweet?text={{ title | url_encode }}&url={{ url | url_encode }}"
+      class="social-sharing__button"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="{{ 'general.social.share_on' | t: platform: 'Twitter' }}"
+    >
+      {% render 'icon-twitter' %}
+    </a>
+    <a
+      href="https://pinterest.com/pin/create/button/?url={{ url | url_encode }}&description={{ title | url_encode }}"
+      class="social-sharing__button"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="{{ 'general.social.share_on' | t: platform: 'Pinterest' }}"
+    >
+      {% render 'icon-checkmark' %}
+    </a>
+    <button
+      class="social-sharing__button"
+      onclick="navigator.share({title: '{{ title }}', url: '{{ url }}'})"
+      aria-label="{{ 'general.social.more' | t }}"
+    >
+      {% render 'icon-checkmark' %}
+    </button>
+  </div>
+</div>
