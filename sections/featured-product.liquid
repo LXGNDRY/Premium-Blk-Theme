@@ -2,41 +2,59 @@
 {
   "name": "Featured product",
   "tag": "section",
-  "class": "section-featured-product",
+  "class": "s-featured-product",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 1,
   "settings": [
+    {
+      "type": "header",
+      "content": "Product"
+    },
     {
       "type": "product",
       "id": "product",
-      "label": "Product",
-      "default": ""
+      "label": "Product"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
     },
     {
       "type": "select",
       "id": "layout",
       "label": "Layout",
-      "default": "image_first",
+      "default": "split",
       "options": [
-        {
-          "value": "image_first",
-          "label": "Image first"
-        },
-        {
-          "value": "text_first",
-          "label": "Text first"
-        }
+        { "value": "split", "label": "Split (image + text)" },
+        { "value": "centered", "label": "Centered (image above)" }
       ]
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker / eyebrow",
+      "default": "Featured"
     },
     {
       "type": "checkbox",
       "id": "show_vendor",
       "label": "Show vendor",
-      "default": true
+      "default": false
     },
     {
       "type": "checkbox",
@@ -46,58 +64,17 @@
     },
     {
       "type": "checkbox",
-      "id": "show_share_buttons",
-      "label": "Show share buttons",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "show_payment_buttons",
-      "label": "Show dynamic checkout button",
+      "id": "show_button",
+      "label": "Show button",
       "default": true
     },
     {
-      "type": "select",
-      "id": "media_size",
-      "label": "Media size",
-      "default": "medium",
-      "options": [
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "large",
-          "label": "Large"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "inverse",
-          "label": "Inverse"
-        }
-      ]
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop now"
     }
   ],
-  "blocks": [],
   "presets": [
     {
       "name": "Featured product",
@@ -108,101 +85,211 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-featured-product {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-featured-product {
+  padding: var(--t-space-10) 0;
 }
 
-.section-featured-product .section__header {
+@media (min-width: 768px) {
+  .s-featured-product {
+    padding: var(--t-space-12) 0;
+  }
+}
+
+.s-featured-product__grid {
+  display: grid;
+  gap: var(--t-space-8);
+  align-items: center;
+}
+
+.s-featured-product--split .s-featured-product__grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 767px) {
+  .s-featured-product--split .s-featured-product__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.s-featured-product--centered .s-featured-product__grid {
+  grid-template-columns: 1fr;
   text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.section-featured-product .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
-}
-
-.section-featured-product .section__subheading {
-  color: var(--color-text-subdued);
   max-width: 600px;
   margin: 0 auto;
 }
 
-.section-featured-product .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-featured-product--img-right .s-featured-product__image {
+  order: 2;
+}
+
+.s-featured-product__image {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--t-surface);
+}
+
+.s-featured-product__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-transition-base);
+}
+
+.s-featured-product:hover .s-featured-product__image img {
+  transform: scale(1.03);
+}
+
+.s-featured-product__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
+}
+
+.s-featured-product--centered .s-featured-product__info {
+  align-items: center;
+}
+
+.s-featured-product__kicker {
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.s-featured-product__title {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.s-featured-product__vendor {
+  font-size: var(--t-font-size-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--t-text-muted);
+  font-weight: 600;
+  margin: 0;
+}
+
+.s-featured-product__price {
+  font-family: var(--t-font-mono);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.s-featured-product__description {
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 480px;
+}
+
+.s-featured-product__button {
+  align-self: flex-start;
+  margin-top: var(--t-space-2);
+}
+
+.s-featured-product--centered .s-featured-product__button {
+  align-self: center;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _product = all_products[section.settings.product]
+  assign _layout = section.settings.layout
+  assign _img_pos = section.settings.image_position
+  assign _kicker = section.settings.kicker
+  assign _show_vendor = section.settings.show_vendor
+  assign _show_desc = section.settings.show_description
+  assign _show_btn = section.settings.show_button
+  assign _btn_text = section.settings.button_text
+
+  assign _section_class = 's-featured-product'
+  assign _section_class = _section_class | append: ' s-featured-product--' | append: _layout
+  if _img_pos == 'right'
+    assign _section_class = _section_class | append: ' s-featured-product--img-right'
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-featured-product"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="featured-product"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    <div class="blocks blocks--featured-product">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
+  <div class="c-container">
+    {% if _product %}
+      <div class="s-featured-product__grid">
+        <div class="s-featured-product__image">
+          {% if _product.featured_image %}
+            <a href="{{ _product.url }}">
+              <img
+                src="{{ _product.featured_image | image_url: width: 800 }}"
+                srcset="
+                  {{ _product.featured_image | image_url: width: 400 }} 400w,
+                  {{ _product.featured_image | image_url: width: 800 }} 800w,
+                  {{ _product.featured_image | image_url: width: 1200 }} 1200w
+                "
+                sizes="(max-width: 767px) 100vw, 50vw"
+                alt="{{ _product.featured_image.alt | escape }}"
+                width="800"
+                height="1067"
+                loading="lazy"
+              >
+            </a>
+          {% endif %}
         </div>
-      {% endfor %}
-    </div>
+
+        <div class="s-featured-product__info">
+          {% if _kicker != blank %}
+            <p class="s-featured-product__kicker">{{ _kicker | escape }}</p>
+          {% endif %}
+          {% if _show_vendor and _product.vendor %}
+            <p class="s-featured-product__vendor">{{ _product.vendor | escape }}</p>
+          {% endif %}
+          <h2 class="s-featured-product__title">
+            <a href="{{ _product.url }}" style="color: inherit; text-decoration: none;">
+              {{ _product.title | escape }}
+            </a>
+          </h2>
+          <div class="s-featured-product__price">
+            {% render 'component-product-price', product: _product, size: 'lg', show_badge: true %}
+          </div>
+          {% if _show_desc and _product.description != blank %}
+            <p class="s-featured-product__description">
+              {{ _product.description | strip_html | truncate: 200 }}
+            </p>
+          {% endif %}
+          {% if _show_btn %}
+            <a href="{{ _product.url }}" class="c-btn c-btn--primary s-featured-product__button">
+              {{ _btn_text | default: 'Shop now' | escape }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <p style="text-align: center; color: var(--t-text-muted);">
+        {{ 'sections.featured_product.no_product' | t | default: 'Select a product to feature.' }}
+      </p>
+    {% endif %}
   </div>
 </section>
 
 {% javascript %}
 class FeaturedProductSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-featured-product')) {
-  customElements.define('section-featured-product', FeaturedProductSection);
+if (!customElements.get('featured-product-section')) {
+  customElements.define('featured-product-section', FeaturedProductSection);
 }
 {% endjavascript %}

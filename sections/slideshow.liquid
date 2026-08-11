@@ -2,142 +2,133 @@
 {
   "name": "Slideshow",
   "tag": "section",
-  "class": "section-slideshow",
+  "class": "s-slideshow",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 6,
+  "max_blocks": 5,
   "settings": [
     {
-      "type": "select",
-      "id": "slide_height",
-      "label": "Slide height",
-      "default": "adapt",
-      "options": [
-        {
-          "value": "adapt",
-          "label": "Adapt to first image"
-        },
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "large",
-          "label": "Large"
-        }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "show_text_box",
-      "label": "Show text box",
-      "default": true
+      "type": "header",
+      "content": "Controls"
     },
     {
       "type": "checkbox",
       "id": "autoplay",
-      "label": "Autoplay",
-      "default": false
+      "label": "Auto-rotate slides",
+      "default": true
     },
     {
       "type": "range",
       "id": "autoplay_speed",
-      "label": "Autoplay speed",
-      "default": 5,
+      "label": "Auto-rotate speed",
       "min": 3,
-      "max": 10,
+      "max": 15,
       "step": 1,
-      "unit": "seconds"
+      "unit": "s",
+      "default": 7
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show pagination dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Slide"
     },
     {
       "type": "select",
-      "id": "text_alignment",
-      "label": "Text alignment",
-      "default": "center",
+      "id": "text_position",
+      "label": "Text position",
+      "default": "center-left",
       "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
+        { "value": "left", "label": "Left" },
+        { "value": "center-left", "label": "Center left" },
+        { "value": "center", "label": "Center" },
+        { "value": "center-right", "label": "Center right" },
+        { "value": "right", "label": "Right" }
       ]
     },
     {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "inverse",
-          "label": "Inverse"
-        }
-      ]
+      "type": "range",
+      "id": "slide_height_desktop",
+      "label": "Slide height (desktop)",
+      "min": 400,
+      "max": 900,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "slide_height_mobile",
+      "label": "Slide height (mobile)",
+      "min": 300,
+      "max": 700,
+      "step": 50,
+      "unit": "px",
+      "default": 480
     }
   ],
   "blocks": [
     {
       "type": "slide",
       "name": "Slide",
-      "limit": 6,
+      "limit": 5,
       "settings": [
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image",
-          "default": ""
+          "label": "Image"
         },
         {
           "type": "text",
           "id": "heading",
           "label": "Heading",
-          "default": ""
+          "default": "Slide heading"
         },
         {
-          "type": "textarea",
+          "type": "text",
           "id": "subheading",
           "label": "Subheading",
           "default": ""
         },
         {
           "type": "text",
-          "id": "button_label",
-          "label": "Button label",
+          "id": "kicker",
+          "label": "Kicker / eyebrow",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
           "default": "Shop now"
         },
         {
           "type": "url",
           "id": "button_link",
-          "label": "Button link",
-          "default": ""
+          "label": "Button link"
         },
         {
-          "type": "checkbox",
-          "id": "show_text_box",
-          "label": "Show text box",
-          "default": true
+          "type": "select",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity",
+          "default": "medium",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "low", "label": "Low" },
+            { "value": "medium", "label": "Medium" },
+            { "value": "high", "label": "High" }
+          ]
         }
       ]
     }
@@ -145,116 +136,412 @@
   "presets": [
     {
       "name": "Slideshow",
-      "category": "Image"
+      "category": "Image",
+      "blocks": [
+        { "type": "slide", "settings": { "heading": "Slide 1" } },
+        { "type": "slide", "settings": { "heading": "Slide 2" } }
+      ]
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-slideshow {
-  padding: var(--spacing-xl) 0;
+.s-slideshow {
   position: relative;
+  overflow: hidden;
 }
 
-.section-slideshow .section__header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
+.s-slideshow__slider {
+  position: relative;
+  overflow: hidden;
 }
 
-.section-slideshow .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-slideshow__track {
+  display: flex;
+  transition: transform var(--t-transition-base) var(--t-ease-out);
+  will-change: transform;
 }
 
-.section-slideshow .section__subheading {
-  color: var(--color-text-subdued);
+.s-slideshow__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: var(--slide-align, flex-start);
+  padding: var(--t-space-8) 0;
+  min-height: var(--slide-height, 600px);
+  background-size: cover;
+  background-position: center;
+  background-color: var(--t-surface);
+}
+
+.s-slideshow--pos-left .s-slideshow__slide { justify-content: flex-start; text-align: left; align-items: flex-start; }
+.s-slideshow--pos-center-left .s-slideshow__slide { justify-content: flex-start; text-align: left; align-items: center; }
+.s-slideshow--pos-center .s-slideshow__slide { justify-content: center; text-align: center; align-items: center; }
+.s-slideshow--pos-center-right .s-slideshow__slide { justify-content: flex-end; text-align: right; align-items: center; }
+.s-slideshow--pos-right .s-slideshow__slide { justify-content: flex-end; text-align: right; align-items: flex-start; }
+
+.s-slideshow__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.s-slideshow__overlay--low { background: rgba(0,0,0,0.2); }
+.s-slideshow__overlay--medium { background: rgba(0,0,0,0.4); }
+.s-slideshow__overlay--high { background: rgba(0,0,0,0.6); }
+
+.s-slideshow__content {
+  position: relative;
+  z-index: 2;
   max-width: 600px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
+  color: #fff;
+  width: 100%;
 }
 
-.section-slideshow .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-slideshow--pos-center .s-slideshow__content { margin: 0 auto; align-items: center; }
+.s-slideshow--pos-center-right .s-slideshow__content,
+.s-slideshow--pos-right .s-slideshow__content { margin-left: auto; }
+
+.s-slideshow__kicker {
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.s-slideshow__heading {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0;
+  text-transform: uppercase;
+  max-width: 600px;
+}
+
+.s-slideshow__subheading {
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.s-slideshow__buttons {
+  display: flex;
+  gap: var(--t-space-3);
+  flex-wrap: wrap;
+  margin-top: var(--t-space-2);
+}
+
+.s-slideshow--pos-center .s-slideshow__buttons { justify-content: center; }
+
+/* Arrows */
+.s-slideshow__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  transition: all var(--t-transition-fast);
+  backdrop-filter: blur(8px);
+}
+
+.s-slideshow__arrow:hover {
+  background: rgba(0,0,0,0.6);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.s-slideshow__arrow--prev { left: var(--t-space-4); }
+.s-slideshow__arrow--next { right: var(--t-space-4); }
+
+.s-slideshow__arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Dots */
+.s-slideshow__dots {
+  position: absolute;
+  bottom: var(--t-space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: var(--t-space-2);
+}
+
+.s-slideshow__dot {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(255,255,255,0.5);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--t-transition-fast);
+  border-radius: 0;
+}
+
+.s-slideshow__dot.is-active {
+  background: #fff;
+  border-color: #fff;
+  width: 28px;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .s-slideshow__slide {
+    min-height: var(--slide-height-mobile, 480px);
+    padding: var(--t-space-6) 0;
+  }
+
+  .s-slideshow__arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .s-slideshow__arrow--prev { left: var(--t-space-2); }
+  .s-slideshow__arrow--next { right: var(--t-space-2); }
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _autoplay = section.settings.autoplay
+  assign _speed = section.settings.autoplay_speed | times: 1000
+  assign _show_arrows = section.settings.show_arrows
+  assign _show_dots = section.settings.show_dots
+  assign _text_pos = section.settings.text_position
+  assign _height_desk = section.settings.slide_height_desktop
+  assign _height_mob = section.settings.slide_height_mobile
+
+  assign _section_class = 's-slideshow'
+  assign _section_class = _section_class | append: ' s-slideshow--pos-' | append: _text_pos
+
+  assign _inline_style = '--slide-height: ' | append: _height_desk | append: 'px; --slide-height-mobile: ' | append: _height_mob | append: 'px;'
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-slideshow"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  style="{{ _inline_style }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="slideshow"
+  data-autoplay="{% if _autoplay %}true{% else %}false{% endif %}"
+  data-speed="{{ _speed }}"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
+  {% if section.blocks.size > 0 %}
+    <div class="s-slideshow__slider">
+      <div class="s-slideshow__track" data-slideshow-track>
+        {% for block in section.blocks %}
+          <div
+            class="s-slideshow__slide"
+            data-slide-index="{{ forloop.index0 }}"
+            data-block-id="{{ block.id }}"
+            {% if block.settings.image %}style="background-image: url('{{ block.settings.image | image_url: width: 2000 }}');"{% endif %}
+            role="group"
+            aria-roledescription="slide"
+            aria-label="{{ forloop.index }} of {{ section.blocks.size }}"
+          >
+            {% if block.settings.overlay_opacity != 'none' %}
+              <div class="s-slideshow__overlay s-slideshow__overlay--{{ block.settings.overlay_opacity }}"></div>
+            {% endif %}
 
-    <div class="blocks blocks--slideshow">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'slide' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Slide
-    {% endif %}
-  </div>
-          {% endcase %}
+            <div class="c-container" style="width:100%;">
+              <div class="s-slideshow__content">
+                {% if block.settings.kicker != blank %}
+                  <p class="s-slideshow__kicker">{{ block.settings.kicker | escape }}</p>
+                {% endif %}
+                {% if block.settings.heading != blank %}
+                  <h2 class="s-slideshow__heading">{{ block.settings.heading | escape }}</h2>
+                {% endif %}
+                {% if block.settings.subheading != blank %}
+                  <p class="s-slideshow__subheading">{{ block.settings.subheading | escape }}</p>
+                {% endif %}
+                {% if block.settings.button_text != blank and block.settings.button_link != blank %}
+                  <div class="s-slideshow__buttons">
+                    <a href="{{ block.settings.button_link }}" class="c-btn c-btn--primary c-btn--inverted">
+                      {{ block.settings.button_text | escape }}
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if _show_arrows and section.blocks.size > 1 %}
+        <button type="button" class="s-slideshow__arrow s-slideshow__arrow--prev" data-slide-prev aria-label="Previous slide">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button type="button" class="s-slideshow__arrow s-slideshow__arrow--next" data-slide-next aria-label="Next slide">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      {% endif %}
+
+      {% if _show_dots and section.blocks.size > 1 %}
+        <div class="s-slideshow__dots" role="tablist">
+          {% for block in section.blocks %}
+            <button
+              type="button"
+              class="s-slideshow__dot {% if forloop.first %}is-active{% endif %}"
+              data-goto-slide="{{ forloop.index0 }}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-label="Go to slide {{ forloop.index }}"
+            ></button>
+          {% endfor %}
         </div>
-      {% endfor %}
+      {% endif %}
     </div>
-  </div>
+  {% endif %}
 </section>
 
 {% javascript %}
 class SlideshowSection extends HTMLElement {
   constructor() {
     super();
+    this.currentIndex = 0;
+    this.autoplay = this.dataset.autoplay === 'true';
+    this.speed = parseInt(this.dataset.speed, 10) || 7000;
+    this._timer = null;
+    this._paused = false;
   }
 
   connectedCallback() {
+    this.cacheDOM();
     this.init();
   }
 
+  disconnectedCallback() {
+    this.stopAutoplay();
+  }
+
+  cacheDOM() {
+    this.track = this.querySelector('[data-slideshow-track]');
+    this.slides = this.querySelectorAll('.s-slideshow__slide');
+    this.dots = this.querySelectorAll('[data-goto-slide]');
+    this.prevBtn = this.querySelector('[data-slide-prev]');
+    this.nextBtn = this.querySelector('[data-slide-next]');
+    this.total = this.slides.length;
+  }
+
   init() {
-    // Section initialization logic
+    if (this.total <= 1) return;
+
+    if (this.prevBtn) {
+      this.prevBtn.addEventListener('click', () => this.prev());
+    }
+    if (this.nextBtn) {
+      this.nextBtn.addEventListener('click', () => this.next());
+    }
+
+    this.dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => this.goTo(i));
+    });
+
+    // Pause on hover
+    this.addEventListener('mouseenter', () => this._paused = true);
+    this.addEventListener('mouseleave', () => {
+      this._paused = false;
+      if (this.autoplay) this.startAutoplay();
+    });
+
+    // Pause when tab not visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.stopAutoplay();
+      } else if (this.autoplay) {
+        this.startAutoplay();
+      }
+    });
+
+    // Touch support
+    let startX = 0;
+    this.track.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    this.track.addEventListener('touchend', (e) => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? this.next() : this.prev();
+      }
+    });
+
+    if (this.autoplay) this.startAutoplay();
+  }
+
+  goTo(index) {
+    this.currentIndex = (index + this.total) % this.total;
+    this.track.style.transform = `translateX(-${this.currentIndex * 100}%)`;
+    this.dots.forEach((d, i) => {
+      d.classList.toggle('is-active', i === this.currentIndex);
+      d.setAttribute('aria-selected', i === this.currentIndex ? 'true' : 'false');
+    });
+
+    // Reset autoplay timer
+    if (this.autoplay) {
+      this.stopAutoplay();
+      this.startAutoplay();
+    }
+  }
+
+  next() {
+    this.goTo(this.currentIndex + 1);
+  }
+
+  prev() {
+    this.goTo(this.currentIndex - 1);
+  }
+
+  startAutoplay() {
+    this.stopAutoplay();
+    this._timer = setInterval(() => {
+      if (!this._paused) this.next();
+    }, this.speed);
+  }
+
+  stopAutoplay() {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = null;
+    }
   }
 
   onBlockSelect(evt) {
-    // Block selected in editor
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) {
+      const idx = parseInt(block.dataset.slideIndex, 10);
+      this.goTo(idx);
+    }
   }
 
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-slideshow')) {
-  customElements.define('section-slideshow', SlideshowSection);
+if (!customElements.get('slideshow-section')) {
+  customElements.define('slideshow-section', SlideshowSection);
 }
 {% endjavascript %}

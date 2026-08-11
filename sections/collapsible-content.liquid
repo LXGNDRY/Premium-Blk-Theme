@@ -2,180 +2,334 @@
 {
   "name": "Collapsible content",
   "tag": "section",
-  "class": "section-collapsible-content",
+  "class": "s-collapsible",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 10,
+  "max_blocks": 15,
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "Collapsible content"
+      "label": "Section heading",
+      "default": "FAQs"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "single_open",
+      "label": "Only allow one open at a time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "first_open",
+      "label": "Open first item by default",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 500,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 720
     },
     {
       "type": "select",
-      "id": "icon_position",
-      "label": "Icon position",
-      "default": "right",
+      "id": "style",
+      "label": "Border style",
+      "default": "full",
       "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "icon_style",
-      "label": "Icon style",
-      "default": "plus",
-      "options": [
-        {
-          "value": "plus",
-          "label": "Plus/minus"
-        },
-        {
-          "value": "chevron",
-          "label": "Chevron"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        }
+        { "value": "full", "label": "Full borders" },
+        { "value": "bottom-only", "label": "Bottom borders only" },
+        { "value": "none", "label": "No borders" }
       ]
     }
   ],
   "blocks": [
     {
-      "type": "collapsible_row",
-      "name": "Row",
-      "limit": 10,
+      "type": "item",
+      "name": "Item",
+      "limit": 15,
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": "Section"
-        },
-        {
-          "type": "textarea",
-          "id": "content",
-          "label": "Content",
-          "default": "Content goes here."
-        },
-        {
-          "type": "checkbox",
-          "id": "open_by_default",
-          "label": "Open by default",
-          "default": false
-        }
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Question" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Answer text goes here.</p>" },
+        { "type": "select", "id": "icon", "label": "Icon style", "default": "plus", "options": [
+          { "value": "plus", "label": "Plus/minus" },
+          { "value": "arrow", "label": "Chevron" },
+          { "value": "none", "label": "None" }
+        ]}
       ]
     }
   ],
   "presets": [
     {
       "name": "Collapsible content",
-      "category": "Text"
+      "category": "Text",
+      "blocks": [
+        { "type": "item", "settings": { "heading": "Question 1" } },
+        { "type": "item", "settings": { "heading": "Question 2" } },
+        { "type": "item", "settings": { "heading": "Question 3" } }
+      ]
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-collapsible-content {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-collapsible {
+  padding: var(--t-space-10) 0;
 }
 
-.section-collapsible-content .section__header {
+@media (min-width: 768px) {
+  .s-collapsible {
+    padding: var(--t-space-12) 0;
+  }
+}
+
+.s-collapsible__header {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.section-collapsible-content .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
-}
-
-.section-collapsible-content .section__subheading {
-  color: var(--color-text-subdued);
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0 auto var(--t-space-8);
 }
 
-.section-collapsible-content .container {
-  max-width: calc(var(--container-max-width) * 1px);
+.s-collapsible__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-3);
+}
+
+.s-collapsible__subheading {
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.s-collapsible__items {
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+  display: flex;
+  flex-direction: column;
+}
+
+.s-collapsible--border-bottom .s-collapsible__item {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-collapsible--border-none .s-collapsible__item {
+  border: none;
+}
+
+.s-collapsible--border-none .s-collapsible__item:last-child {
+  border-bottom: none;
+}
+
+.s-collapsible__item {
+  border: 1px solid var(--t-border);
+  border-bottom: none;
+  background: var(--t-bg);
+}
+
+.s-collapsible__item:last-child {
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-collapsible__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--t-space-4);
+  padding: var(--t-space-5);
+  background: none;
+  border: none;
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--t-transition-fast);
+}
+
+.s-collapsible__trigger:hover {
+  color: var(--t-text);
+}
+
+.s-collapsible__trigger-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.s-collapsible__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  position: relative;
+  transition: transform var(--t-transition-base);
+  color: var(--t-text-muted);
+}
+
+.s-collapsible__item.is-open .s-collapsible__icon {
+  transform: rotate(45deg);
+}
+
+.s-collapsible__icon--arrow {
+  transform: rotate(-90deg);
+}
+
+.s-collapsible__item.is-open .s-collapsible__icon--arrow {
+  transform: rotate(0deg);
+}
+
+.s-collapsible__icon::before,
+.s-collapsible__icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+}
+
+.s-collapsible__icon::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.s-collapsible__icon::after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  transition: transform var(--t-transition-base);
+}
+
+.s-collapsible__icon--arrow::after {
+  content: none;
+}
+
+.s-collapsible__icon--arrow::before {
+  transform: none;
+  background: none;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  height: 8px;
+  width: 8px;
+  top: 3px;
+  left: 3px;
+  transform: rotate(45deg);
+}
+
+.s-collapsible__content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--t-transition-base);
+}
+
+.s-collapsible__item.is-open .s-collapsible__content {
+  max-height: 500px;
+}
+
+.s-collapsible__content-inner {
+  padding: 0 var(--t-space-5) var(--t-space-5);
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-small);
+  line-height: 1.6;
+}
+
+.s-collapsible__content-inner p {
+  margin: 0 0 var(--t-space-3);
+}
+
+.s-collapsible__content-inner p:last-child {
+  margin-bottom: 0;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _subheading = section.settings.subheading
+  assign _single = section.settings.single_open
+  assign _first_open = section.settings.first_open
+  assign _max_width = section.settings.max_width
+  assign _style = section.settings.style
+
+  assign _section_class = 's-collapsible'
+  if _style == 'bottom-only'
+    assign _section_class = _section_class | append: ' s-collapsible--border-bottom'
+  elsif _style == 'none'
+    assign _section_class = _section_class | append: ' s-collapsible--border-none'
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-collapsible-content"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="collapsible-content"
+  data-single="{% if _single %}true{% else %}false{% endif %}"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+  <div class="c-container">
+    {% if _heading != blank %}
+      <div class="s-collapsible__header">
+        <h2 class="s-collapsible__heading">{{ _heading | escape }}</h2>
+        {% if _subheading != blank %}
+          <p class="s-collapsible__subheading">{{ _subheading | escape }}</p>
         {% endif %}
       </div>
     {% endif %}
 
-    <div class="blocks blocks--collapsible-content">
+    <div class="s-collapsible__items" style="max-width: {{ _max_width }}px;">
       {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'collapsible_row' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Row
-    {% endif %}
-  </div>
-          {% endcase %}
-        </div>
+        {% if block.type == 'item' %}
+          <div
+            class="s-collapsible__item {% if _first_open and forloop.first %}is-open{% endif %}"
+            data-block-id="{{ block.id }}"
+            data-item-index="{{ forloop.index0 }}"
+          >
+            <button
+              type="button"
+              class="s-collapsible__trigger"
+              data-accordion-trigger
+              aria-expanded="{% if _first_open and forloop.first %}true{% else %}false{% endif %}"
+            >
+              <span class="s-collapsible__trigger-text">{{ block.settings.heading | escape }}</span>
+              {% if block.settings.icon != 'none' %}
+                <span class="s-collapsible__icon s-collapsible__icon--{{ block.settings.icon }}" aria-hidden="true"></span>
+              {% endif %}
+            </button>
+            <div class="s-collapsible__content" data-accordion-content>
+              <div class="s-collapsible__content-inner">
+                {{ block.settings.content }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -185,26 +339,49 @@
 class CollapsibleContentSection extends HTMLElement {
   constructor() {
     super();
+    this.single = this.dataset.single === 'true';
   }
 
   connectedCallback() {
-    this.init();
+    this.items = this.querySelectorAll('.s-collapsible__item');
+    this.triggers = this.querySelectorAll('[data-accordion-trigger]');
+
+    this.triggers.forEach((btn, i) => {
+      btn.addEventListener('click', () => this.toggle(i));
+    });
   }
 
-  init() {
-    // Section initialization logic
+  toggle(index) {
+    const item = this.items[index];
+    const isOpen = item.classList.contains('is-open');
+
+    if (this.single) {
+      this.items.forEach((el, i) => {
+        const open = i === index && !isOpen;
+        el.classList.toggle('is-open', open);
+        const btn = el.querySelector('[data-accordion-trigger]');
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    } else {
+      item.classList.toggle('is-open', !isOpen);
+      const btn = item.querySelector('[data-accordion-trigger]');
+      if (btn) btn.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+    }
   }
 
   onBlockSelect(evt) {
-    // Block selected in editor
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) {
+      const idx = parseInt(block.dataset.itemIndex, 10);
+      this.toggle(idx);
+      block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-collapsible-content')) {
-  customElements.define('section-collapsible-content', CollapsibleContentSection);
+if (!customElements.get('collapsible-content-section')) {
+  customElements.define('collapsible-content-section', CollapsibleContentSection);
 }
 {% endjavascript %}

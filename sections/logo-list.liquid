@@ -2,207 +2,296 @@
 {
   "name": "Logo list",
   "tag": "section",
-  "class": "section-logo-list",
+  "class": "s-logo-list",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 12,
+  "max_blocks": 10,
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "Brands we love"
+      "label": "Section heading",
+      "default": "As seen in"
     },
     {
-      "type": "select",
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
       "id": "columns_desktop",
-      "label": "Columns on desktop",
-      "default": "5",
-      "options": [
-        {
-          "value": "3",
-          "label": "3"
-        },
-        {
-          "value": "4",
-          "label": "4"
-        },
-        {
-          "value": "5",
-          "label": "5"
-        },
-        {
-          "value": "6",
-          "label": "6"
-        }
-      ]
+      "label": "Logos per row (desktop)",
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "logo_size",
+      "label": "Logo size",
+      "min": 60,
+      "max": 180,
+      "step": 10,
+      "unit": "px",
+      "default": 120
     },
     {
       "type": "checkbox",
-      "id": "logos_grayscale",
-      "label": "Make logos grayscale",
+      "id": "grayscale",
+      "label": "Grayscale logos",
       "default": true
     },
     {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        }
-      ]
+      "type": "checkbox",
+      "id": "marquee",
+      "label": "Marquee animation",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "Marquee speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 30
     }
   ],
   "blocks": [
     {
       "type": "logo",
       "name": "Logo",
-      "limit": 12,
+      "limit": 10,
       "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Logo image",
-          "default": ""
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "alt",
-          "label": "Alt text",
-          "default": ""
-        }
+        { "type": "image_picker", "id": "logo", "label": "Logo image" },
+        { "type": "text", "id": "label", "label": "Label (alt text)", "default": "Brand logo" },
+        { "type": "url", "id": "link", "label": "Link (optional)" }
       ]
     }
   ],
   "presets": [
     {
       "name": "Logo list",
-      "category": "Image"
+      "category": "Image",
+      "blocks": [
+        { "type": "logo", "settings": { "label": "Brand 1" } },
+        { "type": "logo", "settings": { "label": "Brand 2" } },
+        { "type": "logo", "settings": { "label": "Brand 3" } },
+        { "type": "logo", "settings": { "label": "Brand 4" } },
+        { "type": "logo", "settings": { "label": "Brand 5" } }
+      ]
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-logo-list {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-logo-list {
+  padding: var(--t-space-8) 0;
 }
 
-.section-logo-list .section__header {
+.s-logo-list__heading {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--t-text-muted);
+  margin: 0 0 var(--t-space-6);
 }
 
-.section-logo-list .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-logo-list__grid {
+  display: grid;
+  gap: var(--t-space-6);
+  align-items: center;
+  justify-items: center;
 }
 
-.section-logo-list .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-logo-list__grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.s-logo-list__grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+.s-logo-list__grid--cols-5 { grid-template-columns: repeat(5, 1fr); }
+.s-logo-list__grid--cols-6 { grid-template-columns: repeat(6, 1fr); }
+.s-logo-list__grid--cols-7 { grid-template-columns: repeat(7, 1fr); }
+.s-logo-list__grid--cols-8 { grid-template-columns: repeat(8, 1fr); }
+
+@media (max-width: 767px) {
+  .s-logo-list__grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--t-space-4);
+  }
 }
 
-.section-logo-list .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+@media (max-width: 479px) {
+  .s-logo-list__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+.s-logo-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.s-logo-list__item img {
+  max-width: var(--logo-size, 120px);
+  max-height: 60px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: filter var(--t-transition-base), opacity var(--t-transition-base);
+}
+
+.s-logo-list--grayscale .s-logo-list__item img {
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.s-logo-list--grayscale .s-logo-list__item:hover img {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* Marquee */
+.s-logo-list--marquee .s-logo-list__grid {
+  display: flex;
+  gap: var(--t-space-8);
+  animation: marquee var(--marquee-speed, 30s) linear infinite;
+  width: max-content;
+  grid-template-columns: none;
+}
+
+.s-logo-list--marquee .s-logo-list__track {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.s-logo-list--marquee .s-logo-list__item {
+  flex-shrink: 0;
+  width: auto;
+  min-width: 120px;
+  justify-content: center;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _cols = section.settings.columns_desktop
+  assign _size = section.settings.logo_size
+  assign _grayscale = section.settings.grayscale
+  assign _marquee = section.settings.marquee
+  assign _speed = section.settings.marquee_speed
+
+  assign _section_class = 's-logo-list'
+  if _grayscale
+    assign _section_class = _section_class | append: ' s-logo-list--grayscale'
+  endif
+  if _marquee
+    assign _section_class = _section_class | append: ' s-logo-list--marquee'
+  endif
+
+  assign _grid_class = 's-logo-list__grid'
+  assign _grid_class = _grid_class | append: ' s-logo-list__grid--cols-' | append: _cols
+
+  assign _inline_style = '--logo-size: ' | append: _size | append: 'px; --marquee-speed: ' | append: _speed | append: 's;'
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-logo-list"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  style="{{ _inline_style }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="logo-list"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
+  <div class="c-container">
+    {% if _heading != blank %}
+      <p class="s-logo-list__heading">{{ _heading | escape }}</p>
     {% endif %}
 
-    <div class="blocks blocks--logo-list">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'logo' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
+    {% if _marquee %}
+      <div class="s-logo-list__track">
+        <div class="{{ _grid_class }}">
     {% else %}
-      Logo
+      <div class="{{ _grid_class }}">
     {% endif %}
-  </div>
-          {% endcase %}
+
+        {% for block in section.blocks %}
+          {% if block.type == 'logo' and block.settings.logo %}
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="s-logo-list__item" data-block-id="{{ block.id }}" target="_blank" rel="noopener noreferrer">
+            {% else %}
+              <div class="s-logo-list__item" data-block-id="{{ block.id }}">
+            {% endif %}
+              <img
+                src="{{ block.settings.logo | image_url: width: 240 }}"
+                alt="{{ block.settings.label | escape }}"
+                width="{{ _size }}"
+                height="auto"
+                loading="lazy"
+              >
+            {% if block.settings.link != blank %}</a>{% else %}</div>{% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if _marquee %}
+          {% comment %} Duplicate for seamless loop {% endcomment %}
+          {% for block in section.blocks %}
+            {% if block.type == 'logo' and block.settings.logo %}
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="s-logo-list__item" target="_blank" rel="noopener noreferrer">
+              {% else %}
+                <div class="s-logo-list__item">
+              {% endif %}
+                <img
+                  src="{{ block.settings.logo | image_url: width: 240 }}"
+                  alt="{{ block.settings.label | escape }}"
+                  width="{{ _size }}"
+                  height="auto"
+                  loading="lazy"
+                  aria-hidden="true"
+                >
+              {% if block.settings.link != blank %}</a>{% else %}</div>{% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+    {% if _marquee %}
         </div>
-      {% endfor %}
-    </div>
+      </div>
+    {% else %}
+      </div>
+    {% endif %}
   </div>
 </section>
 
 {% javascript %}
 class LogoListSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
   onBlockSelect(evt) {
-    // Block selected in editor
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-logo-list')) {
-  customElements.define('section-logo-list', LogoListSection);
+if (!customElements.get('logo-list-section')) {
+  customElements.define('logo-list-section', LogoListSection);
 }
 {% endjavascript %}

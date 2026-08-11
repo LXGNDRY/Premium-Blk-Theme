@@ -2,34 +2,42 @@
 {
   "name": "Multirow",
   "tag": "section",
-  "class": "section-multirow",
+  "class": "s-multirow",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
   "max_blocks": 6,
   "settings": [
     {
+      "type": "header",
+      "content": "Content"
+    },
+    {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "Section heading",
       "default": ""
     },
     {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "alternate",
+      "label": "Alternate image positions",
+      "default": true
+    },
+    {
       "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "default": "1/1",
       "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        }
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "4/5", "label": "Tall (4:5)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
+        { "value": "16/9", "label": "Wide (16:9)" }
       ]
     }
   ],
@@ -39,139 +47,196 @@
       "name": "Row",
       "limit": 6,
       "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": "Row heading"
-        },
-        {
-          "type": "textarea",
-          "id": "text",
-          "label": "Text",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "button_label",
-          "label": "Button label",
-          "default": ""
-        },
-        {
-          "type": "url",
-          "id": "button_link",
-          "label": "Button link",
-          "default": ""
-        },
-        {
-          "type": "select",
-          "id": "layout",
-          "label": "Layout",
-          "default": "image_first",
-          "options": [
-            {
-              "value": "image_first",
-              "label": "Image first"
-            },
-            {
-              "value": "text_first",
-              "label": "Text first"
-            }
-          ]
-        }
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Row heading" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Row content goes here.</p>" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "" },
+        { "type": "url", "id": "button_link", "label": "Button link" },
+        { "type": "select", "id": "image_position", "label": "Image position", "default": "left", "options": [
+          { "value": "left", "label": "Left" },
+          { "value": "right", "label": "Right" }
+        ]}
       ]
     }
   ],
   "presets": [
     {
       "name": "Multirow",
-      "category": "Text"
+      "category": "Text",
+      "blocks": [
+        { "type": "row", "settings": { "heading": "Row 1" } },
+        { "type": "row", "settings": { "heading": "Row 2" } }
+      ]
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-multirow {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-multirow {
+  padding: var(--t-space-10) 0;
 }
 
-.section-multirow .section__header {
+@media (min-width: 768px) {
+  .s-multirow {
+    padding: var(--t-space-12) 0;
+  }
+}
+
+.s-multirow__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  margin: 0 0 var(--t-space-8);
 }
 
-.section-multirow .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-multirow__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-10);
 }
 
-.section-multirow .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-multirow__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--t-space-8);
+  align-items: center;
 }
 
-.section-multirow .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-multirow__row--img-right .s-multirow__image {
+  order: 2;
+}
+
+@media (max-width: 767px) {
+  .s-multirow__row {
+    grid-template-columns: 1fr;
+    gap: var(--t-space-5);
+  }
+
+  .s-multirow__row--img-right .s-multirow__image {
+    order: 0;
+  }
+}
+
+.s-multirow__image {
+  overflow: hidden;
+  background: var(--t-surface);
+}
+
+.s-multirow__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-multirow__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+  max-width: 480px;
+}
+
+.s-multirow__row--img-right .s-multirow__content {
+  justify-self: end;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.s-multirow__row-heading {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.s-multirow__row-text {
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.s-multirow__row-text p { margin: 0 0 var(--t-space-3); }
+.s-multirow__row-text p:last-child { margin-bottom: 0; }
+
+.s-multirow__row-btn {
+  margin-top: var(--t-space-2);
+  align-self: flex-start;
+}
+
+.s-multirow__row--img-right .s-multirow__row-btn {
+  align-self: flex-end;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _alternate = section.settings.alternate
+  assign _ratio = section.settings.image_ratio
+
+  assign _inline_style = ''
+  if _ratio
+    assign _parts = _ratio | split: '/'
+    assign _rw = _parts[0] | times: 1
+    assign _rh = _parts[1] | times: 1
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-multirow"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-multirow"
+  data-section-id="{{ section.id }}"
+  data-section-type="multirow"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
+  <div class="c-container">
+    {% if _heading != blank %}
+      <h2 class="s-multirow__heading">{{ _heading | escape }}</h2>
     {% endif %}
 
-    <div class="blocks blocks--multirow">
+    <div class="s-multirow__rows">
       {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'row' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Row
-    {% endif %}
-  </div>
-          {% endcase %}
-        </div>
+        {% if block.type == 'row' %}
+          {% assign _img_pos = block.settings.image_position %}
+          {% if _alternate and forloop.index > 1 and forloop.index | modulo: 2 == 0 %}
+            {% if _img_pos == 'left' %}
+              {% assign _img_pos = 'right' %}
+            {% else %}
+              {% assign _img_pos = 'left' %}
+            {% endif %}
+          {% endif %}
+
+          <div
+            class="s-multirow__row s-multirow__row--img-{{ _img_pos }}"
+            data-block-id="{{ block.id }}"
+          >
+            <div class="s-multirow__image" style="aspect-ratio: {{ _ratio }};">
+              {% if block.settings.image %}
+                <img
+                  src="{{ block.settings.image | image_url: width: 800 }}"
+                  srcset="
+                    {{ block.settings.image | image_url: width: 400 }} 400w,
+                    {{ block.settings.image | image_url: width: 800 }} 800w,
+                    {{ block.settings.image | image_url: width: 1200 }} 1200w
+                  "
+                  sizes="(max-width: 767px) 100vw, 50vw"
+                  alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                  loading="lazy"
+                >
+              {% endif %}
+            </div>
+            <div class="s-multirow__content">
+              <h3 class="s-multirow__row-heading">{{ block.settings.heading | escape }}</h3>
+              <div class="s-multirow__row-text">{{ block.settings.text }}</div>
+              {% if block.settings.button_text != blank and block.settings.button_link != blank %}
+                <a href="{{ block.settings.button_link }}" class="c-btn c-btn--primary c-btn--sm s-multirow__row-btn">
+                  {{ block.settings.button_text | escape }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -179,28 +244,17 @@
 
 {% javascript %}
 class MultirowSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
   onBlockSelect(evt) {
-    // Block selected in editor
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-multirow')) {
-  customElements.define('section-multirow', MultirowSection);
+if (!customElements.get('multirow-section')) {
+  customElements.define('multirow-section', MultirowSection);
 }
 {% endjavascript %}

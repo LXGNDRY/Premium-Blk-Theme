@@ -2,173 +2,69 @@
 {
   "name": "Collage",
   "tag": "section",
-  "class": "section-collage",
+  "class": "s-collage",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 5,
   "settings": [
     {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": ""
+      "type": "header",
+      "content": "Layout"
     },
     {
       "type": "select",
-      "id": "heading_size",
-      "label": "Heading size",
-      "default": "medium",
+      "id": "layout",
+      "label": "Layout",
+      "default": "split",
       "options": [
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "large",
-          "label": "Large"
-        }
+        { "value": "split", "label": "Split (1 large + 1 small)" },
+        { "value": "triple", "label": "Triple (1 large + 2 small)" },
+        { "value": "grid", "label": "Grid (equal)" }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "mobile_stacked",
-      "label": "Stack on mobile",
-      "default": false
     },
     {
       "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "default": "stack",
       "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        }
+        { "value": "stack", "label": "Stacked" },
+        { "value": "grid", "label": "2-up grid" }
       ]
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
     }
   ],
   "blocks": [
     {
       "type": "image",
-      "name": "Image",
-      "limit": 5,
+      "name": "Image item",
       "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "" },
+        { "type": "text", "id": "tagline", "label": "Tagline", "default": "" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "" },
         {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": ""
-        },
-        {
-          "type": "textarea",
-          "id": "description",
-          "label": "Description",
-          "default": ""
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link",
-          "default": ""
-        },
-        {
-          "type": "checkbox",
-          "id": "circle_shape",
-          "label": "Circle shape",
-          "default": false
-        }
-      ]
-    },
-    {
-      "type": "product",
-      "name": "Product",
-      "limit": 5,
-      "settings": [
-        {
-          "type": "product",
-          "id": "product",
-          "label": "Product",
-          "default": ""
-        },
-        {
-          "type": "checkbox",
-          "id": "show_vendor",
-          "label": "Show vendor",
-          "default": false
-        },
-        {
-          "type": "checkbox",
-          "id": "circle_shape",
-          "label": "Circle shape",
-          "default": false
-        }
-      ]
-    },
-    {
-      "type": "collection",
-      "name": "Collection",
-      "limit": 5,
-      "settings": [
-        {
-          "type": "collection",
-          "id": "collection",
-          "label": "Collection",
-          "default": ""
-        },
-        {
-          "type": "checkbox",
-          "id": "circle_shape",
-          "label": "Circle shape",
-          "default": false
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "name": "Text",
-      "limit": 5,
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": ""
-        },
-        {
-          "type": "textarea",
-          "id": "description",
-          "label": "Description",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "button_label",
-          "label": "Button label",
-          "default": ""
-        },
-        {
-          "type": "url",
-          "id": "button_link",
-          "label": "Button link",
-          "default": ""
+          "type": "select",
+          "id": "text_position",
+          "label": "Text position",
+          "default": "bottom-left",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "top-left", "label": "Top left" },
+            { "value": "top-right", "label": "Top right" },
+            { "value": "bottom-left", "label": "Bottom left" },
+            { "value": "bottom-right", "label": "Bottom right" }
+          ]
         }
       ]
     }
@@ -176,131 +72,215 @@
   "presets": [
     {
       "name": "Collage",
-      "category": "Image"
+      "category": "Image",
+      "blocks": [
+        { "type": "image", "settings": { "heading": "Shop new" } },
+        { "type": "image", "settings": { "heading": "Best sellers" } }
+      ]
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-collage {
-  padding: var(--spacing-xl) 0;
+.s-collage {
+  padding: var(--t-space-10) 0;
+}
+
+.s-collage__grid {
+  display: grid;
+  gap: var(--collage-gap, 12px);
+}
+
+/* Split layout: 1 large + 1 small (desktop) */
+.s-collage--split .s-collage__grid {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.s-collage--split .s-collage__item:first-child {
+  min-height: 500px;
+}
+
+/* Triple layout: 1 large + 2 small stacked */
+.s-collage--triple .s-collage__grid {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.s-collage--triple .s-collage__item:first-child {
+  grid-row: span 2;
+  min-height: 500px;
+}
+
+/* Grid layout: equal items */
+.s-collage--grid .s-collage__grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.s-collage--grid-2 .s-collage__grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+.s-collage--grid-4 .s-collage__grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Mobile: stacked */
+@media (max-width: 767px) {
+  .s-collage--mobile-stack .s-collage__grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .s-collage--mobile-grid .s-collage__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .s-collage--split .s-collage__item:first-child,
+  .s-collage--triple .s-collage__item:first-child {
+    min-height: 300px;
+  }
+}
+
+/* Collage item */
+.s-collage__item {
   position: relative;
+  overflow: hidden;
+  background: var(--t-surface);
+  min-height: 250px;
 }
 
-.section-collage .section__header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
+.s-collage__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  transition: transform var(--t-transition-base);
 }
 
-.section-collage .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-collage__item:hover img {
+  transform: scale(1.05);
 }
 
-.section-collage .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-collage__item-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+  z-index: 1;
 }
 
-.section-collage .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-collage__item-content {
+  position: absolute;
+  z-index: 2;
+  padding: var(--t-space-5);
+  color: #fff;
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+}
+
+.s-collage__item--center .s-collage__item-content {
+  top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; align-items: center;
+}
+.s-collage__item--top-left .s-collage__item-content { top: 0; left: 0; }
+.s-collage__item--top-right .s-collage__item-content { top: 0; right: 0; text-align: right; align-items: flex-end; }
+.s-collage__item--bottom-left .s-collage__item-content { bottom: 0; left: 0; }
+.s-collage__item--bottom-right .s-collage__item-content { bottom: 0; right: 0; text-align: right; align-items: flex-end; }
+
+.s-collage__item-heading {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.s-collage__item:first-child .s-collage__item-heading {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.s-collage__item-tagline {
+  font-size: var(--t-font-size-small);
+  opacity: 0.9;
+  margin: 0;
+}
+
+.s-collage__item-btn {
+  display: inline-block;
+  margin-top: var(--t-space-1);
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 2px;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _layout = section.settings.layout
+  assign _mobile_layout = section.settings.mobile_layout
+  assign _gap = section.settings.gap
+
+  assign _section_class = 's-collage'
+  assign _section_class = _section_class | append: ' s-collage--' | append: _layout
+  assign _section_class = _section_class | append: ' s-collage--mobile-' | append: _mobile_layout
+
+  assign _inline_style = '--collage-gap: ' | append: _gap | append: 'px;'
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-collage"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  style="{{ _inline_style }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="collage"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    <div class="blocks blocks--collage">
+  <div class="c-container">
+    <div class="s-collage__grid">
       {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
+        {% if block.type == 'image' %}
+          {% assign _pos = block.settings.text_position | default: 'bottom-left' %}
+          <a
+            href="{{ block.settings.link | default: '#' }}"
+            class="s-collage__item s-collage__item--{{ _pos }}"
+            data-block-id="{{ block.id }}"
+            {% if block.settings.image == blank %}style="min-height: 250px;"{% endif %}
+          >
+            {% if block.settings.image %}
+              <img
+                src="{{ block.settings.image | image_url: width: 1000 }}"
+                srcset="
+                  {{ block.settings.image | image_url: width: 500 }} 500w,
+                  {{ block.settings.image | image_url: width: 1000 }} 1000w,
+                  {{ block.settings.image | image_url: width: 1500 }} 1500w
+                "
+                sizes="(max-width: 767px) 100vw, 50vw"
+                alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                loading="lazy"
+              >
+              <div class="s-collage__item-overlay"></div>
+            {% endif %}
 
-{%- when 'image' -%}
-  {% if block.settings.image %}
-    <div class="block__image">
-      {{
-        block.settings.image
-        | image_url: width: block.settings.image_width | default: 800
-        | image_tag:
-          alt: block.settings.image.alt | default: block.settings.heading | default: '',
-          class: 'block__image-img',
-          widths: '300, 600, 900, 1200'
-      }}
-    </div>
-  {% else %}
-    <div class="block__image placeholder">
-      {{ 'photo' | placeholder_svg_tag: 'placeholder-svg' }}
-    </div>
-  {% endif %}
-
-{%- when 'product' -%}
-  {% if block.settings.product %}
-    {% assign product = block.settings.product %}
-    <div class="product-card">
-      <div class="product-card__media">
-        {{
-          product.featured_image
-          | image_url: width: 500
-          | image_tag:
-            alt: product.title,
-            class: 'product-card__image',
-            widths: '200, 400, 600, 800'
-        }}
-      </div>
-      <div class="product-card__info">
-        <h3 class="product-card__title">{{ product.title }}</h3>
-        <p class="product-card__price">{{ product.price | money }}</p>
-      </div>
-    </div>
-  {% endif %}
-{%- when 'collection' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Collection
-    {% endif %}
-  </div>
-
-{%- when 'text' -%}
-  <div class="block__text rte">
-    {{ block.settings.text | default: 'Add your text here.' }}
-  </div>
-          {% endcase %}
-        </div>
+            {% if block.settings.heading != blank or block.settings.tagline != blank %}
+              <div class="s-collage__item-content">
+                {% if block.settings.heading != blank %}
+                  <h3 class="s-collage__item-heading">{{ block.settings.heading | escape }}</h3>
+                {% endif %}
+                {% if block.settings.tagline != blank %}
+                  <p class="s-collage__item-tagline">{{ block.settings.tagline | escape }}</p>
+                {% endif %}
+                {% if block.settings.button_text != blank %}
+                  <span class="s-collage__item-btn">{{ block.settings.button_text | escape }} &rarr;</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -308,28 +288,17 @@
 
 {% javascript %}
 class CollageSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
   onBlockSelect(evt) {
-    // Block selected in editor
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-collage')) {
-  customElements.define('section-collage', CollageSection);
+if (!customElements.get('collage-section')) {
+  customElements.define('collage-section', CollageSection);
 }
 {% endjavascript %}

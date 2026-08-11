@@ -9,6 +9,17 @@
         "show_cross_sell": false
       }
     },
+    "predictive-search": {
+      "type": "predictive-search",
+      "settings": {
+        "show_products": true,
+        "show_collections": true,
+        "show_pages": false,
+        "products_limit": 5,
+        "show_price": true,
+        "show_image": true
+      }
+    },
     "footer": {
       "type": "footer",
       "settings": {
@@ -54,6 +65,7 @@
   },
   "order": [
     "cart-drawer",
+    "predictive-search",
     "footer"
   ]
 }

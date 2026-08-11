@@ -2,14 +2,15 @@
 {
   "name": "Related products",
   "tag": "section",
-  "class": "section-related-products",
+  "class": "s-related-products",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "templates": ["product"]
   },
-  "max_blocks": 1,
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -17,99 +18,53 @@
       "default": "You may also like"
     },
     {
-      "type": "select",
-      "id": "products_per_page",
-      "label": "Products to show",
-      "default": "4",
-      "options": [
-        {
-          "value": "4",
-          "label": "4"
-        },
-        {
-          "value": "6",
-          "label": "6"
-        },
-        {
-          "value": "8",
-          "label": "8"
-        },
-        {
-          "value": "10",
-          "label": "10"
-        },
-        {
-          "value": "12",
-          "label": "12"
-        }
-      ]
+      "type": "range",
+      "id": "products_per_row",
+      "label": "Products per row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Number of products",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
     },
     {
       "type": "select",
-      "id": "columns_desktop",
-      "label": "Columns on desktop",
-      "default": "4",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "default": "3/4",
       "options": [
-        {
-          "value": "2",
-          "label": "2"
-        },
-        {
-          "value": "3",
-          "label": "3"
-        },
-        {
-          "value": "4",
-          "label": "4"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "columns_mobile",
-      "label": "Columns on mobile",
-      "default": "2",
-      "options": [
-        {
-          "value": "1",
-          "label": "1"
-        },
-        {
-          "value": "2",
-          "label": "2"
-        }
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
+        { "value": "4/3", "label": "Landscape (4:3)" }
       ]
     },
     {
       "type": "checkbox",
-      "id": "show_product_vendor",
-      "label": "Show product vendor",
+      "id": "show_vendor",
+      "label": "Show vendor",
       "default": false
-    },
-    {
-      "type": "select",
-      "id": "card_style",
-      "label": "Card style",
-      "default": "standard",
-      "options": [
-        {
-          "value": "standard",
-          "label": "Standard"
-        },
-        {
-          "value": "card",
-          "label": "Card"
-        }
-      ]
     },
     {
       "type": "checkbox",
-      "id": "enable_quick_add",
-      "label": "Enable quick add",
-      "default": false
+      "id": "show_secondary_image",
+      "label": "Show secondary image on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badges",
+      "label": "Show badges",
+      "default": true
     }
   ],
-  "blocks": [],
   "presets": [
     {
       "name": "Related products",
@@ -120,101 +75,101 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-related-products {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-related-products {
+  padding: var(--t-space-10) 0;
+  border-top: 1px solid var(--t-border);
 }
 
-.section-related-products .section__header {
+.s-related-products__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-6);
   text-align: center;
-  margin-bottom: var(--spacing-lg);
 }
 
-.section-related-products .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-related-products__grid {
+  display: grid;
+  gap: var(--t-grid-gutter);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.section-related-products .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.section-related-products .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+@media (min-width: 768px) {
+  .s-related-products__grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .s-related-products__grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .s-related-products__grid--cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _cols = section.settings.products_per_row
+  assign _limit = section.settings.products_to_show
+  assign _ratio = section.settings.image_ratio
+  assign _show_vendor = section.settings.show_vendor
+  assign _show_secondary = section.settings.show_secondary_image
+  assign _show_badges = section.settings.show_badges
+
+  assign _grid_class = 's-related-products__grid'
+  assign _grid_class = _grid_class | append: ' s-related-products__grid--cols-' | append: _cols
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-related-products"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-related-products"
+  data-section-id="{{ section.id }}"
+  data-section-type="related-products"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
+  <div class="c-container">
+    {% if _heading != blank %}
+      <h2 class="s-related-products__heading">{{ _heading | escape }}</h2>
     {% endif %}
 
-    <div class="blocks blocks--related-products">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
-        </div>
+    {% comment %}
+      Related products: use collection from the product, otherwise fall back to frontpage.
+      On product pages, product object is available.
+    {% endcomment %}
+    {% assign _related = false %}
+    {% if product and product.collections.size > 0 %}
+      {% for col in product.collections limit: 1 %}
+        {% assign _collection = col %}
+        {% assign _related = true %}
       {% endfor %}
-    </div>
+    {% endif %}
+
+    {% if _related == false %}
+      {% assign _collection = collections.frontpage %}
+    {% endif %}
+
+    {% if _collection.products.size > 0 %}
+      <div class="{{ _grid_class }}">
+        {% for product in _collection.products limit: _limit %}
+          {% if product.id != product.id or _related == false %}
+            {% render 'component-product-card',
+              product: product,
+              media_aspect: _ratio,
+              show_vendor: _show_vendor,
+              show_secondary_image: _show_secondary,
+              show_badges: _show_badges,
+              image_size: 500
+            %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 </section>
 
 {% javascript %}
 class RelatedProductsSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-related-products')) {
-  customElements.define('section-related-products', RelatedProductsSection);
+if (!customElements.get('related-products-section')) {
+  customElements.define('related-products-section', RelatedProductsSection);
 }
 {% endjavascript %}

@@ -2,52 +2,72 @@
 {
   "name": "Newsletter",
   "tag": "section",
-  "class": "section-newsletter",
+  "class": "s-newsletter",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 1,
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Join our newsletter"
+      "default": "Join the list"
     },
     {
       "type": "text",
       "id": "subheading",
       "label": "Subheading",
-      "default": "Get the latest updates and offers."
+      "default": "Get exclusive drops and 10% off your first order."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Placeholder text",
+      "default": "Your email address"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
     },
     {
       "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-2",
+      "id": "layout",
+      "label": "Layout",
+      "default": "center",
       "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "inverse",
-          "label": "Inverse"
-        },
-        {
-          "value": "accent-1",
-          "label": "Accent 1"
-        }
+        { "value": "center", "label": "Centered" },
+        { "value": "split", "label": "Split (text + form)" },
+        { "value": "inline", "label": "Inline row" }
       ]
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "inverted", "label": "Inverted (dark bg)" },
+        { "value": "accent", "label": "Accent background" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_note",
+      "label": "Show privacy note",
+      "default": false
     }
   ],
-  "blocks": [],
   "presets": [
     {
       "name": "Newsletter",
@@ -58,101 +78,243 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-newsletter {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-newsletter {
+  padding: var(--t-space-10) 0;
 }
 
-.section-newsletter .section__header {
+.s-newsletter--inverted {
+  background: var(--t-text);
+  color: var(--t-bg);
+}
+
+.s-newsletter--accent {
+  background: var(--t-accent, #ff3b30);
+  color: #fff;
+}
+
+.s-newsletter__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-6);
+  max-width: 720px;
+  margin: 0 auto;
+  align-items: center;
   text-align: center;
-  margin-bottom: var(--spacing-lg);
 }
 
-.section-newsletter .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-newsletter--split .s-newsletter__inner {
+  max-width: none;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  gap: var(--t-space-8);
 }
 
-.section-newsletter .section__subheading {
-  color: var(--color-text-subdued);
+.s-newsletter--inline .s-newsletter__form {
+  width: 100%;
   max-width: 600px;
-  margin: 0 auto;
 }
 
-.section-newsletter .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-newsletter--inline .s-newsletter__inner {
+  gap: var(--t-space-4);
+}
+
+@media (max-width: 767px) {
+  .s-newsletter--split .s-newsletter__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--t-space-5);
+  }
+}
+
+.s-newsletter__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+  flex: 1;
+}
+
+.s-newsletter__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.s-newsletter--inverted .s-newsletter__heading,
+.s-newsletter--accent .s-newsletter__heading {
+  color: inherit;
+}
+
+.s-newsletter__subheading {
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-base);
+  margin: 0;
+}
+
+.s-newsletter--inverted .s-newsletter__subheading {
+  color: rgba(255,255,255,0.7);
+}
+
+.s-newsletter--accent .s-newsletter__subheading {
+  color: rgba(255,255,255,0.9);
+}
+
+.s-newsletter__form {
+  display: flex;
+  gap: var(--t-space-2);
+  width: 100%;
+  max-width: 480px;
+}
+
+.s-newsletter__form input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+  transition: border-color var(--t-transition-fast);
+}
+
+.s-newsletter--inverted .s-newsletter__form input {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+}
+
+.s-newsletter--accent .s-newsletter__form input {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+}
+
+.s-newsletter__form input:focus {
+  outline: none;
+  border-color: var(--t-border-strong);
+}
+
+.s-newsletter--inverted .s-newsletter__form input:focus,
+.s-newsletter--accent .s-newsletter__form input:focus {
+  border-color: #fff;
+}
+
+.s-newsletter__form input::placeholder {
+  color: var(--t-text-subtle);
+}
+
+.s-newsletter--inverted .s-newsletter__form input::placeholder,
+.s-newsletter--accent .s-newsletter__form input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+.s-newsletter__note {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-subtle);
+  margin: 0;
+}
+
+.s-newsletter--inverted .s-newsletter__note,
+.s-newsletter--accent .s-newsletter__note {
+  color: rgba(255,255,255,0.6);
+}
+
+@media (max-width: 639px) {
+  .s-newsletter__form {
+    flex-direction: column;
+  }
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _subheading = section.settings.subheading
+  assign _btn_text = section.settings.button_text
+  assign _placeholder = section.settings.placeholder
+  assign _layout = section.settings.layout
+  assign _style = section.settings.style
+  assign _show_note = section.settings.show_note
+
+  assign _section_class = 's-newsletter'
+  assign _section_class = _section_class | append: ' s-newsletter--' | append: _layout
+  assign _section_class = _section_class | append: ' s-newsletter--' | append: _style
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-newsletter"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="newsletter"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+  <div class="c-container">
+    <div class="s-newsletter__inner">
+      <div class="s-newsletter__text">
+        {% if _heading != blank %}
+          <h2 class="s-newsletter__heading">{{ _heading | escape }}</h2>
+        {% endif %}
+        {% if _subheading != blank %}
+          <p class="s-newsletter__subheading">{{ _subheading | escape }}</p>
         {% endif %}
       </div>
-    {% endif %}
 
-    <div class="blocks blocks--newsletter">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
+      <form
+        class="s-newsletter__form"
+        action="{{ routes.newsletter_url }}"
+        method="post"
+        accept-charset="UTF-8"
+      >
+        <input type="hidden" name="form_type" value="customer">
+        <input type="hidden" name="utf8" value="✓">
+        <input
+          type="email"
+          name="contact[email]"
+          placeholder="{{ _placeholder | escape }}"
+          aria-label="Email address"
+          required
+          autocomplete="email"
         >
-          {% case block.type %}
-          {% endcase %}
-        </div>
-      {% endfor %}
+        <button type="submit" class="c-btn c-btn--primary">
+          {{ _btn_text | escape }}
+        </button>
+      </form>
+
+      {% if _show_note %}
+        <p class="s-newsletter__note">
+          {{ 'sections.newsletter.privacy_note' | t | default: 'By subscribing, you agree to receive marketing emails. Unsubscribe anytime.' }}
+        </p>
+      {% endif %}
     </div>
   </div>
 </section>
 
 {% javascript %}
 class NewsletterSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
   init() {
-    // Section initialization logic
+    const form = this.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', () => {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) {
+          btn.disabled = true;
+          btn.dataset.originalText = btn.textContent;
+          btn.textContent = 'Subscribing...';
+        }
+      });
+    }
   }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-newsletter')) {
-  customElements.define('section-newsletter', NewsletterSection);
+if (!customElements.get('newsletter-section')) {
+  customElements.define('newsletter-section', NewsletterSection);
 }
 {% endjavascript %}

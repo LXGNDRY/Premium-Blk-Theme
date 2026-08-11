@@ -2,85 +2,66 @@
 {
   "name": "Multicolumn",
   "tag": "section",
-  "class": "section-multicolumn",
+  "class": "s-multicolumn",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
   "max_blocks": 6,
   "settings": [
     {
+      "type": "header",
+      "content": "Content"
+    },
+    {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "Multicolumn"
+      "label": "Section heading",
+      "default": ""
     },
     {
-      "type": "select",
+      "type": "text",
+      "id": "subheading",
+      "label": "Section subheading",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
       "id": "columns_desktop",
-      "label": "Columns on desktop",
-      "default": "3",
-      "options": [
-        {
-          "value": "2",
-          "label": "2"
-        },
-        {
-          "value": "3",
-          "label": "3"
-        },
-        {
-          "value": "4",
-          "label": "4"
-        },
-        {
-          "value": "5",
-          "label": "5"
-        }
-      ]
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
     },
     {
       "type": "select",
-      "id": "columns_mobile",
-      "label": "Columns on mobile",
-      "default": "2",
+      "id": "align",
+      "label": "Text alignment",
+      "default": "center",
       "options": [
-        {
-          "value": "1",
-          "label": "1"
-        },
-        {
-          "value": "2",
-          "label": "2"
-        }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ]
     },
     {
       "type": "checkbox",
-      "id": "image_position_top",
-      "label": "Image position top",
-      "default": true
-    },
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "inverse",
-          "label": "Inverse"
-        }
-      ]
+      "id": "inverted",
+      "label": "Inverted (dark background)",
+      "default": false
     }
   ],
   "blocks": [
@@ -89,123 +70,198 @@
       "name": "Column",
       "limit": 6,
       "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Column"
-        },
-        {
-          "type": "textarea",
-          "id": "description",
-          "label": "Description",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "link_label",
-          "label": "Link label",
-          "default": ""
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link",
-          "default": ""
-        }
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Feature heading" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Feature description text.</p>" },
+        { "type": "image_picker", "id": "icon", "label": "Icon / image" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "" },
+        { "type": "url", "id": "button_link", "label": "Button link" }
       ]
     }
   ],
   "presets": [
     {
       "name": "Multicolumn",
-      "category": "Text"
+      "category": "Text",
+      "blocks": [
+        { "type": "column", "settings": { "heading": "Column 1" } },
+        { "type": "column", "settings": { "heading": "Column 2" } },
+        { "type": "column", "settings": { "heading": "Column 3" } }
+      ]
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-multicolumn {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-multicolumn {
+  padding: var(--t-space-10) 0;
 }
 
-.section-multicolumn .section__header {
+@media (min-width: 768px) {
+  .s-multicolumn {
+    padding: var(--t-space-12) 0;
+  }
+}
+
+.s-multicolumn--inverted {
+  background: var(--t-text);
+  color: var(--t-bg);
+}
+
+.s-multicolumn--inverted .s-multicolumn__heading,
+.s-multicolumn--inverted .s-multicolumn__col-heading {
+  color: var(--t-bg);
+}
+
+.s-multicolumn--inverted .s-multicolumn__subheading,
+.s-multicolumn--inverted .s-multicolumn__col-text {
+  color: rgba(255,255,255,0.7);
+}
+
+.s-multicolumn__header {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.section-multicolumn .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
-}
-
-.section-multicolumn .section__subheading {
-  color: var(--color-text-subdued);
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0 auto var(--t-space-8);
 }
 
-.section-multicolumn .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-multicolumn__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-3);
+}
+
+.s-multicolumn__subheading {
+  color: var(--t-text-muted);
+  margin: 0;
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+}
+
+.s-multicolumn__grid {
+  display: grid;
+  gap: var(--t-space-6);
+}
+
+.s-multicolumn--cols-2 .s-multicolumn__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.s-multicolumn--cols-3 .s-multicolumn__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.s-multicolumn--cols-4 .s-multicolumn__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.s-multicolumn--cols-5 .s-multicolumn__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.s-multicolumn--cols-6 .s-multicolumn__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+@media (max-width: 1023px) {
+  .s-multicolumn--cols-6 .s-multicolumn__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .s-multicolumn--cols-5 .s-multicolumn__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px) {
+  .s-multicolumn--mobile-1 .s-multicolumn__grid { grid-template-columns: 1fr; }
+  .s-multicolumn--mobile-2 .s-multicolumn__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s-multicolumn--mobile-3 .s-multicolumn__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.s-multicolumn--align-left .s-multicolumn__col { text-align: left; align-items: flex-start; }
+.s-multicolumn--align-center .s-multicolumn__col { text-align: center; align-items: center; }
+.s-multicolumn--align-right .s-multicolumn__col { text-align: right; align-items: flex-end; }
+
+.s-multicolumn__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+}
+
+.s-multicolumn__col-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--t-space-1);
+}
+
+.s-multicolumn__col-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.s-multicolumn__col-heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.s-multicolumn__col-text {
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-small);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.s-multicolumn__col-btn {
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _subheading = section.settings.subheading
+  assign _cols_desk = section.settings.columns_desktop
+  assign _cols_mob = section.settings.columns_mobile
+  assign _align = section.settings.align
+  assign _inverted = section.settings.inverted
+
+  assign _section_class = 's-multicolumn'
+  assign _section_class = _section_class | append: ' s-multicolumn--cols-' | append: _cols_desk
+  assign _section_class = _section_class | append: ' s-multicolumn--mobile-' | append: _cols_mob
+  assign _section_class = _section_class | append: ' s-multicolumn--align-' | append: _align
+  if _inverted
+    assign _section_class = _section_class | append: ' s-multicolumn--inverted'
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-multicolumn"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="multicolumn"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+  <div class="c-container">
+    {% if _heading != blank %}
+      <div class="s-multicolumn__header">
+        <h2 class="s-multicolumn__heading">{{ _heading | escape }}</h2>
+        {% if _subheading != blank %}
+          <p class="s-multicolumn__subheading">{{ _subheading | escape }}</p>
         {% endif %}
       </div>
     {% endif %}
 
-    <div class="blocks blocks--multicolumn">
+    <div class="s-multicolumn__grid">
       {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'column' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Column
-    {% endif %}
-  </div>
-          {% endcase %}
-        </div>
+        {% if block.type == 'column' %}
+          <div class="s-multicolumn__col" data-block-id="{{ block.id }}">
+            {% if block.settings.icon %}
+              <div class="s-multicolumn__col-icon">
+                <img src="{{ block.settings.icon | image_url: width: 96 }}" alt="" width="48" height="48" loading="lazy">
+              </div>
+            {% endif %}
+            <h3 class="s-multicolumn__col-heading">{{ block.settings.heading | escape }}</h3>
+            {% if block.settings.text != blank %}
+              <div class="s-multicolumn__col-text">{{ block.settings.text }}</div>
+            {% endif %}
+            {% if block.settings.button_text != blank and block.settings.button_link != blank %}
+              <a href="{{ block.settings.button_link }}" class="s-multicolumn__col-btn">
+                {{ block.settings.button_text | escape }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -213,28 +269,17 @@
 
 {% javascript %}
 class MulticolumnSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
   onBlockSelect(evt) {
-    // Block selected in editor
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-multicolumn')) {
-  customElements.define('section-multicolumn', MulticolumnSection);
+if (!customElements.get('multicolumn-section')) {
+  customElements.define('multicolumn-section', MulticolumnSection);
 }
 {% endjavascript %}
