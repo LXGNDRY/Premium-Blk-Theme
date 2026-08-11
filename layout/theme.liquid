@@ -335,6 +335,12 @@
     <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
   </noscript>
 
+  {% comment %} === JSON-LD STRUCTURED DATA === {% endcomment %}
+  {% render 'seo-organization' %}
+  {% if template contains 'index' %}{% render 'seo-search' %}{% endif %}
+  {% if template contains 'product' %}{% render 'seo-product' with product %}{% endif %}
+  {% render 'seo-breadcrumb' %}
+
   {{ content_for_header }}
 </head>
 

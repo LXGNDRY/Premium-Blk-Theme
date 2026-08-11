@@ -1,26 +1,71 @@
 {
   "sections": {
-    "Image banner": {
+    "banner": {
       "type": "image-banner",
-      "settings": {}
+      "settings": {
+        "heading": "New arrivals",
+        "subheading": "Shop the latest drop before it's gone.",
+        "kicker": "Just in",
+        "button_text": "Shop now",
+        "button_link": "/collections/all",
+        "text_position": "left",
+        "text_position_vertical": "middle",
+        "style": "editorial",
+        "heading_size": "h1",
+        "min_height_desktop": 600,
+        "min_height_mobile": 480
+      }
     },
-    "Featured collection": {
+    "featured": {
       "type": "featured-collection",
-      "settings": {}
+      "settings": {
+        "collection": "frontpage",
+        "heading": "Featured",
+        "subheading": "Handpicked pieces from our latest collection.",
+        "products_per_row": 4,
+        "products_to_show": 8,
+        "image_ratio": "3/4",
+        "show_secondary_image": true,
+        "show_badges": true,
+        "show_view_all": true,
+        "view_all_text": "View all products",
+        "align": "left"
+      }
     },
-    "Rich text": {
+    "brand": {
+      "type": "image-with-text",
+      "settings": {
+        "kicker": "Our story",
+        "heading": "Built different.",
+        "text": "<p>Legendary Branding was founded in 2023 with one goal: make streetwear that actually lasts. Premium fabrics, honest construction, and zero compromise on quality.</p>",
+        "button_text": "About us",
+        "button_link": "/pages/about",
+        "image_position": "left",
+        "layout": "half",
+        "text_align": "middle",
+        "stack_on_mobile": true
+      }
+    },
+    "text-banner": {
       "type": "rich-text",
-      "settings": {}
-    },
-    "Email signup banner": {
-      "type": "email-signup-banner",
-      "settings": {}
+      "settings": {
+        "kicker": "Join the list",
+        "heading": "Get 10% off your first order.",
+        "text": "<p>Sign up for exclusive drops, early access, and member-only deals. No spam — just heat.</p>",
+        "button_text": "Shop the collection",
+        "button_link": "/collections/all",
+        "align": "center",
+        "max_width": "medium",
+        "size": "large",
+        "inverted": true,
+        "show_rule": true
+      }
     }
   },
   "order": [
-    "Image banner",
-    "Featured collection",
-    "Rich text",
-    "Email signup banner"
+    "banner",
+    "featured",
+    "brand",
+    "text-banner"
   ]
 }

@@ -1,0 +1,55 @@
+{% comment %}
+  SEO: BreadcrumbList JSON-LD
+  Renders schema.org BreadcrumbList structured data.
+  Uses page context to build the breadcrumb trail.
+{% endcomment %}
+
+{%- liquid
+  assign _items = ''
+  assign _pos = 1
+
+  # Home is always first
+  assign _items = _items | append: '{"@type":"ListItem","position":1,"name":"Home","item":"' | append: shop.url | append: '"}'
+  assign _pos = 2
+
+  if template contains 'collection' and collection
+    assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":' | append: collection.title | json | append: ',"item":"' | append: collection.url | absolute_url | append: '"}'
+    assign _pos = _pos | plus: 1
+  endif
+
+  if template contains 'product' and product
+    if collection
+      assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":' | append: collection.title | json | append: ',"item":"' | append: collection.url | absolute_url | append: '"}'
+      assign _pos = _pos | plus: 1
+    endif
+    assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":' | append: product.title | json | append: ',"item":"' | append: product.url | absolute_url | append: '"}'
+  endif
+
+  if template contains 'page' and page
+    assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":' | append: page.title | json | append: ',"item":"' | append: page.url | absolute_url | append: '"}'
+  endif
+
+  if template contains 'blog' and blog
+    assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":' | append: blog.title | json | append: ',"item":"' | append: blog.url | absolute_url | append: '"}'
+    if article
+      assign _pos = _pos | plus: 1
+      assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":' | append: article.title | json | append: ',"item":"' | append: article.url | absolute_url | append: '"}'
+    endif
+  endif
+
+  if template contains 'cart'
+    assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":"Cart","item":"' | append: routes.cart_url | absolute_url | append: '"}'
+  endif
+
+  if template contains 'search'
+    assign _items = _items | append: ',{"@type":"ListItem","position":' | append: _pos | append: ',"name":"Search","item":"' | append: routes.search_url | absolute_url | append: '"}'
+  endif
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{{ _items }}]
+}
+</script>

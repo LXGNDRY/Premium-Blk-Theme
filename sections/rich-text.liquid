@@ -2,84 +2,99 @@
 {
   "name": "Rich text",
   "tag": "section",
-  "class": "section-rich-text",
+  "class": "s-rich-text",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 1,
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker / eyebrow text",
+      "default": ""
+    },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Rich text"
+      "default": "Section heading"
     },
     {
-      "type": "textarea",
+      "type": "richtext",
       "id": "text",
       "label": "Text",
-      "default": "Add rich text content here."
-    },
-    {
-      "type": "select",
-      "id": "text_alignment",
-      "label": "Text alignment",
-      "default": "center",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "inverse",
-          "label": "Inverse"
-        },
-        {
-          "value": "accent-1",
-          "label": "Accent 1"
-        }
-      ]
+      "default": "<p>Add your content here.</p>"
     },
     {
       "type": "text",
-      "id": "button_label",
-      "label": "Button label",
+      "id": "button_text",
+      "label": "Button text",
       "default": ""
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link",
-      "default": ""
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Text alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Max content width",
+      "default": "medium",
+      "options": [
+        { "value": "small", "label": "Small (520px)" },
+        { "value": "medium", "label": "Medium (720px)" },
+        { "value": "large", "label": "Large (960px)" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Heading size",
+      "default": "medium",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "display", "label": "Display" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inverted",
+      "label": "Inverted (black bg, white text)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rule",
+      "label": "Show horizontal rule below heading",
+      "default": false
     }
   ],
-  "blocks": [],
   "presets": [
     {
       "name": "Rich text",
@@ -90,101 +105,187 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-rich-text {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-rich-text {
+  padding: var(--t-space-10) 0;
 }
 
-.section-rich-text .section__header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
+@media (min-width: 768px) {
+  .s-rich-text {
+    padding: var(--t-space-12) 0;
+  }
 }
 
-.section-rich-text .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-rich-text--inverted {
+  background: var(--t-text);
+  color: var(--t-bg);
 }
 
-.section-rich-text .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
+.s-rich-text--inverted .s-rich-text__heading,
+.s-rich-text--inverted .s-rich-text__kicker,
+.s-rich-text__text {
+  color: inherit;
+}
+
+.s-rich-text__inner {
+  max-width: 720px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
 }
 
-.section-rich-text .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-rich-text--align-left .s-rich-text__inner {
+  margin-left: 0;
+}
+
+.s-rich-text--align-right .s-rich-text__inner {
+  margin-right: 0;
+}
+
+.s-rich-text--width-small .s-rich-text__inner { max-width: 520px; }
+.s-rich-text--width-medium .s-rich-text__inner { max-width: 720px; }
+.s-rich-text--width-large .s-rich-text__inner { max-width: 960px; }
+
+.s-rich-text--align-center .s-rich-text__inner { text-align: center; align-items: center; }
+.s-rich-text--align-left .s-rich-text__inner { text-align: left; align-items: flex-start; }
+.s-rich-text--align-right .s-rich-text__inner { text-align: right; align-items: flex-end; }
+
+.s-rich-text__kicker {
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.s-rich-text--inverted .s-rich-text__kicker {
+  color: rgba(255,255,255,0.6);
+}
+
+.s-rich-text__heading {
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.s-rich-text__heading--small { font-size: var(--t-font-size-h3); }
+.s-rich-text__heading--medium { font-size: var(--t-font-size-h2); }
+.s-rich-text__heading--large {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+.s-rich-text__heading--display {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.s-rich-text__rule {
+  width: 60px;
+  height: 3px;
+  background: var(--t-border-strong);
+  border: none;
+  margin: 0;
+}
+
+.s-rich-text--inverted .s-rich-text__rule {
+  background: rgba(255,255,255,0.4);
+}
+
+.s-rich-text__text {
+  font-size: var(--t-font-size-base);
+  line-height: var(--t-line-height-relaxed);
+  color: inherit;
+  margin: 0;
+}
+
+.s-rich-text__text p {
+  margin: 0 0 var(--t-space-4);
+}
+
+.s-rich-text__text p:last-child {
+  margin-bottom: 0;
+}
+
+.s-rich-text__text a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.s-rich-text__button {
+  margin-top: var(--t-space-2);
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _kicker = section.settings.kicker
+  assign _heading = section.settings.heading
+  assign _text = section.settings.text
+  assign _btn_text = section.settings.button_text
+  assign _btn_link = section.settings.button_link
+  assign _align = section.settings.align
+  assign _max_width = section.settings.max_width
+  assign _size = section.settings.size
+  assign _inverted = section.settings.inverted
+  assign _show_rule = section.settings.show_rule
+
+  assign _section_class = 's-rich-text'
+  assign _section_class = _section_class | append: ' s-rich-text--align-' | append: _align
+  assign _section_class = _section_class | append: ' s-rich-text--width-' | append: _max_width
+  if _inverted
+    assign _section_class = _section_class | append: ' s-rich-text--inverted'
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-rich-text"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="rich-text"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
+  <div class="c-container">
+    <div class="s-rich-text__inner">
+      {% if _kicker != blank %}
+        <p class="s-rich-text__kicker">{{ _kicker | escape }}</p>
+      {% endif %}
 
-    <div class="blocks blocks--rich-text">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
+      {% if _heading != blank %}
+        <h2 class="s-rich-text__heading s-rich-text__heading--{{ _size }}">{{ _heading | escape }}</h2>
+      {% endif %}
+
+      {% if _show_rule %}
+        <hr class="s-rich-text__rule">
+      {% endif %}
+
+      {% if _text != blank %}
+        <div class="s-rich-text__text">{{ _text }}</div>
+      {% endif %}
+
+      {% if _btn_text != blank and _btn_link != blank %}
+        <div class="s-rich-text__button">
+          <a href="{{ _btn_link }}" class="c-btn {% if _inverted %}c-btn--inverted{% else %}c-btn--primary{% endif %}">
+            {{ _btn_text | escape }}
+          </a>
         </div>
-      {% endfor %}
+      {% endif %}
     </div>
   </div>
 </section>
 
 {% javascript %}
 class RichTextSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-rich-text')) {
-  customElements.define('section-rich-text', RichTextSection);
+if (!customElements.get('rich-text-section')) {
+  customElements.define('rich-text-section', RichTextSection);
 }
 {% endjavascript %}

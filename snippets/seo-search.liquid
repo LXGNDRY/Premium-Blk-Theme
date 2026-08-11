@@ -1,0 +1,22 @@
+{% comment %}
+  SEO: WebSite + SearchAction JSON-LD
+  Renders schema.org WebSite structured data with search action.
+  Placed in <head> on the home page.
+{% endcomment %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ shop.name | json }},
+  "url": {{ shop.url | json }},
+  {% if shop.description %}
+  "description": {{ shop.description | strip_html | json }},
+  {% endif %}
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ shop.url }}/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>

@@ -2,35 +2,58 @@
   "type": "footer",
   "name": "Footer group",
   "sections": {
+    "cart-drawer": {
+      "type": "cart-drawer",
+      "settings": {
+        "open_on_add": true,
+        "show_cross_sell": false
+      }
+    },
     "footer": {
       "type": "footer",
       "settings": {
-        "show_social_icons": true,
-        "show_payment_icons": true,
-        "show_country_selector": false,
-        "show_language_selector": false,
-        "newsletter_label": "Newsletter",
-        "menu_design": "Default"
+        "layout": "multi-column",
+        "show_separator": true,
+        "show_newsletter": true,
+        "show_social": true,
+        "show_payment": true,
+        "newsletter_heading": "Stay in the loop",
+        "newsletter_subheading": "Get exclusive drops, restocks, and 10% off your first order.",
+        "newsletter_button_text": "Subscribe",
+        "copyright_text": "© {{ year }} {{ shop.name }}. All rights reserved.",
+        "show_powered_by": false,
+        "tagline": "Premium streetwear. Built to last."
       },
       "blocks": [
         {
-          "type": "link_list",
-          "id": "menu-1",
+          "type": "menu",
+          "id": "menu-shop",
           "settings": {
-            "heading": "Quick links",
-            "menu": "main-menu"
+            "menu": "main-menu",
+            "heading": "Shop"
           }
         },
         {
-          "type": "link_list",
-          "id": "menu-2",
+          "type": "menu",
+          "id": "menu-company",
           "settings": {
-            "heading": "Company",
-            "menu": "footer-menu"
+            "menu": "footer-menu",
+            "heading": "Company"
+          }
+        },
+        {
+          "type": "menu",
+          "id": "menu-help",
+          "settings": {
+            "menu": "footer-menu",
+            "heading": "Help"
           }
         }
       ]
     }
   },
-  "order": ["footer"]
+  "order": [
+    "cart-drawer",
+    "footer"
+  ]
 }

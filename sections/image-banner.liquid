@@ -2,176 +2,142 @@
 {
   "name": "Image banner",
   "tag": "section",
-  "class": "section-image-banner",
+  "class": "s-image-banner",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 2,
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Image",
-      "default": ""
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image (optional)"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Image banner"
+      "default": "New drop"
     },
     {
       "type": "textarea",
-      "id": "text",
-      "label": "Text",
-      "default": ""
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "The winter collection is here."
     },
     {
       "type": "text",
-      "id": "button_label",
-      "label": "Button label",
-      "default": "Shop now"
+      "id": "kicker",
+      "label": "Kicker / eyebrow text",
+      "default": ""
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary button text",
       "default": ""
     },
     {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
       "type": "select",
-      "id": "text_alignment",
-      "label": "Text alignment",
+      "id": "text_position",
+      "label": "Text position",
       "default": "center",
       "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ]
     },
     {
       "type": "select",
-      "id": "height",
-      "label": "Section height",
-      "default": "adapt",
+      "id": "text_position_vertical",
+      "label": "Vertical position",
+      "default": "middle",
       "options": [
-        {
-          "value": "adapt",
-          "label": "Adapt to first image"
-        },
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "large",
-          "label": "Large"
-        }
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "min_height_desktop",
+      "label": "Minimum height (desktop)",
+      "min": 400,
+      "max": 900,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "label": "Minimum height (mobile)",
+      "min": 300,
+      "max": 700,
+      "step": 50,
+      "unit": "px",
+      "default": 480
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "editorial",
+      "options": [
+        { "value": "editorial", "label": "Editorial (text over image)" },
+        { "value": "brutalist", "label": "Brutalist (solid bg, no image)" },
+        { "value": "split", "label": "Split (image + text side by side)" }
       ]
     },
     {
       "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
+      "id": "heading_size",
+      "label": "Heading size",
+      "default": "h1",
       "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        },
-        {
-          "value": "inverse",
-          "label": "Inverse"
-        },
-        {
-          "value": "accent-1",
-          "label": "Accent 1"
-        }
+        { "value": "h1", "label": "Display" },
+        { "value": "h2", "label": "Large" },
+        { "value": "h3", "label": "Medium" }
       ]
     },
     {
       "type": "checkbox",
-      "id": "show_text_box",
-      "label": "Show text box",
-      "default": true
-    },
-    {
-      "type": "select",
-      "id": "text_box_width",
-      "label": "Text box width",
-      "default": "medium",
-      "options": [
-        {
-          "value": "small",
-          "label": "Small"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "large",
-          "label": "Large"
-        }
-      ]
-    }
-  ],
-  "blocks": [
-    {
-      "type": "banner",
-      "name": "Banner",
-      "limit": 2,
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": ""
-        },
-        {
-          "type": "textarea",
-          "id": "text",
-          "label": "Text",
-          "default": ""
-        },
-        {
-          "type": "text",
-          "id": "button_label",
-          "label": "Button label",
-          "default": ""
-        },
-        {
-          "type": "url",
-          "id": "button_link",
-          "label": "Button link",
-          "default": ""
-        }
-      ]
+      "id": "show_scroll_hint",
+      "label": "Show scroll hint",
+      "default": false
     }
   ],
   "presets": [
@@ -184,109 +150,334 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-image-banner {
-  padding: var(--spacing-xl) 0;
+.s-image-banner {
   position: relative;
+  overflow: hidden;
+  width: 100%;
 }
 
-.section-image-banner .section__header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
+.s-image-banner__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--t-surface);
 }
 
-.section-image-banner .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-image-banner__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
 }
 
-.section-image-banner .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-image-banner--light .s-image-banner__overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
 }
 
-.section-image-banner .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-image-banner__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: var(--banner-height, 600px);
+  padding: var(--t-space-10) 0;
+}
+
+.s-image-banner--pos-h-center .s-image-banner__content { justify-content: center; text-align: center; }
+.s-image-banner--pos-h-left .s-image-banner__content { justify-content: flex-start; }
+.s-image-banner--pos-h-right .s-image-banner__content { justify-content: flex-end; }
+.s-image-banner--pos-v-center .s-image-banner__content { align-items: center; }
+.s-image-banner--pos-v-top .s-image-banner__content { align-items: flex-start; }
+.s-image-banner--pos-v-bottom .s-image-banner__content { align-items: flex-end; }
+
+.s-image-banner__text {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
+  color: var(--banner-text, #fff);
+}
+
+.s-image-banner--pos-h-center .s-image-banner__text { align-items: center; }
+
+.s-image-banner__kicker {
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0;
+  color: var(--banner-text, #fff);
+  opacity: 0.85;
+}
+
+.s-image-banner__heading {
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.s-image-banner__heading--h1 {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+}
+
+.s-image-banner__heading--h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.s-image-banner__heading--h3 {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.s-image-banner__subheading {
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0;
+  color: var(--banner-text, #fff);
+  opacity: 0.9;
+}
+
+.s-image-banner__buttons {
+  display: flex;
+  gap: var(--t-space-3);
+  flex-wrap: wrap;
+  margin-top: var(--t-space-2);
+}
+
+/* Brutalist style */
+.s-image-banner--brutalist {
+  background: var(--t-bg);
+  border-bottom: 4px solid var(--t-text);
+}
+
+.s-image-banner--brutalist .s-image-banner__content {
+  min-height: auto;
+  padding: var(--t-space-16) 0;
+}
+
+.s-image-banner--brutalist .s-image-banner__text {
+  color: var(--t-text);
+}
+
+.s-image-banner--brutalist .s-image-banner__kicker {
+  color: var(--t-text-muted);
+}
+
+/* Split style */
+.s-image-banner--split .s-image-banner__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.s-image-banner--split .s-image-banner__bg {
+  position: relative;
+  min-height: 500px;
+}
+
+.s-image-banner--split .s-image-banner__content {
+  min-height: auto;
+  padding: var(--t-space-12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--t-bg);
+}
+
+.s-image-banner--split .s-image-banner__text {
+  color: var(--t-text);
+}
+
+.s-image-banner--split .s-image-banner__kicker {
+  color: var(--t-text-muted);
+}
+
+/* Scroll hint */
+.s-image-banner__scroll-hint {
+  position: absolute;
+  bottom: var(--t-space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--t-space-2);
+  color: var(--banner-text, #fff);
+  font-size: var(--t-font-size-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.s-image-banner__scroll-hint::after {
+  content: '';
+  width: 1px;
+  height: 40px;
+  background: currentColor;
+  animation: scroll-hint 2s ease-in-out infinite;
+}
+
+@keyframes scroll-hint {
+  0%, 100% { transform: scaleY(1); transform-origin: top; }
+  50% { transform: scaleY(0.5); transform-origin: bottom; }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .s-image-banner__content {
+    min-height: var(--banner-height-mobile, 480px);
+    padding: var(--t-space-8) 0;
+  }
+
+  .s-image-banner--split .s-image-banner__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .s-image-banner--split .s-image-banner__bg {
+    min-height: 300px;
+  }
+
+  .s-image-banner--split .s-image-banner__content {
+    padding: var(--t-space-8);
+  }
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _image = section.settings.image
+  assign _image_mobile = section.settings.image_mobile
+  assign _heading = section.settings.heading
+  assign _subheading = section.settings.subheading
+  assign _kicker = section.settings.kicker
+  assign _btn_text = section.settings.button_text
+  assign _btn_link = section.settings.button_link
+  assign _btn2_text = section.settings.secondary_button_text
+  assign _btn2_link = section.settings.secondary_button_link
+  assign _text_pos_h = section.settings.text_position
+  assign _text_pos_v = section.settings.text_position_vertical
+  assign _style = section.settings.style
+  assign _heading_size = section.settings.heading_size
+  assign _scroll_hint = section.settings.show_scroll_hint
+
+  assign _section_class = 's-image-banner'
+  assign _section_class = _section_class | append: ' s-image-banner--' | append: _style
+  assign _section_class = _section_class | append: ' s-image-banner--pos-h-' | append: _text_pos_h
+  assign _section_class = _section_class | append: ' s-image-banner--pos-v-' | append: _text_pos_v
+
+  assign _bg_style = ''
+  if _style != 'brutalist' and _image
+    assign _img_url = _image | image_url: width: 2000
+    assign _bg_style = '--banner-bg-url: url(' | append: _img_url | append: ');'
+    if _image_mobile
+      assign _img_mobile_url = _image_mobile | image_url: width: 1200
+    endif
+  endif
+
+  assign _height_style = '--banner-height: ' | append: section.settings.min_height_desktop | append: 'px;'
+  assign _height_style = _height_style | append: ' --banner-height-mobile: ' | append: section.settings.min_height_mobile | append: 'px;'
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-image-banner"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  style="{{ _bg_style }} {{ _height_style }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="image-banner"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
+  {% if _style == 'split' %}
+    <div class="s-image-banner__inner">
+      <div
+        class="s-image-banner__bg"
+        {% if _image %}style="background-image: url('{{ _image | image_url: width: 1600 }}');"{% endif %}
+        role="img"
+        aria-label="{{ _heading | escape }}"
+      ></div>
+      <div class="s-image-banner__content">
+        <div class="s-image-banner__text">
+          {% if _kicker != blank %}
+            <p class="s-image-banner__kicker">{{ _kicker | escape }}</p>
+          {% endif %}
+          {% if _heading != blank %}
+            <h1 class="s-image-banner__heading s-image-banner__heading--{{ _heading_size }}">{{ _heading | escape }}</h1>
+          {% endif %}
+          {% if _subheading != blank %}
+            <p class="s-image-banner__subheading">{{ _subheading | escape }}</p>
+          {% endif %}
+          {% if _btn_text != blank and _btn_link != blank %}
+            <div class="s-image-banner__buttons">
+              <a href="{{ _btn_link }}" class="c-btn c-btn--primary">{{ _btn_text | escape }}</a>
+              {% if _btn2_text != blank and _btn2_link != blank %}
+                <a href="{{ _btn2_link }}" class="c-btn c-btn--ghost">{{ _btn2_text | escape }}</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
       </div>
+    </div>
+  {% else %}
+    {% if _image and _style != 'brutalist' %}
+      <div
+        class="s-image-banner__bg"
+        style="background-image: url('{{ _image | image_url: width: 2000 }}');"
+        role="img"
+        aria-label="{{ _heading | escape }}"
+      ></div>
+      <div class="s-image-banner__overlay"></div>
     {% endif %}
 
-    <div class="blocks blocks--image-banner">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'banner' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Banner
-    {% endif %}
-  </div>
-          {% endcase %}
+    <div class="s-image-banner__content">
+      <div class="c-container" style="width:100%;">
+        <div class="s-image-banner__text">
+          {% if _kicker != blank %}
+            <p class="s-image-banner__kicker">{{ _kicker | escape }}</p>
+          {% endif %}
+          {% if _heading != blank %}
+            <h1 class="s-image-banner__heading s-image-banner__heading--{{ _heading_size }}">{{ _heading | escape }}</h1>
+          {% endif %}
+          {% if _subheading != blank %}
+            <p class="s-image-banner__subheading">{{ _subheading | escape }}</p>
+          {% endif %}
+          {% if _btn_text != blank and _btn_link != blank %}
+            <div class="s-image-banner__buttons">
+              <a href="{{ _btn_link }}" class="c-btn c-btn--primary">{{ _btn_text | escape }}</a>
+              {% if _btn2_text != blank and _btn2_link != blank %}
+                <a href="{{ _btn2_link }}" class="c-btn c-btn--outline c-btn--inverted">{{ _btn2_text | escape }}</a>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
-      {% endfor %}
+      </div>
     </div>
-  </div>
+
+    {% if _scroll_hint and _style != 'brutalist' %}
+      <div class="s-image-banner__scroll-hint">
+        <span>{{ 'general.scroll' | t | default: 'Scroll' }}</span>
+      </div>
+    {% endif %}
+  {% endif %}
 </section>
 
 {% javascript %}
 class ImageBannerSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-image-banner')) {
-  customElements.define('section-image-banner', ImageBannerSection);
+if (!customElements.get('image-banner-section')) {
+  customElements.define('image-banner-section', ImageBannerSection);
 }
 {% endjavascript %}

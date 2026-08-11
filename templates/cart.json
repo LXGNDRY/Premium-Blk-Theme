@@ -1,16 +1,16 @@
 {
   "sections": {
-    "Items": {
-      "type": "main-cart-items",
-      "settings": {}
-    },
-    "Footer": {
-      "type": "main-cart-footer",
-      "settings": {}
+    "main": {
+      "type": "main-cart",
+      "settings": {
+        "show_note": true,
+        "show_savings": true,
+        "sticky_checkout": true,
+        "show_trust_badges": true
+      }
     }
   },
   "order": [
-    "Items",
-    "Footer"
+    "main"
   ]
 }

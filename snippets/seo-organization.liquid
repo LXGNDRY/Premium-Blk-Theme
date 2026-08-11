@@ -1,0 +1,57 @@
+{% comment %}
+  SEO: Organization JSON-LD
+  Renders schema.org Organization structured data.
+  Placed in <head> on all pages.
+{% endcomment %}
+
+{%- liquid
+  assign _logo_url = section.settings.logo
+  assign _org_name = shop.name
+  assign _org_url = shop.url
+
+  assign _social_urls = ''
+  if settings.social_instagram_link != blank
+    assign _social_urls = _social_urls | append: '"' | append: settings.social_instagram_link | append: '",'
+  endif
+  if settings.social_tiktok_link != blank
+    assign _social_urls = _social_urls | append: '"' | append: settings.social_tiktok_link | append: '",'
+  endif
+  if settings.social_twitter_link != blank
+    assign _social_urls = _social_urls | append: '"' | append: settings.social_twitter_link | append: '",'
+  endif
+  if settings.social_youtube_link != blank
+    assign _social_urls = _social_urls | append: '"' | append: settings.social_youtube_link | append: '",'
+  endif
+  if settings.social_facebook_link != blank
+    assign _social_urls = _social_urls | append: '"' | append: settings.social_facebook_link | append: '",'
+  endif
+  if _social_urls.size > 0
+    assign _social_urls = _social_urls | remove_last: ','
+  endif
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ _org_name | json }},
+  "url": {{ _org_url | json }},
+  "logo": {% if _logo_url %}{{ _logo_url | image_url: width: 600 | json }}{% else %}""{% endif %},
+  {% if shop.email %}
+  "email": {{ shop.email | json }},
+  {% endif %}
+  {% if shop.address %}
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": {{ shop.address.address1 | json }},
+    "addressLocality": {{ shop.address.city | json }},
+    "addressRegion": {{ shop.address.province | json }},
+    "postalCode": {{ shop.address.zip | json }},
+    "addressCountry": {{ shop.address.country | json }}
+  },
+  {% endif %}
+  {% if _social_urls.size > 0 %}
+  "sameAs": [{{ _social_urls }}]
+  {% endif %}
+}
+</script>

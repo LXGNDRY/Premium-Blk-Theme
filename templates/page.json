@@ -1,11 +1,15 @@
 {
   "sections": {
-    "Page": {
+    "main": {
       "type": "main-page",
-      "settings": {}
+      "settings": {
+        "show_title": true,
+        "narrow_width": true,
+        "show_breadcrumbs": true
+      }
     }
   },
   "order": [
-    "Page"
+    "main"
   ]
 }

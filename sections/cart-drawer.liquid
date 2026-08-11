@@ -1,52 +1,28 @@
 {% schema %}
 {
   "name": "Cart drawer",
-  "tag": "section",
-  "class": "section-cart-drawer",
+  "tag": "div",
+  "class": "s-cart-drawer",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 16,
+  "limit": 1,
   "settings": [
     {
-      "type": "checkbox",
-      "id": "show_cart_note",
-      "label": "Show order note",
-      "default": false
+      "type": "header",
+      "content": "Behavior"
     },
     {
       "type": "checkbox",
-      "id": "show_cart_upsell",
-      "label": "Show cart upsell",
+      "id": "open_on_add",
+      "label": "Open drawer when item is added to cart",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cross_sell",
+      "label": "Show cross-sell products in drawer",
       "default": false
-    }
-  ],
-  "blocks": [
-    {
-      "type": "subtotal",
-      "name": "Subtotal",
-      "limit": 1,
-      "settings": []
-    },
-    {
-      "type": "proceed_to_checkout",
-      "name": "Proceed to checkout",
-      "limit": 1,
-      "settings": []
-    },
-    {
-      "type": "dynamic_checkout",
-      "name": "Dynamic checkout",
-      "limit": 1,
-      "settings": []
-    },
-    {
-      "type": "app",
-      "name": "App",
-      "limit": 16,
-      "settings": []
     }
   ],
   "presets": [
@@ -59,133 +35,420 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-cart-drawer {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-cart-drawer {
+  --drawer-width: 380px;
 }
 
-.section-cart-drawer .section__header {
+/* Backdrop / overlay */
+.s-cart-drawer__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: var(--t-z-modal);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-transition-base);
+}
+
+.s-cart-drawer.is-open .s-cart-drawer__backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Drawer panel */
+.s-cart-drawer__panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(90vw, var(--drawer-width));
+  background: var(--t-bg);
+  border-left: 1px solid var(--t-border);
+  z-index: calc(var(--t-z-modal) + 1);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--t-transition-base) var(--t-ease-out);
+  will-change: transform;
+}
+
+.s-cart-drawer.is-open .s-cart-drawer__panel {
+  transform: translateX(0);
+}
+
+/* Header */
+.s-cart-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--t-space-4) var(--t-space-5);
+  border-bottom: 1px solid var(--t-border);
+  flex-shrink: 0;
+}
+
+.s-cart-drawer__title {
+  font-size: var(--t-font-size-h3);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.s-cart-drawer__count {
+  font-size: var(--t-font-size-base);
+  color: var(--t-text-muted);
+  font-weight: 400;
+}
+
+.s-cart-drawer__close {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--t-text);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 0;
+}
+
+.s-cart-drawer__close:hover {
+  color: var(--t-text-muted);
+}
+
+.s-cart-drawer__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Items */
+.s-cart-drawer__items {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--t-space-4) var(--t-space-5);
+  -webkit-overflow-scrolling: touch;
+}
+
+.s-cart-drawer__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  gap: var(--t-space-4);
+  color: var(--t-text-muted);
 }
 
-.section-cart-drawer .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
+.s-cart-drawer__item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: var(--t-space-3);
+  padding: var(--t-space-3) 0;
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-cart-drawer__item:last-child {
+  border-bottom: none;
+}
+
+.s-cart-drawer__item-img {
+  aspect-ratio: 3 / 4;
+  background: var(--t-surface);
+  overflow: hidden;
+}
+
+.s-cart-drawer__item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-cart-drawer__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.s-cart-drawer__item-title {
+  font-size: var(--t-font-size-small);
   font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+  margin: 0;
+  line-height: 1.3;
 }
 
-.section-cart-drawer .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-cart-drawer__item-title a {
+  color: var(--t-text);
+  text-decoration: none;
 }
 
-.section-cart-drawer .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-cart-drawer__item-variant {
+  font-size: 12px;
+  color: var(--t-text-muted);
+}
+
+.s-cart-drawer__item-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.s-cart-drawer__item-price {
+  font-family: var(--t-font-mono);
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+}
+
+.s-cart-drawer__item-qty {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+}
+
+.s-cart-drawer__item-qty button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--t-border);
+  background: var(--t-surface);
+  color: var(--t-text);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+}
+
+.s-cart-drawer__item-qty input {
+  width: 32px;
+  height: 24px;
+  text-align: center;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-size: 12px;
+  font-family: inherit;
+  padding: 0;
+  border-radius: 0;
+  -moz-appearance: textfield;
+}
+
+.s-cart-drawer__item-qty input::-webkit-outer-spin-button,
+.s-cart-drawer__item-qty input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.s-cart-drawer__item-remove {
+  font-size: 11px;
+  color: var(--t-text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+  margin-top: 4px;
+}
+
+/* Footer */
+.s-cart-drawer__footer {
+  padding: var(--t-space-4) var(--t-space-5);
+  border-top: 1px solid var(--t-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+  flex-shrink: 0;
+}
+
+.s-cart-drawer__subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.s-cart-drawer__subtotal-label {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.s-cart-drawer__subtotal-value {
+  font-family: var(--t-font-mono);
+  font-size: var(--t-font-size-h3);
+  font-weight: 700;
+}
+
+.s-cart-drawer__note {
+  font-size: 11px;
+  color: var(--t-text-muted);
+  text-align: center;
 }
 {% endstylesheet %}
 
-<section
+<div
   id="section-{{ section.id }}"
-  class="section-cart-drawer"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-cart-drawer"
+  data-section-id="{{ section.id }}"
+  data-section-type="cart-drawer"
+  data-open-on-add="{% if section.settings.open_on_add %}true{% else %}false{% endif %}"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="cart-drawer-title-{{ section.id }}"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
+  <div class="s-cart-drawer__backdrop" data-drawer-close></div>
+
+  <div class="s-cart-drawer__panel">
+    <div class="s-cart-drawer__header">
+      <h2 class="s-cart-drawer__title" id="cart-drawer-title-{{ section.id }}">
+        {{ 'cart.general.cart' | t | default: 'Cart' }}
+        <span class="s-cart-drawer__count" data-cart-count>{{ cart.item_count }}</span>
+      </h2>
+      <button class="s-cart-drawer__close" data-drawer-close aria-label="Close cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="s-cart-drawer__items" data-cart-items>
+      {% if cart.item_count > 0 %}
+        {% for item in cart.items %}
+          <div class="s-cart-drawer__item" data-drawer-item data-key="{{ item.key }}">
+            <div class="s-cart-drawer__item-img">
+              {% if item.image %}
+                <img src="{{ item.image | image_url: width: 140 }}" alt="{{ item.image.alt | escape }}" width="70" height="93" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="s-cart-drawer__item-info">
+              <h4 class="s-cart-drawer__item-title">
+                <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
+              </h4>
+              {% if item.variant_title and item.variant_title != 'Default Title' %}
+                <span class="s-cart-drawer__item-variant">{{ item.variant_title | escape }}</span>
+              {% endif %}
+              <div class="s-cart-drawer__item-qty">
+                <button type="button" data-qty-decrease aria-label="Decrease">−</button>
+                <input type="number" value="{{ item.quantity }}" min="1" data-item-qty aria-label="Quantity">
+                <button type="button" data-qty-increase aria-label="Increase">+</button>
+              </div>
+              <button type="button" class="s-cart-drawer__item-remove" data-item-remove>
+                {{ 'cart.general.remove' | t | default: 'Remove' }}
+              </button>
+            </div>
+            <div class="s-cart-drawer__item-actions">
+              <span class="s-cart-drawer__item-price" data-item-line-total>{{ item.final_line_price | money }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="s-cart-drawer__empty">
+          <p>{{ 'cart.general.empty' | t | default: 'Your cart is empty' }}</p>
+          <a href="/collections/all" class="c-btn c-btn--primary c-btn--sm" data-drawer-close>
+            {{ 'cart.general.continue_shopping' | t | default: 'Start shopping' }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if cart.item_count > 0 %}
+      <div class="s-cart-drawer__footer">
+        <div class="s-cart-drawer__subtotal">
+          <span class="s-cart-drawer__subtotal-label">
+            {{ 'cart.general.subtotal' | t | default: 'Subtotal' }}
+          </span>
+          <span class="s-cart-drawer__subtotal-value" data-cart-subtotal>
+            {{ cart.total_price | money }}
+          </span>
+        </div>
+        <button type="button" class="c-btn c-btn--primary c-btn--full" onclick="window.location.href='/checkout'">
+          {{ 'cart.general.checkout' | t | default: 'Checkout' }}
+        </button>
+        <a href="/cart" class="c-btn c-btn--ghost c-btn--full c-btn--sm" data-drawer-close>
+          {{ 'cart.general.view_cart' | t | default: 'View cart' }}
+        </a>
+        <p class="s-cart-drawer__note">
+          {{ 'cart.general.taxes_at_checkout' | t | default: 'Taxes and shipping calculated at checkout.' }}
+        </p>
       </div>
     {% endif %}
-
-    <div class="blocks blocks--cart-drawer">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'subtotal' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Subtotal
-    {% endif %}
   </div>
-{%- when 'proceed_to_checkout' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Proceed to checkout
-    {% endif %}
-  </div>
-{%- when 'dynamic_checkout' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      Dynamic checkout
-    {% endif %}
-  </div>
-{%- when 'app' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      App
-    {% endif %}
-  </div>
-          {% endcase %}
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+</div>
 
 {% javascript %}
-class CartDrawerSection extends HTMLElement {
+class CartDrawer extends HTMLElement {
   constructor() {
     super();
+    this._isOpen = false;
+    this._openOnAdd = this.dataset.openOnAdd === 'true';
   }
 
   connectedCallback() {
-    this.init();
+    this.cacheDOM();
+    this.bindEvents();
+
+    // Subscribe to global cart events
+    if (window.__theme?.PubSub) {
+      this._unsubAdd = window.__theme.PubSub.subscribe('cart:add', () => {
+        if (this._openOnAdd) this.open();
+      });
+      this._unsubToggle = window.__theme.PubSub.subscribe('cart:toggle', () => this.toggle());
+      this._unsubOpen = window.__theme.PubSub.subscribe('cart:open', () => this.open());
+    }
   }
 
-  init() {
-    // Section initialization logic
+  disconnectedCallback() {
+    if (this._unsubAdd) this._unsubAdd();
+    if (this._unsubToggle) this._unsubToggle();
+    if (this._unsubOpen) this._unsubOpen();
   }
 
-  onBlockSelect(evt) {
-    // Block selected in editor
+  cacheDOM() {
+    this.closeBtns = this.querySelectorAll('[data-drawer-close]');
+    this.itemsContainer = this.querySelector('[data-cart-items]');
+    this.countEl = this.querySelector('[data-cart-count]');
+    this.subtotalEl = this.querySelector('[data-cart-subtotal]');
   }
 
-  onBlockDeselect(evt) {
-    // Block deselected in editor
+  bindEvents() {
+    this.closeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => this.close());
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this._isOpen) this.close();
+    });
+  }
+
+  open() {
+    this._isOpen = true;
+    this.classList.add('is-open');
+    this.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  close() {
+    this._isOpen = false;
+    this.classList.remove('is-open');
+    this.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  toggle() {
+    this._isOpen ? this.close() : this.open();
   }
 }
 
-if (!customElements.get('section-cart-drawer')) {
-  customElements.define('section-cart-drawer', CartDrawerSection);
+if (!customElements.get('cart-drawer')) {
+  customElements.define('cart-drawer', CartDrawer);
 }
 {% endjavascript %}

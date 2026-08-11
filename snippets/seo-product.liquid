@@ -1,0 +1,69 @@
+{% comment %}
+  SEO: Product JSON-LD
+  Renders schema.org Product structured data.
+  Used on product template pages.
+{% endcomment %}
+
+{%- liquid
+  if product == nil or product == blank
+    return
+  endif
+
+  assign _name = product.title
+  assign _description = product.description | strip_html | truncate: 500
+  assign _brand = product.vendor
+  assign _sku = product.selected_or_first_available_variant.sku
+  assign _price = product.price | money_without_currency
+  assign _price_currency = cart.currency.iso_code
+  assign _availability = "https://schema.org/InStock"
+  if product.available == false
+    assign _availability = "https://schema.org/OutOfStock"
+  endif
+
+  assign _images = ''
+  for image in product.images limit: 8
+    assign _img_url = image | image_url: width: 1200
+    assign _images = _images | append: '"' | append: _img_url | append: '",'
+  endfor
+  if _images.size > 0
+    assign _images = _images | remove_last: ','
+  endif
+
+  assign _rating = ''
+  if product.metafields.reviews.avg_rating
+    assign _rating = product.metafields.reviews.avg_rating | times: 1
+    assign _review_count = product.metafields.reviews.count | times: 1
+  endif
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ _name | json }},
+  "description": {{ _description | json }},
+  "brand": {
+    "@type": "Brand",
+    "name": {{ _brand | json }}
+  },
+  {% if _sku %}"sku": {{ _sku | json }},{% endif %}
+  {% if product.gtin %}"gtin": {{ product.gtin | json }},{% endif %}
+  {% if _images.size > 0 %}"image": [{{ _images }}],{% endif %}
+  {% if product.url %}"url": {{ product.url | absolute_url | json }},{% endif %}
+  "offers": {
+    "@type": "Offer",
+    "url": {{ product.url | absolute_url | json }},
+    "priceCurrency": "{{ _price_currency }}",
+    "price": {{ product.price_min | divided_by: 100.0 | round: 2 }},
+    "availability": "{{ _availability }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+  {% if _rating and _rating > 0 %}
+  ,"aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ _rating }}",
+    "reviewCount": "{{ _review_count }}"
+  }
+  {% endif %}
+}
+</script>

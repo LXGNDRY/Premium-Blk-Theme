@@ -1,16 +1,30 @@
 {
   "sections": {
-    "Banner": {
+    "banner": {
       "type": "main-collection-banner",
-      "settings": {}
+      "settings": {
+        "show_description": true,
+        "show_image": false,
+        "style": "minimal"
+      }
     },
-    "Product grid": {
+    "grid": {
       "type": "main-collection-product-grid",
-      "settings": {}
+      "settings": {
+        "products_per_row": 4,
+        "products_per_page": 24,
+        "image_ratio": "3/4",
+        "show_vendor": false,
+        "show_secondary_image": true,
+        "show_badges": true,
+        "show_swatches": false,
+        "show_quick_add": false,
+        "show_sort": true
+      }
     }
   },
   "order": [
-    "Banner",
-    "Product grid"
+    "banner",
+    "grid"
   ]
 }
