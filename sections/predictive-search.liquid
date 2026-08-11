@@ -1,154 +1,537 @@
 {% schema %}
 {
   "name": "Predictive search",
-  "tag": "section",
-  "class": "section-predictive-search",
+  "tag": "div",
+  "class": "s-predictive-search",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "groups": ["*"]
   },
-  "max_blocks": 1,
+  "limit": 1,
   "settings": [
     {
-      "type": "checkbox",
-      "id": "show_product_vendor",
-      "label": "Show product vendor",
-      "default": false
+      "type": "header",
+      "content": "Content"
     },
     {
       "type": "checkbox",
-      "id": "show_product_price",
+      "id": "show_products",
+      "label": "Show product results",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collections",
+      "label": "Show collection results",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pages",
+      "label": "Show page results",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max product results",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
       "label": "Show product price",
       "default": true
     },
     {
-      "type": "select",
-      "id": "show_options",
-      "label": "Show",
-      "default": "products_and_collections_and_pages_and_articles",
-      "options": [
-        {
-          "value": "products_and_collections_and_pages_and_articles",
-          "label": "All"
-        },
-        {
-          "value": "products",
-          "label": "Products only"
-        },
-        {
-          "value": "products_and_collections",
-          "label": "Products + collections"
-        }
-      ]
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show product image",
+      "default": true
     }
   ],
-  "blocks": [],
   "presets": [
     {
       "name": "Predictive search",
-      "category": "Utility"
+      "category": "Search"
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-predictive-search {
-  padding: var(--spacing-xl) 0;
+.s-predictive-search {
   position: relative;
+  width: 100%;
 }
 
-.section-predictive-search .section__header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
+.s-predictive-search__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-.section-predictive-search .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
+.s-predictive-search__icon {
+  position: absolute;
+  left: var(--t-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--t-text-muted);
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.s-predictive-search__input {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--t-space-4) 0 calc(var(--t-space-4) + 24px);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+  transition: border-color var(--t-transition-fast);
+}
+
+.s-predictive-search__input:focus {
+  outline: none;
+  border-color: var(--t-border-strong);
+}
+
+.s-predictive-search__input::placeholder {
+  color: var(--t-text-subtle);
+}
+
+/* Results panel */
+.s-predictive-search__results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--t-bg);
+  border: 1px solid var(--t-border);
+  z-index: var(--t-z-dropdown);
+  max-height: 70vh;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity var(--t-transition-fast), transform var(--t-transition-fast);
+  -webkit-overflow-scrolling: touch;
+}
+
+.s-predictive-search.is-open .s-predictive-search__results {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.s-predictive-search__group {
+  padding: var(--t-space-3) 0;
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-predictive-search__group:last-child {
+  border-bottom: none;
+}
+
+.s-predictive-search__group-title {
+  padding: var(--t-space-2) var(--t-space-4);
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.s-predictive-search__item {
+  display: flex;
+  align-items: center;
+  gap: var(--t-space-3);
+  padding: var(--t-space-2) var(--t-space-4);
+  color: var(--t-text);
+  text-decoration: none;
+  transition: background var(--t-transition-fast);
+}
+
+.s-predictive-search__item:hover,
+.s-predictive-search__item.is-active {
+  background: var(--t-surface);
+}
+
+.s-predictive-search__item-img {
+  width: 48px;
+  height: 64px;
+  background: var(--t-surface);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.s-predictive-search__item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-predictive-search__item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.s-predictive-search__item-title {
+  font-size: var(--t-font-size-small);
   font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.section-predictive-search .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-predictive-search__item-price {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-muted);
+  font-family: var(--t-font-mono);
 }
 
-.section-predictive-search .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-predictive-search__item mark {
+  background: transparent;
+  color: var(--t-text);
+  font-weight: 700;
+}
+
+.s-predictive-search__view-all {
+  display: flex;
+  justify-content: center;
+  padding: var(--t-space-3) var(--t-space-4);
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  color: var(--t-text);
+  text-decoration: none;
+  border-top: 1px solid var(--t-border);
+  background: var(--t-surface);
+  transition: background var(--t-transition-fast);
+}
+
+.s-predictive-search__view-all:hover {
+  background: var(--t-border);
+}
+
+.s-predictive-search__empty {
+  padding: var(--t-space-6) var(--t-space-4);
+  text-align: center;
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-small);
+}
+
+.s-predictive-search__loading {
+  display: none;
+  position: absolute;
+  right: var(--t-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--t-border);
+  border-top-color: var(--t-text);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.s-predictive-search.is-loading .s-predictive-search__loading {
+  display: block;
+}
+
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
 }
 {% endstylesheet %}
 
-<section
-  id="section-{{ section.id }}"
-  class="section-predictive-search"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
->
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
+{%- liquid
+  assign _show_products = section.settings.show_products
+  assign _show_collections = section.settings.show_collections
+  assign _show_pages = section.settings.show_pages
+  assign _limit = section.settings.products_limit
+  assign _show_price = section.settings.show_price
+  assign _show_image = section.settings.show_image
+-%}
 
-    <div class="blocks blocks--predictive-search">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
-        </div>
-      {% endfor %}
-    </div>
+<div
+  id="section-{{ section.id }}"
+  class="s-predictive-search"
+  data-section-id="{{ section.id }}"
+  data-section-type="predictive-search"
+  data-show-products="{% if _show_products %}true{% else %}false{% endif %}"
+  data-show-collections="{% if _show_collections %}true{% else %}false{% endif %}"
+  data-show-pages="{% if _show_pages %}true{% else %}false{% endif %}"
+  data-products-limit="{{ _limit }}"
+  data-show-price="{% if _show_price %}true{% else %}false{% endif %}"
+  data-show-image="{% if _show_image %}true{% else %}false{% endif %}"
+>
+  <div class="s-predictive-search__input-wrap">
+    <svg class="s-predictive-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <form role="search" method="get" action="{{ routes.search_url }}">
+      <input
+        type="search"
+        name="q"
+        class="s-predictive-search__input"
+        placeholder="{{ 'general.search.placeholder' | t | default: 'Search products...' }}"
+        aria-label="{{ 'general.search.placeholder' | t | default: 'Search products...' }}"
+        autocomplete="off"
+        data-search-input
+      >
+    </form>
+    <div class="s-predictive-search__loading" aria-hidden="true"></div>
   </div>
-</section>
+
+  <div class="s-predictive-search__results" data-search-results role="listbox" aria-label="Search results">
+    {% comment %} Results populated by JS {% endcomment %}
+  </div>
+</div>
 
 {% javascript %}
-class PredictiveSearchSection extends HTMLElement {
+class PredictiveSearch extends HTMLElement {
   constructor() {
     super();
+    this._debounceTimer = null;
+    this._results = [];
+    this._activeIndex = -1;
+    this._isOpen = false;
   }
 
   connectedCallback() {
-    this.init();
+    this.cacheDOM();
+    this.bindEvents();
   }
 
-  init() {
-    // Section initialization logic
+  cacheDOM() {
+    this.input = this.querySelector('[data-search-input]');
+    this.resultsPanel = this.querySelector('[data-search-results]');
+    this.limit = parseInt(this.dataset.productsLimit, 10) || 5;
+    this.showProducts = this.dataset.showProducts === 'true';
+    this.showCollections = this.dataset.showCollections === 'true';
+    this.showPages = this.dataset.showPages === 'true';
+    this.showPrice = this.dataset.showPrice === 'true';
+    this.showImage = this.dataset.showImage === 'true';
   }
 
-  onBlockSelect(evt) {
-    // Block selected in editor
+  bindEvents() {
+    this.input.addEventListener('input', (e) => this._onInput(e));
+    this.input.addEventListener('focus', () => this._onFocus());
+    this.input.addEventListener('keydown', (e) => this._onKeydown(e));
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!this.contains(e.target)) this.close();
+    });
   }
 
-  onBlockDeselect(evt) {
-    // Block deselected in editor
+  _onInput() {
+    const query = this.input.value.trim();
+    clearTimeout(this._debounceTimer);
+
+    if (query.length < 2) {
+      this.close();
+      return;
+    }
+
+    this.classList.add('is-loading');
+    this._debounceTimer = setTimeout(() => this.search(query), 200);
+  }
+
+  _onFocus() {
+    if (this.resultsPanel.children.length > 0 && this.input.value.length >= 2) {
+      this.open();
+    }
+  }
+
+  _onKeydown(e) {
+    if (!this._isOpen) return;
+
+    const items = this.querySelectorAll('.s-predictive-search__item');
+    if (!items.length) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        this._activeIndex = Math.min(this._activeIndex + 1, items.length - 1);
+        this._updateActive(items);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        this._activeIndex = Math.max(this._activeIndex - 1, 0);
+        this._updateActive(items);
+        break;
+      case 'Enter':
+        if (this._activeIndex >= 0) {
+          e.preventDefault();
+          items[this._activeIndex].click();
+        }
+        break;
+      case 'Escape':
+        this.close();
+        this.input.blur();
+        break;
+    }
+  }
+
+  _updateActive(items) {
+    items.forEach((item, i) => {
+      item.classList.toggle('is-active', i === this._activeIndex);
+    });
+  }
+
+  async search(query) {
+    try {
+      const types = [];
+      if (this.showProducts) types.push('product');
+      if (this.showCollections) types.push('collection');
+      if (this.showPages) types.push('page');
+
+      const url = `/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=${types.join(',')}&resources[limit]=${this.limit}&resources[options][unavailable_products]=last`;
+
+      const res = await fetch(url, {
+        headers: { Accept: 'application/json' }
+      });
+
+      if (!res.ok) throw new Error('Search failed');
+
+      const data = await res.json();
+      this._results = data.resources;
+      this.renderResults(query);
+
+      if (this._hasResults()) {
+        this.open();
+      } else {
+        this.close();
+      }
+    } catch (err) {
+      console.warn('Predictive search error:', err);
+    } finally {
+      this.classList.remove('is-loading');
+    }
+  }
+
+  _hasResults() {
+    if (!this._results) return false;
+    return (this._results.products?.length || 0) +
+           (this._results.collections?.length || 0) +
+           (this._results.pages?.length || 0) > 0;
+  }
+
+  renderResults(query) {
+    let html = '';
+    this._activeIndex = -1;
+    let itemCount = 0;
+
+    // Products
+    if (this.showProducts && this._results.products?.length) {
+      html += `<div class="s-predictive-search__group"><p class="s-predictive-search__group-title">Products</p>`;
+      this._results.products.forEach((p) => {
+        html += this._renderProductItem(p, query);
+        itemCount++;
+      });
+      html += `</div>`;
+    }
+
+    // Collections
+    if (this.showCollections && this._results.collections?.length) {
+      html += `<div class="s-predictive-search__group"><p class="s-predictive-search__group-title">Collections</p>`;
+      this._results.collections.forEach((c) => {
+        html += `<a href="/collections/${c.handle}" class="s-predictive-search__item" role="option">
+          <span class="s-predictive-search__item-info">
+            <p class="s-predictive-search__item-title">${this._highlight(c.title, query)}</p>
+          </span>
+        </a>`;
+        itemCount++;
+      });
+      html += `</div>`;
+    }
+
+    // Pages
+    if (this.showPages && this._results.pages?.length) {
+      html += `<div class="s-predictive-search__group"><p class="s-predictive-search__group-title">Pages</p>`;
+      this._results.pages.forEach((pg) => {
+        html += `<a href="/pages/${pg.handle}" class="s-predictive-search__item" role="option">
+          <span class="s-predictive-search__item-info">
+            <p class="s-predictive-search__item-title">${this._highlight(pg.title, query)}</p>
+          </span>
+        </a>`;
+        itemCount++;
+      });
+      html += `</div>`;
+    }
+
+    // View all
+    if (itemCount > 0) {
+      html += `<a href="/search?q=${encodeURIComponent(query)}" class="s-predictive-search__view-all">View all results &rarr;</a>`;
+    }
+
+    if (!html) {
+      html = `<div class="s-predictive-search__empty">No results for "${query}"</div>`;
+    }
+
+    this.resultsPanel.innerHTML = html;
+  }
+
+  _renderProductItem(product, query) {
+    const imgHtml = this.showImage && product.featured_image?.url
+      ? `<div class="s-predictive-search__item-img">
+          <img src="${product.featured_image.url.replace('.jpg', '_120x160_crop_center.jpg')}" alt="${this._escape(product.featured_image.alt || product.title)}" loading="lazy">
+        </div>`
+      : '';
+
+    const priceHtml = this.showPrice
+      ? `<div class="s-predictive-search__item-price">$${(product.price / 100).toFixed(2)}</div>`
+      : '';
+
+    return `<a href="/products/${product.handle}" class="s-predictive-search__item" role="option">
+      ${imgHtml}
+      <span class="s-predictive-search__item-info">
+        <p class="s-predictive-search__item-title">${this._highlight(product.title, query)}</p>
+        ${priceHtml}
+      </span>
+    </a>`;
+  }
+
+  _highlight(text, query) {
+    if (!query) return this._escape(text);
+    const regex = new RegExp(`(${this._escapeRegex(query)})`, 'gi');
+    return this._escape(text).replace(regex, '<mark>$1</mark>');
+  }
+
+  _escape(s) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  _escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  open() {
+    this._isOpen = true;
+    this.classList.add('is-open');
+  }
+
+  close() {
+    this._isOpen = false;
+    this._activeIndex = -1;
+    this.classList.remove('is-open');
   }
 }
 
-if (!customElements.get('section-predictive-search')) {
-  customElements.define('section-predictive-search', PredictiveSearchSection);
+if (!customElements.get('predictive-search')) {
+  customElements.define('predictive-search', PredictiveSearch);
 }
 {% endjavascript %}

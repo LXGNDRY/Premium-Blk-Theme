@@ -2,15 +2,46 @@
 {
   "name": "404 page",
   "tag": "section",
-  "class": "section-main-404",
+  "class": "s-main-404",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "templates": ["404"]
   },
-  "max_blocks": 16,
-  "settings": [],
-  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Page not found"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "The page you're looking for doesn't exist or has been moved."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Back to home"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_big_number",
+      "label": "Show big 404",
+      "default": true
+    }
+  ],
   "presets": [
     {
       "name": "404 page",
@@ -21,101 +52,128 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-main-404 {
-  padding: var(--spacing-xl) 0;
-  position: relative;
-}
-
-.section-main-404 .section__header {
+.s-main-404 {
+  padding: var(--t-space-16) 0;
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
 }
 
-.section-main-404 .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
-}
-
-.section-main-404 .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
+.s-main-404__inner {
+  max-width: 520px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--t-space-5);
 }
 
-.section-main-404 .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-main-404__number {
+  font-size: clamp(6rem, 20vw, 12rem);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  margin: 0;
+  color: var(--t-text);
+  font-family: var(--t-font-display);
+}
+
+.s-main-404__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.s-main-404__text {
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.s-main-404__search {
+  width: 100%;
+  max-width: 400px;
+  margin-top: var(--t-space-2);
+}
+
+.s-main-404__search input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+  text-align: center;
+}
+
+.s-main-404__search input:focus {
+  outline: none;
+  border-color: var(--t-border-strong);
+}
+
+.s-main-404__actions {
+  display: flex;
+  gap: var(--t-space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--t-space-2);
 }
 {% endstylesheet %}
 
 <section
   id="section-{{ section.id }}"
-  class="section-main-404"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-main-404"
+  data-section-id="{{ section.id }}"
+  data-section-type="main-404"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
+  <div class="c-container">
+    <div class="s-main-404__inner">
+      {% if section.settings.show_big_number %}
+        <p class="s-main-404__number" aria-hidden="true">404</p>
+      {% endif %}
+      <h1 class="s-main-404__heading">{{ section.settings.heading | escape }}</h1>
+      <p class="s-main-404__text">{{ section.settings.text | escape }}</p>
 
-    <div class="blocks blocks--main-404">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
-        </div>
-      {% endfor %}
+      {% if section.settings.show_search %}
+        <form class="s-main-404__search" role="search" method="get" action="{{ routes.search_url }}">
+          <input
+            type="search"
+            name="q"
+            placeholder="{{ 'general.search.placeholder' | t | default: 'Search...' }}"
+            aria-label="Search"
+            autofocus
+          >
+        </form>
+      {% endif %}
+
+      <div class="s-main-404__actions">
+        <a href="/" class="c-btn c-btn--primary">
+          {{ section.settings.button_text | escape }}
+        </a>
+        <a href="/collections/all" class="c-btn c-btn--ghost">
+          {{ 'general.shop_all' | t | default: 'Shop all' }}
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
 {% javascript %}
 class Main404Section extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-main-404')) {
-  customElements.define('section-main-404', Main404Section);
+if (!customElements.get('main-404-section')) {
+  customElements.define('main-404-section', Main404Section);
 }
 {% endjavascript %}

@@ -2,165 +2,251 @@
 {
   "name": "Contact form",
   "tag": "section",
-  "class": "section-contact-form",
+  "class": "s-contact-form",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "templates": ["page.contact"]
   },
-  "max_blocks": 1,
   "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show section heading",
+      "default": true
+    },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Contact us"
+      "default": "Get in touch"
     },
     {
-      "type": "text",
-      "id": "subheading",
-      "label": "Subheading",
-      "default": "We'd love to hear from you"
+      "type": "checkbox",
+      "id": "centered",
+      "label": "Centered layout",
+      "default": true
     },
     {
-      "type": "select",
-      "id": "form_alignment",
-      "label": "Form alignment",
-      "default": "left",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "background-1",
-      "options": [
-        {
-          "value": "background-1",
-          "label": "Background 1"
-        },
-        {
-          "value": "background-2",
-          "label": "Background 2"
-        }
-      ]
+      "type": "range",
+      "id": "form_max_width",
+      "label": "Form max width",
+      "min": 400,
+      "max": 720,
+      "step": 20,
+      "unit": "px",
+      "default": 560
     }
   ],
-  "blocks": [],
   "presets": [
     {
       "name": "Contact form",
-      "category": "Content"
+      "category": "Page"
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-contact-form {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-contact-form {
+  padding: var(--t-space-10) 0;
 }
 
-.section-contact-form .section__header {
+.s-contact-form__inner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.s-contact-form--left .s-contact-form__inner {
+  margin-left: 0;
+}
+
+.s-contact-form__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-6);
   text-align: center;
-  margin-bottom: var(--spacing-lg);
 }
 
-.section-contact-form .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
+.s-contact-form--left .s-contact-form__heading {
+  text-align: left;
+}
+
+.s-contact-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
+}
+
+.s-contact-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+}
+
+.s-contact-form__label {
+  font-size: var(--t-font-size-small);
   font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.section-contact-form .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-contact-form__input,
+.s-contact-form__textarea,
+.s-contact-form__select {
+  width: 100%;
+  padding: var(--t-space-3) var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+  transition: border-color var(--t-transition-fast);
 }
 
-.section-contact-form .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-contact-form__input:focus,
+.s-contact-form__textarea:focus,
+.s-contact-form__select:focus {
+  outline: none;
+  border-color: var(--t-border-strong);
+}
+
+.s-contact-form__textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.s-contact-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--t-space-4);
+}
+
+@media (max-width: 639px) {
+  .s-contact-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.s-contact-form__success {
+  padding: var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border-strong);
+  text-align: center;
+  color: var(--t-text);
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _show_heading = section.settings.show_heading
+  assign _heading = section.settings.heading
+  assign _centered = section.settings.centered
+  assign _max_width = section.settings.form_max_width
+
+  assign _section_class = 's-contact-form'
+  if _centered == false
+    assign _section_class = _section_class | append: ' s-contact-form--left'
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-contact-form"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="contact-form"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
+  <div class="c-container">
+    <div class="s-contact-form__inner" style="max-width: {{ _max_width }}px;">
+      {% if _show_heading and _heading != blank %}
+        <h2 class="s-contact-form__heading">{{ _heading | escape }}</h2>
+      {% endif %}
 
-    <div class="blocks blocks--contact-form">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
+      {% if form.posted_successfully? %}
+        <div class="s-contact-form__success">
+          {{ 'contact.form.post_success' | t | default: 'Thanks for reaching out! We\'ll get back to you soon.' }}
         </div>
-      {% endfor %}
+      {% else %}
+        <form class="s-contact-form__form" method="post" action="/contact" accept-charset="UTF-8">
+          <input type="hidden" name="form_type" value="contact">
+          <input type="hidden" name="utf8" value="✓">
+
+          <div class="s-contact-form__row">
+            <div class="s-contact-form__field">
+              <label for="contact-name-{{ section.id }}" class="s-contact-form__label">
+                {{ 'contact.form.name' | t | default: 'Name' }}
+              </label>
+              <input
+                type="text"
+                id="contact-name-{{ section.id }}"
+                name="contact[{{ 'contact.form.name' | t | default: 'name' }}]"
+                class="s-contact-form__input"
+                autocomplete="name"
+                required
+              >
+            </div>
+            <div class="s-contact-form__field">
+              <label for="contact-email-{{ section.id }}" class="s-contact-form__label">
+                {{ 'contact.form.email' | t | default: 'Email' }}
+              </label>
+              <input
+                type="email"
+                id="contact-email-{{ section.id }}"
+                name="contact[email]"
+                class="s-contact-form__input"
+                autocomplete="email"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="s-contact-form__field">
+            <label for="contact-phone-{{ section.id }}" class="s-contact-form__label">
+              {{ 'contact.form.phone' | t | default: 'Phone' }}
+            </label>
+            <input
+              type="tel"
+              id="contact-phone-{{ section.id }}"
+              name="contact[{{ 'contact.form.phone' | t | default: 'phone' }}]"
+              class="s-contact-form__input"
+              autocomplete="tel"
+            >
+          </div>
+
+          <div class="s-contact-form__field">
+            <label for="contact-message-{{ section.id }}" class="s-contact-form__label">
+              {{ 'contact.form.message' | t | default: 'Message' }}
+            </label>
+            <textarea
+              id="contact-message-{{ section.id }}"
+              name="contact[body]"
+              class="s-contact-form__textarea"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="c-btn c-btn--primary" style="align-self: flex-start;">
+            {{ 'contact.form.submit' | t | default: 'Send message' }}
+          </button>
+        </form>
+      {% endif %}
     </div>
   </div>
 </section>
 
 {% javascript %}
 class ContactFormSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-contact-form')) {
-  customElements.define('section-contact-form', ContactFormSection);
+if (!customElements.get('contact-form-section')) {
+  customElements.define('contact-form-section', ContactFormSection);
 }
 {% endjavascript %}

@@ -2,15 +2,62 @@
 {
   "name": "Search results",
   "tag": "section",
-  "class": "section-main-search",
+  "class": "s-main-search",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "templates": ["search"]
   },
-  "max_blocks": 16,
-  "settings": [],
-  "blocks": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "label": "Products per row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Results per page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "default": "3/4",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
+        { "value": "4/3", "label": "Landscape (4:3)" },
+        { "value": "4/5", "label": "Tall (4:5)" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Product card"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badges",
+      "label": "Show badges",
+      "default": true
+    }
+  ],
   "presets": [
     {
       "name": "Search results",
@@ -21,101 +68,178 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-main-search {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-main-search {
+  padding: var(--t-space-8) 0 var(--t-space-12);
 }
 
-.section-main-search .section__header {
+.s-main-search__header {
+  margin-bottom: var(--t-space-6);
+}
+
+.s-main-search__title {
+  font-size: var(--t-font-size-h1);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-3);
+}
+
+.s-main-search__form {
+  max-width: 500px;
+  margin-bottom: var(--t-space-6);
+}
+
+.s-main-search__form input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+}
+
+.s-main-search__form input:focus {
+  outline: none;
+  border-color: var(--t-border-strong);
+}
+
+.s-main-search__results-count {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+  margin-bottom: var(--t-space-4);
+}
+
+.s-main-search__grid {
+  display: grid;
+  gap: var(--t-grid-gutter);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .s-main-search__grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .s-main-search__grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .s-main-search__grid--cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+.s-main-search__empty {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  padding: var(--t-space-12) 0;
+  color: var(--t-text-muted);
 }
 
-.section-main-search .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+.s-main-search__empty-title {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  color: var(--t-text);
+  margin: 0 0 var(--t-space-3);
 }
 
-.section-main-search .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.section-main-search .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-main-search__pagination {
+  margin-top: var(--t-space-8);
+  display: flex;
+  justify-content: center;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _cols = section.settings.products_per_row
+  assign _per_page = section.settings.products_per_page
+  assign _ratio = section.settings.image_ratio
+  assign _show_vendor = section.settings.show_vendor
+  assign _show_badges = section.settings.show_badges
+
+  assign _grid_class = 's-main-search__grid'
+  assign _grid_class = _grid_class | append: ' s-main-search__grid--cols-' | append: _cols
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-main-search"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-main-search"
+  data-section-id="{{ section.id }}"
+  data-section-type="main-search"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
+  <div class="c-container">
+    <div class="s-main-search__header">
+      <h1 class="s-main-search__title">
+        {{ 'general.search.title' | t | default: 'Search' }}
+      </h1>
+      <p class="s-main-search__results-count">
+        {% if search.terms %}
+          {{ search.results_count }} {{ 'general.search.results_for' | t | default: 'results for' }} "{{ search.terms }}"
         {% endif %}
+      </p>
+    </div>
+
+    <form class="s-main-search__form" role="search" method="get" action="{{ routes.search_url }}">
+      <input
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'general.search.placeholder' | t | default: 'Search products...' }}"
+        aria-label="{{ 'general.search.placeholder' | t | default: 'Search products...' }}"
+        autofocus
+      >
+    </form>
+
+    {% if search.terms and search.results_count > 0 %}
+      {% paginate search.results by _per_page %}
+        <div class="{{ _grid_class }}">
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              {% assign _product = item %}
+              {% render 'component-product-card',
+                product: _product,
+                media_aspect: _ratio,
+                show_vendor: _show_vendor,
+                show_secondary_image: true,
+                show_badges: _show_badges,
+                image_size: 500
+              %}
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <div class="s-main-search__pagination">
+            <nav class="c-pagination" aria-label="Search pagination">
+              {% if paginate.previous %}
+                <a href="{{ paginate.previous.url }}" class="c-pagination__item">
+                  &larr; {{ 'general.pagination.previous' | t | default: 'Previous' }}
+                </a>
+              {% endif %}
+              <span class="c-pagination__item is-active">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+              {% if paginate.next %}
+                <a href="{{ paginate.next.url }}" class="c-pagination__item">
+                  {{ 'general.pagination.next' | t | default: 'Next' }} &rarr;
+                </a>
+              {% endif %}
+            </nav>
+          </div>
+        {% endif %}
+      {% endpaginate %}
+    {% elsif search.terms %}
+      <div class="s-main-search__empty">
+        <h2 class="s-main-search__empty-title">
+          {{ 'general.search.no_results' | t | default: 'No results found' }}
+        </h2>
+        <p>{{ 'general.search.no_results_text' | t | default: 'Try a different search term.' }}</p>
       </div>
     {% endif %}
-
-    <div class="blocks blocks--main-search">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-          {% endcase %}
-        </div>
-      {% endfor %}
-    </div>
   </div>
 </section>
 
 {% javascript %}
 class MainSearchSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-main-search')) {
-  customElements.define('section-main-search', MainSearchSection);
+if (!customElements.get('main-search-section')) {
+  customElements.define('main-search-section', MainSearchSection);
 }
 {% endjavascript %}

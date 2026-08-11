@@ -2,135 +2,344 @@
 {
   "name": "Article",
   "tag": "section",
-  "class": "section-main-article",
+  "class": "s-main-article",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "templates": ["article"]
   },
-  "max_blocks": 16,
-  "settings": [],
-  "blocks": [
+  "settings": [
     {
-      "type": "app",
-      "name": "App",
-      "limit": 16,
-      "settings": []
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "Show featured image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Show share buttons",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 560,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 720
     }
   ],
   "presets": [
     {
       "name": "Article",
-      "category": "Article"
+      "category": "Blog"
     }
   ]
 }
 {% endschema %}
 
 {% stylesheet %}
-.section-main-article {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-main-article {
+  padding: var(--t-space-8) 0 var(--t-space-12);
 }
 
-.section-main-article .section__header {
+.s-main-article__header {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
+  max-width: 720px;
+  margin: 0 auto var(--t-space-8);
 }
 
-.section-main-article .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
+.s-main-article__meta {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+  margin-bottom: var(--t-space-4);
 }
 
-.section-main-article .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
+.s-main-article__title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-4);
 }
 
-.section-main-article .container {
-  max-width: calc(var(--container-max-width) * 1px);
+.s-main-article__subtitle {
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-base);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.s-main-article__image {
+  margin: 0 auto var(--t-space-8);
+  max-width: 1000px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--t-surface);
+}
+
+.s-main-article__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-main-article__content {
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+  line-height: var(--t-line-height-relaxed);
+  font-size: 1.0625rem;
+}
+
+.s-main-article__content h1,
+.s-main-article__content h2,
+.s-main-article__content h3,
+.s-main-article__content h4 {
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: var(--t-space-8);
+  margin-bottom: var(--t-space-4);
+}
+
+.s-main-article__content h2 { font-size: 1.75rem; }
+.s-main-article__content h3 { font-size: 1.375rem; }
+.s-main-article__content h4 { font-size: 1.125rem; }
+
+.s-main-article__content p {
+  margin-bottom: var(--t-space-4);
+}
+
+.s-main-article__content a {
+  color: var(--t-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.s-main-article__content ul,
+.s-main-article__content ol {
+  margin-bottom: var(--t-space-4);
+  padding-left: var(--t-space-6);
+}
+
+.s-main-article__content li {
+  margin-bottom: var(--t-space-2);
+}
+
+.s-main-article__content blockquote {
+  border-left: 3px solid var(--t-border-strong);
+  padding-left: var(--t-space-5);
+  margin: var(--t-space-8) 0;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--t-text-muted);
+}
+
+.s-main-article__content img {
+  max-width: 100%;
+  height: auto;
+  margin: var(--t-space-6) 0;
+}
+
+.s-main-article__content hr {
+  border: none;
+  border-top: 1px solid var(--t-border);
+  margin: var(--t-space-10) 0;
+}
+
+.s-main-article__content code {
+  font-family: var(--t-font-mono);
+  font-size: 0.9em;
+  background: var(--t-surface);
+  padding: 2px 6px;
+}
+
+.s-main-article__tags {
+  max-width: 720px;
+  margin: var(--t-space-8) auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--t-space-2);
+}
+
+.s-main-article__tag {
+  font-size: var(--t-font-size-meta);
+  padding: 4px 10px;
+  border: 1px solid var(--t-border);
+  color: var(--t-text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  transition: all var(--t-transition-fast);
+}
+
+.s-main-article__tag:hover {
+  border-color: var(--t-border-strong);
+  color: var(--t-text);
+}
+
+.s-main-article__share {
+  max-width: 720px;
+  margin: var(--t-space-6) auto 0;
+  display: flex;
+  gap: var(--t-space-3);
+  align-items: center;
+}
+
+.s-main-article__share-label {
+  font-size: var(--t-font-size-meta);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-text-muted);
+}
+
+.s-main-article__share a {
+  color: var(--t-text-muted);
+  transition: color var(--t-transition-fast);
+}
+
+.s-main-article__share a:hover {
+  color: var(--t-text);
+}
+
+/* Back button */
+.s-main-article__back {
+  max-width: 720px;
+  margin: 0 auto var(--t-space-6);
+}
+
+.s-main-article__back a {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--t-space-2);
+  transition: color var(--t-transition-fast);
+}
+
+.s-main-article__back a:hover {
+  color: var(--t-text);
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _show_image = section.settings.show_featured_image
+  assign _show_author = section.settings.show_author
+  assign _show_date = section.settings.show_date
+  assign _show_tags = section.settings.show_tags
+  assign _show_share = section.settings.show_share
+  assign _max_width = section.settings.content_max_width
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-main-article"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-main-article"
+  data-section-id="{{ section.id }}"
+  data-section-type="main-article"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
+  <div class="c-container">
+    <div class="s-main-article__back">
+      <a href="{{ blog.url }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        {{ 'blog.general.back_to_blog' | t | default: 'Back to blog' }}
+      </a>
+    </div>
+
+    <header class="s-main-article__header">
+      <div class="s-main-article__meta">
+        {% if _show_date %}{{ article.published_at | date: "%B %d, %Y" }}{% endif %}
+        {% if _show_author and article.author %} · {{ article.author }}{% endif %}
+      </div>
+      <h1 class="s-main-article__title">{{ article.title | escape }}</h1>
+      {% if article.excerpt != blank %}
+        <p class="s-main-article__subtitle">{{ article.excerpt }}</p>
+      {% endif %}
+    </header>
+
+    {% if _show_image and article.image %}
+      <div class="s-main-article__image">
+        <img
+          src="{{ article.image | image_url: width: 1400 }}"
+          srcset="
+            {{ article.image | image_url: width: 700 }} 700w,
+            {{ article.image | image_url: width: 1000 }} 1000w,
+            {{ article.image | image_url: width: 1400 }} 1400w
+          "
+          sizes="(max-width: 767px) 100vw, 1000px"
+          alt="{{ article.image.alt | escape }}"
+          width="1400"
+          height="788"
+          loading="eager"
+        >
       </div>
     {% endif %}
 
-    <div class="blocks blocks--main-article">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'app' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      App
-    {% endif %}
-  </div>
-          {% endcase %}
-        </div>
-      {% endfor %}
+    <div class="s-main-article__content" style="max-width: {{ _max_width }}px;">
+      {{ article.content }}
     </div>
+
+    {% if _show_tags and article.tags.size > 0 %}
+      <div class="s-main-article__tags">
+        {% for tag in article.tags %}
+          <a href="{{ blog.url }}/tagged/{{ tag | handleize }}" class="s-main-article__tag">
+            {{ tag | escape }}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if _show_share %}
+      <div class="s-main-article__share">
+        <span class="s-main-article__share-label">Share</span>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ article.url | absolute_url | url_encode }}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">FB</a>
+        <a href="https://twitter.com/intent/tweet?text={{ article.title | url_encode }}&url={{ article.url | absolute_url | url_encode }}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">X</a>
+      </div>
+    {% endif %}
   </div>
 </section>
 
 {% javascript %}
 class MainArticleSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-main-article')) {
-  customElements.define('section-main-article', MainArticleSection);
+if (!customElements.get('main-article-section')) {
+  customElements.define('main-article-section', MainArticleSection);
 }
 {% endjavascript %}

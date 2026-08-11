@@ -1,11 +1,14 @@
 {
   "sections": {
-    "Activate Account": {
-      "type": "main-activate-account",
-      "settings": {}
+    "main": {
+      "type": "main-customer",
+      "settings": {
+        "centered": true,
+        "form_max_width": 440
+      }
     }
   },
   "order": [
-    "Activate Account"
+    "main"
   ]
 }

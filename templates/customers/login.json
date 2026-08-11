@@ -1,4 +1,14 @@
 {
-  "sections": {},
-  "order": []
+  "sections": {
+    "main": {
+      "type": "main-customer",
+      "settings": {
+        "centered": true,
+        "form_max_width": 440
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
 }

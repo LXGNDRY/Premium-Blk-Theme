@@ -1,11 +1,17 @@
 {
   "sections": {
-    "404": {
+    "main": {
       "type": "main-404",
-      "settings": {}
+      "settings": {
+        "heading": "Lost in the void.",
+        "text": "The page you're looking for doesn't exist or has been moved.",
+        "button_text": "Back to home",
+        "show_search": true,
+        "show_big_number": true
+      }
     }
   },
   "order": [
-    "404"
+    "main"
   ]
 }

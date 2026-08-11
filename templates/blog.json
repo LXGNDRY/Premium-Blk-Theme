@@ -1,11 +1,19 @@
 {
   "sections": {
-    "Blog": {
+    "main": {
       "type": "main-blog",
-      "settings": {}
+      "settings": {
+        "layout": "grid",
+        "posts_per_row": 3,
+        "posts_per_page": 12,
+        "show_image": true,
+        "show_author": true,
+        "show_date": true,
+        "show_excerpt": true
+      }
     }
   },
   "order": [
-    "Blog"
+    "main"
   ]
 }

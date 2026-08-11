@@ -1,0 +1,633 @@
+{% schema %}
+{
+  "name": "Customer account",
+  "tag": "section",
+  "class": "s-main-customer",
+  "enabled_on": {
+    "templates": ["customer"]
+  },
+  "limit": 1,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "centered",
+      "label": "Centered layout",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "form_max_width",
+      "label": "Form max width",
+      "min": 360,
+      "max": 520,
+      "step": 20,
+      "unit": "px",
+      "default": 440
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer account",
+      "category": "Customer"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-main-customer {
+  padding: var(--t-space-12) 0;
+}
+
+.s-main-customer__inner {
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.s-main-customer--left .s-main-customer__inner {
+  margin-left: 0;
+}
+
+.s-main-customer__title {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-6);
+  text-align: center;
+}
+
+.s-main-customer--left .s-main-customer__title {
+  text-align: left;
+}
+
+.s-main-customer__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
+}
+
+.s-main-customer__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+}
+
+.s-main-customer__label {
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.s-main-customer__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+  transition: border-color var(--t-transition-fast);
+}
+
+.s-main-customer__input:focus {
+  outline: none;
+  border-color: var(--t-border-strong);
+}
+
+.s-main-customer__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--t-space-3);
+}
+
+@media (max-width: 479px) {
+  .s-main-customer__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.s-main-customer__actions {
+  margin-top: var(--t-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+}
+
+.s-main-customer__link {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+  text-decoration: underline;
+  text-align: center;
+  transition: color var(--t-transition-fast);
+}
+
+.s-main-customer__link:hover {
+  color: var(--t-text);
+}
+
+.s-main-customer__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--t-space-4);
+  margin: var(--t-space-2) 0;
+  color: var(--t-text-muted);
+  font-size: var(--t-font-size-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.s-main-customer__divider::before,
+.s-main-customer__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--t-border);
+}
+
+/* Account page */
+.s-main-customer__account {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.s-main-customer__account-header {
+  margin-bottom: var(--t-space-6);
+}
+
+.s-main-customer__account-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--t-space-8);
+  align-items: start;
+}
+
+@media (max-width: 767px) {
+  .s-main-customer__account-grid {
+    grid-template-columns: 1fr;
+    gap: var(--t-space-6);
+  }
+}
+
+.s-main-customer__orders {
+  border: 1px solid var(--t-border);
+}
+
+.s-main-customer__orders-title {
+  padding: var(--t-space-4);
+  border-bottom: 1px solid var(--t-border);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.s-main-customer__order {
+  padding: var(--t-space-4);
+  border-bottom: 1px solid var(--t-border);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--t-space-4);
+}
+
+.s-main-customer__order:last-child {
+  border-bottom: none;
+}
+
+.s-main-customer__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-4);
+}
+
+.s-main-customer__card {
+  border: 1px solid var(--t-border);
+  padding: var(--t-space-4);
+}
+
+.s-main-customer__card-title {
+  font-weight: 700;
+  font-size: var(--t-font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--t-space-3);
+}
+
+.s-main-customer__card-content {
+  font-size: var(--t-font-size-small);
+  line-height: 1.6;
+  color: var(--t-text-muted);
+}
+
+/* Addresses */
+.s-main-customer__addresses {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.s-main-customer__addresses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--t-space-6);
+}
+
+@media (max-width: 767px) {
+  .s-main-customer__addresses-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.s-main-customer__address {
+  border: 1px solid var(--t-border);
+  padding: var(--t-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+}
+
+.s-main-customer__address-title {
+  font-weight: 700;
+  font-size: var(--t-font-size-base);
+  margin: 0;
+}
+
+.s-main-customer__address-body {
+  font-size: var(--t-font-size-small);
+  line-height: 1.6;
+  color: var(--t-text-muted);
+}
+
+.s-main-customer__address-actions {
+  display: flex;
+  gap: var(--t-space-3);
+  margin-top: auto;
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _centered = section.settings.centered
+  assign _max_width = section.settings.form_max_width
+
+  assign _section_class = 's-main-customer'
+  if _centered == false
+    assign _section_class = _section_class | append: ' s-main-customer--left'
+  endif
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="main-customer"
+>
+  <div class="c-container">
+
+    {% comment %} === LOGIN === {% endcomment %}
+    {% if template contains 'login' %}
+      <div class="s-main-customer__inner" style="max-width: {{ _max_width }}px;">
+        <h1 class="s-main-customer__title">{{ 'customer.login.title' | t | default: 'Sign in' }}</h1>
+        {%- form 'customer_login' -%}
+          <div class="s-main-customer__form">
+            <div class="s-main-customer__field">
+              <label for="CustomerEmail" class="s-main-customer__label">
+                {{ 'customer.login.email' | t | default: 'Email' }}
+              </label>
+              <input
+                type="email"
+                id="CustomerEmail"
+                name="customer[email]"
+                class="s-main-customer__input"
+                autocomplete="email"
+                required
+                autofocus
+              >
+            </div>
+            <div class="s-main-customer__field">
+              <label for="CustomerPassword" class="s-main-customer__label">
+                {{ 'customer.login.password' | t | default: 'Password' }}
+              </label>
+              <input
+                type="password"
+                id="CustomerPassword"
+                name="customer[password]"
+                class="s-main-customer__input"
+                autocomplete="current-password"
+                required
+              >
+            </div>
+            <div class="s-main-customer__actions">
+              <button type="submit" class="c-btn c-btn--primary c-btn--full">
+                {{ 'customer.login.submit' | t | default: 'Sign in' }}
+              </button>
+              <a href="{{ routes.account_reset_password_url }}" class="s-main-customer__link">
+                {{ 'customer.login.forgot_password' | t | default: 'Forgot your password?' }}
+              </a>
+            </div>
+            <div class="s-main-customer__divider">{{ 'customer.login.or' | t | default: 'Or' }}</div>
+            <a href="{{ routes.account_register_url }}" class="c-btn c-btn--ghost c-btn--full">
+              {{ 'customer.login.create_account' | t | default: 'Create account' }}
+            </a>
+            {%- if form.errors -%}
+              <p style="color: var(--t-accent-red, #ff3b30); font-size: var(--t-font-size-small); text-align: center;">
+                {{ form.errors.messages.first }}
+              </p>
+            {%- endif -%}
+          </div>
+        {%- endform -%}
+      </div>
+    {% endif %}
+
+    {% comment %} === REGISTER === {% endcomment %}
+    {% if template contains 'register' %}
+      <div class="s-main-customer__inner" style="max-width: {{ _max_width }}px;">
+        <h1 class="s-main-customer__title">{{ 'customer.register.title' | t | default: 'Create account' }}</h1>
+        {%- form 'create_customer' -%}
+          <div class="s-main-customer__form">
+            <div class="s-main-customer__row">
+              <div class="s-main-customer__field">
+                <label for="FirstName" class="s-main-customer__label">
+                  {{ 'customer.register.first_name' | t | default: 'First name' }}
+                </label>
+                <input
+                  type="text"
+                  id="FirstName"
+                  name="customer[first_name]"
+                  class="s-main-customer__input"
+                  autocomplete="given-name"
+                >
+              </div>
+              <div class="s-main-customer__field">
+                <label for="LastName" class="s-main-customer__label">
+                  {{ 'customer.register.last_name' | t | default: 'Last name' }}
+                </label>
+                <input
+                  type="text"
+                  id="LastName"
+                  name="customer[last_name]"
+                  class="s-main-customer__input"
+                  autocomplete="family-name"
+                >
+              </div>
+            </div>
+            <div class="s-main-customer__field">
+              <label for="Email" class="s-main-customer__label">
+                {{ 'customer.register.email' | t | default: 'Email' }}
+              </label>
+              <input
+                type="email"
+                id="Email"
+                name="customer[email]"
+                class="s-main-customer__input"
+                autocomplete="email"
+                required
+              >
+            </div>
+            <div class="s-main-customer__field">
+              <label for="CreatePassword" class="s-main-customer__label">
+                {{ 'customer.register.password' | t | default: 'Password' }}
+              </label>
+              <input
+                type="password"
+                id="CreatePassword"
+                name="customer[password]"
+                class="s-main-customer__input"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+            <div class="s-main-customer__actions">
+              <button type="submit" class="c-btn c-btn--primary c-btn--full">
+                {{ 'customer.register.submit' | t | default: 'Create account' }}
+              </button>
+              <a href="{{ routes.account_login_url }}" class="s-main-customer__link">
+                {{ 'customer.register.have_account' | t | default: 'Already have an account? Sign in' }}
+              </a>
+            </div>
+            {%- if form.errors -%}
+              <p style="color: var(--t-accent-red, #ff3b30); font-size: var(--t-font-size-small); text-align: center;">
+                {{ form.errors.messages.first }}
+              </p>
+            {%- endif -%}
+          </div>
+        {%- endform -%}
+      </div>
+    {% endif %}
+
+    {% comment %} === ACCOUNT (dashboard) === {% endcomment %}
+    {% if template contains 'account' and customer %}
+      <div class="s-main-customer__account">
+        <div class="s-main-customer__account-header">
+          <h1 class="s-main-customer__title" style="text-align: left;">
+            {{ 'customer.account.title' | t | default: 'Your account' }}
+          </h1>
+          <p style="color: var(--t-text-muted); margin: 0;">
+            {{ 'customer.account.greeting' | t: name: customer.first_name | default: 'Hi,' }}
+          </p>
+        </div>
+
+        <div class="s-main-customer__account-grid">
+          <div class="s-main-customer__orders">
+            <h3 class="s-main-customer__orders-title">
+              {{ 'customer.account.order_history' | t | default: 'Order history' }}
+            </h3>
+            {% if customer.orders.size > 0 %}
+              {% for order in customer.orders limit: 10 %}
+                <div class="s-main-customer__order">
+                  <div>
+                    <a href="{{ order.customer_url }}" style="color: var(--t-text); text-decoration: none; font-weight: 600;">
+                      {{ 'customer.account.order_number' | t | default: 'Order' }} #{{ order.name }}
+                    </a>
+                    <p style="font-size: var(--t-font-size-meta); color: var(--t-text-muted); margin: 4px 0 0;">
+                      {{ order.created_at | date: "%B %d, %Y" }}
+                    </p>
+                  </div>
+                  <div style="text-align: right;">
+                    <p style="font-family: var(--t-font-mono); font-weight: 600; margin: 0;">
+                      {{ order.total_price | money }}
+                    </p>
+                    <p style="font-size: var(--t-font-size-meta); color: var(--t-text-muted); margin: 4px 0 0;">
+                      {{ order.financial_status }}
+                    </p>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div style="padding: var(--t-space-5); text-align: center; color: var(--t-text-muted); font-size: var(--t-font-size-small);">
+                {{ 'customer.account.no_orders' | t | default: 'No orders yet.' }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="s-main-customer__sidebar">
+            <div class="s-main-customer__card">
+              <h3 class="s-main-customer__card-title">{{ 'customer.account.details' | t | default: 'Account details' }}</h3>
+              <div class="s-main-customer__card-content">
+                {{ customer.name }}<br>
+                {{ customer.email }}
+              </div>
+              <a href="{{ routes.account_addresses_url }}" style="font-size: var(--t-font-size-small); text-decoration: underline; color: var(--t-text); display: inline-block; margin-top: var(--t-space-3);">
+                {{ 'customer.account.view_addresses' | t | default: 'View addresses' }}
+              </a>
+            </div>
+            <a href="{{ routes.account_logout_url }}" class="c-btn c-btn--ghost c-btn--full c-btn--sm">
+              {{ 'customer.account.logout' | t | default: 'Sign out' }}
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% comment %} === ADDRESSES === {% endcomment %}
+    {% if template contains 'addresses' and customer %}
+      <div class="s-main-customer__addresses">
+        <div class="s-main-customer__account-header">
+          <h1 class="s-main-customer__title" style="text-align: left;">
+            {{ 'customer.addresses.title' | t | default: 'Your addresses' }}
+          </h1>
+          <a href="{{ routes.account_url }}" style="font-size: var(--t-font-size-small); color: var(--t-text-muted); text-decoration: underline;">
+            &larr; {{ 'customer.addresses.back_to_account' | t | default: 'Back to account' }}
+          </a>
+        </div>
+
+        <div class="s-main-customer__addresses-grid">
+          {% for address in customer.addresses %}
+            <div class="s-main-customer__address">
+              <h3 class="s-main-customer__address-title">
+                {% if address.first_name %}{{ address.first_name }} {{ address.last_name }}{% else %}{{ address.name }}{% endif %}
+                {% if address.id == customer.default_address.id %}
+                  <span style="font-size: var(--t-font-size-meta); color: var(--t-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-left: var(--t-space-2);">
+                    {{ 'customer.addresses.default' | t | default: 'Default' }}
+                  </span>
+                {% endif %}
+              </h3>
+              <div class="s-main-customer__address-body">
+                {{ address.address1 }}<br>
+                {% if address.address2 %}{{ address.address2 }}<br>{% endif %}
+                {{ address.city }}, {{ address.province }} {{ address.zip }}<br>
+                {{ address.country }}
+              </div>
+              <div class="s-main-customer__address-actions">
+                <button type="button" class="c-btn c-btn--ghost c-btn--sm">
+                  {{ 'customer.addresses.edit' | t | default: 'Edit' }}
+                </button>
+                <button type="button" class="c-btn c-btn--ghost c-btn--sm">
+                  {{ 'customer.addresses.delete' | t | default: 'Delete' }}
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+
+          {% if customer.addresses.size == 0 %}
+            <p style="grid-column: 1 / -1; color: var(--t-text-muted); text-align: center; padding: var(--t-space-8) 0;">
+              {{ 'customer.addresses.none' | t | default: 'No addresses saved yet.' }}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% comment %} === RESET PASSWORD === {% endcomment %}
+    {% if template contains 'reset_password' %}
+      <div class="s-main-customer__inner" style="max-width: {{ _max_width }}px;">
+        <h1 class="s-main-customer__title">{{ 'customer.reset_password.title' | t | default: 'Reset password' }}</h1>
+        {%- form 'reset_customer_password' -%}
+          <div class="s-main-customer__form">
+            <div class="s-main-customer__field">
+              <label for="ResetPassword" class="s-main-customer__label">
+                {{ 'customer.reset_password.new_password' | t | default: 'New password' }}
+              </label>
+              <input
+                type="password"
+                id="ResetPassword"
+                name="customer[password]"
+                class="s-main-customer__input"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+            <div class="s-main-customer__field">
+              <label for="ResetPasswordConfirm" class="s-main-customer__label">
+                {{ 'customer.reset_password.confirm' | t | default: 'Confirm password' }}
+              </label>
+              <input
+                type="password"
+                id="ResetPasswordConfirm"
+                name="customer[password_confirmation]"
+                class="s-main-customer__input"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+            <div class="s-main-customer__actions">
+              <button type="submit" class="c-btn c-btn--primary c-btn--full">
+                {{ 'customer.reset_password.submit' | t | default: 'Reset password' }}
+              </button>
+            </div>
+          </div>
+        {%- endform -%}
+      </div>
+    {% endif %}
+
+    {% comment %} === ACTIVATE ACCOUNT === {% endcomment %}
+    {% if template contains 'activate_account' %}
+      <div class="s-main-customer__inner" style="max-width: {{ _max_width }}px;">
+        <h1 class="s-main-customer__title">{{ 'customer.activate.title' | t | default: 'Activate your account' }}</h1>
+        {%- form 'activate_customer_password' -%}
+          <div class="s-main-customer__form">
+            <div class="s-main-customer__field">
+              <label for="ActivatePassword" class="s-main-customer__label">
+                {{ 'customer.activate.password' | t | default: 'Password' }}
+              </label>
+              <input
+                type="password"
+                id="ActivatePassword"
+                name="customer[password]"
+                class="s-main-customer__input"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+            <div class="s-main-customer__field">
+              <label for="ActivatePasswordConfirm" class="s-main-customer__label">
+                {{ 'customer.activate.confirm' | t | default: 'Confirm password' }}
+              </label>
+              <input
+                type="password"
+                id="ActivatePasswordConfirm"
+                name="customer[password_confirmation]"
+                class="s-main-customer__input"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+            <div class="s-main-customer__actions">
+              <button type="submit" class="c-btn c-btn--primary c-btn--full">
+                {{ 'customer.activate.submit' | t | default: 'Activate account' }}
+              </button>
+            </div>
+          </div>
+        {%- endform -%}
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% javascript %}
+class MainCustomerSection extends HTMLElement {
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
+}
+
+if (!customElements.get('main-customer-section')) {
+  customElements.define('main-customer-section', MainCustomerSection);
+}
+{% endjavascript %}
