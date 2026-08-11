@@ -1,0 +1,219 @@
+{% schema %}
+{
+  "name": "Recently viewed",
+  "tag": "section",
+  "class": "s-recently-viewed",
+  "enabled_on": {
+    "groups": ["*"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recently viewed"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "label": "Products per row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Number of products",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "default": "3/4",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
+        { "value": "4/3", "label": "Landscape (4:3)" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badges",
+      "label": "Show badges",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently viewed",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-recently-viewed {
+  padding: var(--t-space-10) 0;
+  border-top: 1px solid var(--t-border);
+}
+
+.s-recently-viewed__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-6);
+  text-align: center;
+}
+
+.s-recently-viewed__grid {
+  display: grid;
+  gap: var(--t-grid-gutter);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .s-recently-viewed__grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .s-recently-viewed__grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .s-recently-viewed__grid--cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+.s-recently-viewed__empty {
+  display: none;
+  text-align: center;
+  color: var(--t-text-muted);
+  padding: var(--t-space-6) 0;
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _cols = section.settings.products_per_row
+  assign _limit = section.settings.products_to_show
+  assign _ratio = section.settings.image_ratio
+  assign _show_vendor = section.settings.show_vendor
+  assign _show_badges = section.settings.show_badges
+
+  assign _grid_class = 's-recently-viewed__grid'
+  assign _grid_class = _grid_class | append: ' s-recently-viewed__grid--cols-' | append: _cols
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="s-recently-viewed"
+  data-section-id="{{ section.id }}"
+  data-section-type="recently-viewed"
+  data-limit="{{ _limit }}"
+  data-ratio="{{ _ratio }}"
+  data-show-vendor="{% if _show_vendor %}true{% else %}false{% endif %}"
+  data-show-badges="{% if _show_badges %}true{% else %}false{% endif %}"
+>
+  <div class="c-container">
+    <h2 class="s-recently-viewed__heading">{{ _heading | escape }}</h2>
+
+    <div class="{{ _grid_class }}" data-recently-viewed-grid>
+      {% comment %} Populated by JS from localStorage {% endcomment %}
+    </div>
+
+    <div class="s-recently-viewed__empty" data-recently-viewed-empty>
+      <p>{{ 'sections.recently_viewed.empty' | t | default: 'You haven\'t viewed any products yet.' }}</p>
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class RecentlyViewedSection extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.cacheDOM();
+    this.render();
+  }
+
+  cacheDOM() {
+    this.grid = this.querySelector('[data-recently-viewed-grid]');
+    this.empty = this.querySelector('[data-recently-viewed-empty]');
+    this.limit = parseInt(this.dataset.limit, 10) || 4;
+    this.ratio = this.dataset.ratio || '3/4';
+    this.showVendor = this.dataset.showVendor === 'true';
+    this.showBadges = this.dataset.showBadges === 'true';
+  }
+
+  render() {
+    const items = window.__theme?.RecentlyViewed?.getAll() || [];
+    if (!items || items.length === 0) {
+      if (this.empty) this.empty.style.display = 'block';
+      return;
+    }
+
+    const _this = this;
+    const html = items.slice(0, this.limit).map((item) => {
+      const imgHtml = item.image
+        ? `<img src="${_this._resizeImage(item.image, 500)}" alt="${_this._escape(item.title)}" width="500" height="667" loading="lazy">`
+        : '';
+      return `
+        <article class="c-product-card">
+          <a href="${item.url}" class="c-product-card__media" style="aspect-ratio: ${_this.ratio};">
+            ${imgHtml}
+          </a>
+          <div class="c-product-card__info">
+            <h3 class="c-product-card__title">
+              <a href="${item.url}">${_this._escape(item.title)}</a>
+            </h3>
+            <div class="c-price">
+              <span class="c-price__regular">${_this._formatMoney(item.price)}</span>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    this.grid.innerHTML = html;
+  }
+
+  _resizeImage(url, width) {
+    // Convert Shopify CDN URL to requested width
+    return url.replace(/_(?:[0-9]+x[0-9]+|[0-9]+)\.(jpg|png|webp|jpeg)/, `_${width}x${Math.round(width * 1.333)}.$1`)
+      || url;
+  }
+
+  _formatMoney(cents) {
+    if (window.__theme?.formatMoney) return window.__theme.formatMoney(cents);
+    return `$${(cents / 100).toFixed(2)}`;
+  }
+
+  _escape(s) {
+    const div = document.createElement('div');
+    div.textContent = s || '';
+    return div.innerHTML;
+  }
+
+  onBlockSelect() {}
+  onBlockDeselect() {}
+}
+
+if (!customElements.get('recently-viewed-section')) {
+  customElements.define('recently-viewed-section', RecentlyViewedSection);
+}
+{% endjavascript %}

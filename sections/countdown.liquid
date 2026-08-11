@@ -1,0 +1,378 @@
+{% schema %}
+{
+  "name": "Countdown timer",
+  "tag": "section",
+  "class": "s-countdown",
+  "enabled_on": {
+    "groups": ["*"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Limited time drop"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Countdown"
+    },
+    {
+      "type": "text",
+      "id": "date",
+      "label": "End date",
+      "default": "",
+      "info": "Format: 2024-12-31 23:59:59"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_days",
+      "label": "Show days",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hours",
+      "label": "Show hours",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_minutes",
+      "label": "Show minutes",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_seconds",
+      "label": "Show seconds",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "expired_message",
+      "label": "Expired message",
+      "default": "This drop has ended."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "inverted",
+      "label": "Inverted (dark background)",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Text alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Countdown timer",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-countdown {
+  padding: var(--t-space-10) 0;
+}
+
+.s-countdown--inverted {
+  background: var(--t-text);
+  color: var(--t-bg);
+}
+
+.s-countdown__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--t-space-6);
+}
+
+.s-countdown--align-left .s-countdown__inner { align-items: flex-start; text-align: left; }
+.s-countdown--align-right .s-countdown__inner { align-items: flex-end; text-align: right; }
+
+.s-countdown__heading {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.s-countdown__subheading {
+  font-size: var(--t-font-size-base);
+  color: var(--t-text-muted);
+  margin: 0;
+  max-width: 500px;
+}
+
+.s-countdown--inverted .s-countdown__subheading {
+  color: rgba(255,255,255,0.7);
+}
+
+.s-countdown__timer {
+  display: flex;
+  gap: var(--t-space-4);
+  justify-content: center;
+}
+
+.s-countdown--align-left .s-countdown__timer { justify-content: flex-start; }
+.s-countdown--align-right .s-countdown__timer { justify-content: flex-end; }
+
+.s-countdown__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--t-space-2);
+  min-width: 60px;
+}
+
+.s-countdown__number {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  font-family: var(--t-font-mono);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-countdown__label {
+  font-size: var(--t-font-size-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--t-text-muted);
+}
+
+.s-countdown--inverted .s-countdown__label {
+  color: rgba(255,255,255,0.6);
+}
+
+.s-countdown__expired {
+  font-size: var(--t-font-size-h3);
+  font-weight: 700;
+  padding: var(--t-space-6);
+}
+
+.s-countdown__button {
+  margin-top: var(--t-space-2);
+}
+
+@media (max-width: 479px) {
+  .s-countdown__timer {
+    gap: var(--t-space-2);
+  }
+  .s-countdown__unit {
+    min-width: 48px;
+  }
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _subheading = section.settings.subheading
+  assign _btn_text = section.settings.button_text
+  assign _btn_link = section.settings.button_link
+  assign _date = section.settings.date
+  assign _expired_msg = section.settings.expired_message
+  assign _inverted = section.settings.inverted
+  assign _align = section.settings.align
+  assign _show_days = section.settings.show_days
+  assign _show_hours = section.settings.show_hours
+  assign _show_minutes = section.settings.show_minutes
+  assign _show_seconds = section.settings.show_seconds
+
+  assign _section_class = 's-countdown'
+  if _inverted
+    assign _section_class = _section_class | append: ' s-countdown--inverted'
+  endif
+  assign _section_class = _section_class | append: ' s-countdown--align-' | append: _align
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="{{ _section_class }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="countdown"
+  data-end-date="{{ _date | escape }}"
+  data-show-days="{% if _show_days %}true{% else %}false{% endif %}"
+  data-show-hours="{% if _show_hours %}true{% else %}false{% endif %}"
+  data-show-minutes="{% if _show_minutes %}true{% else %}false{% endif %}"
+  data-show-seconds="{% if _show_seconds %}true{% else %}false{% endif %}"
+>
+  <div class="c-container">
+    <div class="s-countdown__inner">
+      {% if _heading != blank %}
+        <h2 class="s-countdown__heading">{{ _heading | escape }}</h2>
+      {% endif %}
+      {% if _subheading != blank %}
+        <p class="s-countdown__subheading">{{ _subheading | escape }}</p>
+      {% endif %}
+
+      <div class="s-countdown__timer" data-countdown-timer>
+        {% if _show_days %}
+          <div class="s-countdown__unit">
+            <span class="s-countdown__number" data-days>00</span>
+            <span class="s-countdown__label">{{ 'general.days' | t | default: 'Days' }}</span>
+          </div>
+        {% endif %}
+        {% if _show_hours %}
+          <div class="s-countdown__unit">
+            <span class="s-countdown__number" data-hours>00</span>
+            <span class="s-countdown__label">{{ 'general.hours' | t | default: 'Hours' }}</span>
+          </div>
+        {% endif %}
+        {% if _show_minutes %}
+          <div class="s-countdown__unit">
+            <span class="s-countdown__number" data-minutes>00</span>
+            <span class="s-countdown__label">{{ 'general.minutes' | t | default: 'Min' }}</span>
+          </div>
+        {% endif %}
+        {% if _show_seconds %}
+          <div class="s-countdown__unit">
+            <span class="s-countdown__number" data-seconds>00</span>
+            <span class="s-countdown__label">{{ 'general.seconds' | t | default: 'Sec' }}</span>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if _btn_text != blank and _btn_link != blank %}
+        <a href="{{ _btn_link }}" class="c-btn c-btn--primary s-countdown__button">
+          {{ _btn_text | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class CountdownSection extends HTMLElement {
+  constructor() {
+    super();
+    this._interval = null;
+    this._target = null;
+    this._expired = false;
+  }
+
+  connectedCallback() {
+    this.cacheDOM();
+    this.init();
+  }
+
+  disconnectedCallback() {
+    this._stop();
+  }
+
+  cacheDOM() {
+    this.timer = this.querySelector('[data-countdown-timer]');
+    this.daysEl = this.querySelector('[data-days]');
+    this.hoursEl = this.querySelector('[data-hours]');
+    this.minutesEl = this.querySelector('[data-minutes]');
+    this.secondsEl = this.querySelector('[data-seconds]');
+  }
+
+  init() {
+    const endDateStr = this.dataset.endDate;
+    if (!endDateStr) return;
+
+    // Parse date (handle various formats)
+    const target = new Date(endDateStr.replace(' ', 'T'));
+    if (isNaN(target.getTime())) {
+      // Try alternate format
+      const alt = new Date(endDateStr);
+      if (isNaN(alt.getTime())) return;
+      this._target = alt;
+    } else {
+      this._target = target;
+    }
+
+    this._tick();
+    this._start();
+  }
+
+  _start() {
+    this._stop();
+    this._interval = setInterval(() => this._tick(), 1000);
+  }
+
+  _stop() {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = null;
+    }
+  }
+
+  _tick() {
+    if (!this._target) return;
+
+    const now = new Date();
+    const diff = this._target - now;
+
+    if (diff <= 0) {
+      this._expired = true;
+      this._stop();
+      this._showExpired();
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    if (this.daysEl) this.daysEl.textContent = String(days).padStart(2, '0');
+    if (this.hoursEl) this.hoursEl.textContent = String(hours).padStart(2, '0');
+    if (this.minutesEl) this.minutesEl.textContent = String(minutes).padStart(2, '0');
+    if (this.secondsEl) this.secondsEl.textContent = String(seconds).padStart(2, '0');
+  }
+
+  _showExpired() {
+    if (!this.timer) return;
+    const msg = this.dataset.expiredMessage || 'This drop has ended.';
+    this.timer.innerHTML = `<div class="s-countdown__expired">${msg}</div>`;
+  }
+
+  onBlockSelect() {}
+  onBlockDeselect() {}
+}
+
+if (!customElements.get('countdown-section')) {
+  customElements.define('countdown-section', CountdownSection);
+}
+{% endjavascript %}

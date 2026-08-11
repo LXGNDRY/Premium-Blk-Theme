@@ -1,0 +1,247 @@
+{% schema %}
+{
+  "name": "Product reviews",
+  "tag": "section",
+  "class": "s-product-reviews",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Customer reviews"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Review source",
+      "default": "metafield",
+      "options": [
+        { "value": "metafield", "label": "Metafields" },
+        { "value": "app", "label": "Reviews app (embed)" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "app_embed",
+      "label": "App embed ID",
+      "default": "",
+      "info": "Product Reviews app widget ID"
+    },
+    {
+      "type": "header",
+      "content": "Metafield-based reviews"
+    },
+    {
+      "type": "text",
+      "id": "metafield_rating",
+      "label": "Rating metafield",
+      "default": "reviews.avg_rating",
+      "info": "Namespace.key format"
+    },
+    {
+      "type": "text",
+      "id": "metafield_count",
+      "label": "Review count metafield",
+      "default": "reviews.rating_count"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_rating",
+      "label": "Show star rating summary",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_review_form",
+      "label": "Show review form (Shopify)",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product reviews",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-product-reviews {
+  padding: var(--t-space-10) 0;
+  border-top: 1px solid var(--t-border);
+}
+
+.s-product-reviews__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-6);
+  text-align: center;
+}
+
+/* Rating summary */
+.s-product-reviews__summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--t-space-5);
+  margin-bottom: var(--t-space-8);
+  flex-wrap: wrap;
+}
+
+.s-product-reviews__stars {
+  display: flex;
+  gap: 2px;
+  color: var(--t-accent-red, #ff3b30);
+}
+
+.s-product-reviews__stars svg {
+  width: 20px;
+  height: 20px;
+}
+
+.s-product-reviews__stars--empty {
+  color: var(--t-border);
+}
+
+.s-product-reviews__score {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--t-font-mono);
+  line-height: 1;
+}
+
+.s-product-reviews__count {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+}
+
+/* Empty state */
+.s-product-reviews__empty {
+  text-align: center;
+  color: var(--t-text-muted);
+  padding: var(--t-space-6) 0;
+}
+
+/* App embed */
+.s-product-reviews__app {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.s-product-reviews__app iframe {
+  width: 100%;
+  min-height: 400px;
+  border: none;
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _source = section.settings.source
+  assign _app_embed = section.settings.app_embed
+  assign _enable_rating = section.settings.enable_rating
+  assign _show_form = section.settings.show_review_form
+
+  assign _rating = 0
+  assign _count = 0
+  if _source == 'metafield'
+    assign _mf_parts = section.settings.metafield_rating | split: '.'
+    if _mf_parts.size == 2
+      assign _rating = product.metafields[_mf_parts[0]][_mf_parts[1]] | default: 0
+    endif
+    assign _mf_parts2 = section.settings.metafield_count | split: '.'
+    if _mf_parts2.size == 2
+      assign _count = product.metafields[_mf_parts2[0]][_mf_parts2[1]] | default: 0
+    endif
+  endif
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="s-product-reviews"
+  data-section-id="{{ section.id }}"
+  data-section-type="product-reviews"
+>
+  <div class="c-container">
+    <h2 class="s-product-reviews__heading">{{ _heading | escape }}</h2>
+
+    {% if _source == 'metafield' %}
+      {% if _enable_rating and _rating > 0 %}
+        <div class="s-product-reviews__summary">
+          <div class="s-product-reviews__stars" role="img" aria-label="Rated {{ _rating }} out of 5">
+            {% assign _rating_floor = _rating | floor %}
+            {% assign _full = _rating_floor %}
+            {% assign _has_half = false %}
+            {% assign _diff = _rating | minus: _rating_floor %}
+            {% if _diff >= 0.25 and _diff < 0.75 %}
+              {% assign _has_half = true %}
+            {% elsif _diff >= 0.75 %}
+              {% assign _full = _full | plus: 1 %}
+            {% endif %}
+            {% for i in (1..5) %}
+              {% if forloop.index <= _full %}
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {% elsif _has_half and forloop.index == _full | plus: 1 %}
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="opacity:0.5;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {% else %}
+                <svg viewBox="0 0 24 24" fill="var(--t-border)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <span class="s-product-reviews__score">{{ _rating }}</span>
+          {% if _count > 0 %}
+            <span class="s-product-reviews__count">
+              {{ _count }} {{ 'general.reviews' | t | default: 'reviews' }}
+            </span>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="s-product-reviews__empty">
+          <p>{{ 'sections.reviews.no_reviews' | t | default: 'No reviews yet. Be the first to review this product.' }}</p>
+        </div>
+      {% endif %}
+
+      {% if _show_form %}
+        <div id="ShopifyProductReviews" style="max-width: 800px; margin: 0 auto;">
+          <div id="shopify-product-reviews" data-id="{{ product.id }}">
+            {{ product.metafields.reviews.reviews }}
+          </div>
+        </div>
+      {% endif %}
+
+    {% elsif _source == 'app' and _app_embed != blank %}
+      <div class="s-product-reviews__app">
+        <div id="shopify-product-reviews" data-id="{{ product.id }}" data-widget-id="{{ _app_embed }}">
+          {{ product.metafields.reviews.reviews }}
+        </div>
+      </div>
+    {% else %}
+      <div class="s-product-reviews__empty">
+        <p>{{ 'sections.reviews.not_configured' | t | default: 'Configure the review source in section settings.' }}</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% javascript %}
+class ProductReviewsSection extends HTMLElement {
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {}
+  onBlockSelect() {}
+  onBlockDeselect() {}
+}
+
+if (!customElements.get('product-reviews-section')) {
+  customElements.define('product-reviews-section', ProductReviewsSection);
+}
+{% endjavascript %}

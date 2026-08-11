@@ -90,27 +90,27 @@
       --t-color-orange-500: #ff9500;
 
       /* === Level 2: Semantic (dark mode = default) === */
-      --t-bg: var(--t-color-black);
-      --t-surface: var(--t-color-gray-950);
+      --t-bg: {{ settings.color_bg_dark | default: '#000000' }};
+      --t-surface: {{ settings.color_surface_dark | default: '#0a0a0a' }};
       --t-surface-2: var(--t-color-gray-900);
-      --t-border: var(--t-color-gray-800);
-      --t-border-strong: var(--t-color-white);
-      --t-text: var(--t-color-white);
-      --t-text-muted: var(--t-color-gray-400);
+      --t-border: {{ settings.color_border_dark | default: '#262626' }};
+      --t-border-strong: {{ settings.color_border_strong_dark | default: '#525252' }};
+      --t-text: {{ settings.color_text_dark | default: '#ffffff' }};
+      --t-text-muted: {{ settings.color_text_muted_dark | default: '#a3a3a3' }};
       --t-text-subtle: var(--t-color-gray-600);
-      --t-accent: var(--t-color-white);
-      --t-accent-red: var(--t-color-red-500);
-      --t-sale: var(--t-color-red-500);
+      --t-accent: {{ settings.color_primary | default: '#ff3b30' }};
+      --t-accent-red: {{ settings.color_primary | default: '#ff3b30' }};
+      --t-sale: {{ settings.color_primary | default: '#ff3b30' }};
       --t-success: var(--t-color-green-500);
       --t-warning: var(--t-color-orange-500);
       --t-error: var(--t-color-red-500);
 
       /* === Typography === */
-      --t-font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --t-font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --t-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+      --t-font-body: {{ settings.font_body.family | default: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }};
+      --t-font-display: {{ settings.font_heading.family | default: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }};
+      --t-font-mono: {{ settings.font_mono.family | default: "ui-monospace, SFMono-Regular, Menlo, Monaco, monospace" }};
 
-      --t-font-size-base: 16px;
+      --t-font-size-base: {{ settings.font_size_base | default: 16 }}px;
       --t-font-size-display: clamp(3rem, 8vw, 7rem);
       --t-font-size-h1: clamp(2rem, 5vw, 4rem);
       --t-font-size-h2: clamp(1.5rem, 3vw, 2.5rem);
@@ -156,15 +156,16 @@
 
     /* Light mode (when user explicitly chooses) */
     :root[data-theme="light"] {
-      --t-bg: var(--t-color-white);
-      --t-surface: var(--t-color-gray-50);
+      --t-bg: {{ settings.color_bg_light | default: '#ffffff' }};
+      --t-surface: {{ settings.color_surface_light | default: '#fafafa' }};
       --t-surface-2: var(--t-color-gray-100);
-      --t-border: var(--t-color-gray-200);
-      --t-border-strong: var(--t-color-black);
-      --t-text: var(--t-color-black);
-      --t-text-muted: var(--t-color-gray-600);
+      --t-border: {{ settings.color_border_light | default: '#e5e5e5' }};
+      --t-border-strong: {{ settings.color_border_strong_light | default: '#a3a3a3' }};
+      --t-text: {{ settings.color_text_light | default: '#000000' }};
+      --t-text-muted: {{ settings.color_text_muted_light | default: '#525252' }};
       --t-text-subtle: var(--t-color-gray-400);
-      --t-accent: var(--t-color-black);
+      --t-accent: {{ settings.color_primary | default: '#ff3b30' }};
+      --t-accent-red: {{ settings.color_primary | default: '#ff3b30' }};
       --t-success: #248a3d;
       --t-warning: #b26a00;
       --t-error: #d70015;
@@ -173,15 +174,16 @@
     /* Respect system preference when no user choice stored */
     @media (prefers-color-scheme: light) {
       :root:not([data-theme]) {
-        --t-bg: var(--t-color-white);
-        --t-surface: var(--t-color-gray-50);
+        --t-bg: {{ settings.color_bg_light | default: '#ffffff' }};
+        --t-surface: {{ settings.color_surface_light | default: '#fafafa' }};
         --t-surface-2: var(--t-color-gray-100);
-        --t-border: var(--t-color-gray-200);
-        --t-border-strong: var(--t-color-black);
-        --t-text: var(--t-color-black);
-        --t-text-muted: var(--t-color-gray-600);
+        --t-border: {{ settings.color_border_light | default: '#e5e5e5' }};
+        --t-border-strong: {{ settings.color_border_strong_light | default: '#a3a3a3' }};
+        --t-text: {{ settings.color_text_light | default: '#000000' }};
+        --t-text-muted: {{ settings.color_text_muted_light | default: '#525252' }};
         --t-text-subtle: var(--t-color-gray-400);
-        --t-accent: var(--t-color-black);
+        --t-accent: {{ settings.color_primary | default: '#ff3b30' }};
+        --t-accent-red: {{ settings.color_primary | default: '#ff3b30' }};
         --t-success: #248a3d;
         --t-warning: #b26a00;
         --t-error: #d70015;

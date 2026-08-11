@@ -1,0 +1,329 @@
+{% schema %}
+{
+  "name": "Lookbook",
+  "tag": "section",
+  "class": "s-lookbook",
+  "enabled_on": {
+    "groups": ["*"]
+  },
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Lookbook"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout style",
+      "default": "masonry",
+      "options": [
+        { "value": "masonry", "label": "Masonry" },
+        { "value": "grid", "label": "Grid" },
+        { "value": "editorial", "label": "Editorial (large feature)" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between images",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "show_captions",
+      "label": "Show image captions",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Lookbook image",
+      "limit": 6,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "" },
+        { "type": "url", "id": "link", "label": "Link (optional)" },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Size (masonry/editorial)",
+          "default": "medium",
+          "options": [
+            { "value": "small", "label": "Small" },
+            { "value": "medium", "label": "Medium" },
+            { "value": "large", "label": "Large" },
+            { "value": "tall", "label": "Tall" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook",
+      "category": "Image",
+      "blocks": [
+        { "type": "image", "settings": { "caption": "Look 1" } },
+        { "type": "image", "settings": { "caption": "Look 2" } },
+        { "type": "image", "settings": { "caption": "Look 3" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-lookbook {
+  padding: var(--t-space-10) 0;
+}
+
+@media (min-width: 768px) {
+  .s-lookbook {
+    padding: var(--t-space-12) 0;
+  }
+}
+
+.s-lookbook__header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto var(--t-space-8);
+}
+
+.s-lookbook__heading {
+  font-size: var(--t-font-size-h1);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--t-space-3);
+  text-transform: uppercase;
+}
+
+.s-lookbook__subheading {
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+/* Masonry */
+.s-lookbook__gallery {
+  columns: var(--lookbook-cols, 3);
+  column-gap: var(--lookbook-gap, 12px);
+}
+
+.s-lookbook__gallery-item {
+  break-inside: avoid;
+  margin-bottom: var(--lookbook-gap, 12px);
+  position: relative;
+  overflow: hidden;
+  background: var(--t-surface);
+}
+
+.s-lookbook__gallery-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform var(--t-transition-base);
+}
+
+.s-lookbook__gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+/* Grid */
+.s-lookbook--grid .s-lookbook__gallery {
+  columns: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--lookbook-gap, 12px);
+}
+
+.s-lookbook--grid .s-lookbook__gallery-item {
+  margin-bottom: 0;
+}
+
+.s-lookbook--grid .s-lookbook__gallery-item img {
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  height: 100%;
+}
+
+/* Editorial */
+.s-lookbook--editorial .s-lookbook__gallery {
+  columns: auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: auto;
+  gap: var(--lookbook-gap, 12px);
+}
+
+.s-lookbook--editorial .s-lookbook__gallery-item:first-child {
+  grid-row: span 2;
+}
+
+.s-lookbook--editorial .s-lookbook__gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 767px) {
+  .s-lookbook__gallery {
+    columns: var(--lookbook-cols-mobile, 2);
+  }
+
+  .s-lookbook--grid .s-lookbook__gallery,
+  .s-lookbook--editorial .s-lookbook__gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 479px) {
+  .s-lookbook__gallery {
+    columns: 1;
+  }
+
+  .s-lookbook--grid .s-lookbook__gallery,
+  .s-lookbook--editorial .s-lookbook__gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Caption */
+.s-lookbook__caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--t-space-4);
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: #fff;
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all var(--t-transition-base);
+}
+
+.s-lookbook__gallery-item:hover .s-lookbook__caption,
+.s-lookbook__caption.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _heading = section.settings.heading
+  assign _subheading = section.settings.subheading
+  assign _layout = section.settings.layout
+  assign _gap = section.settings.gap
+  assign _show_captions = section.settings.show_captions
+
+  assign _section_class = 's-lookbook'
+  assign _section_class = _section_class | append: ' s-lookbook--' | append: _layout
+
+  assign _inline_style = '--lookbook-gap: ' | append: _gap | append: 'px;'
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="{{ _section_class }}"
+  style="{{ _inline_style }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="lookbook"
+>
+  <div class="c-container">
+    {% if _heading != blank %}
+      <div class="s-lookbook__header">
+        <h2 class="s-lookbook__heading">{{ _heading | escape }}</h2>
+        {% if _subheading != blank %}
+          <p class="s-lookbook__subheading">{{ _subheading | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="s-lookbook__gallery">
+      {% for block in section.blocks %}
+        {% if block.type == 'image' and block.settings.image %}
+          {% if block.settings.link != blank %}
+            <a
+              href="{{ block.settings.link }}"
+              class="s-lookbook__gallery-item"
+              data-block-id="{{ block.id }}"
+              aria-label="{{ block.settings.caption | default: 'Lookbook image' | escape }}"
+            >
+          {% else %}
+            <figure class="s-lookbook__gallery-item" data-block-id="{{ block.id }}">
+          {% endif %}
+
+            <img
+              src="{{ block.settings.image | image_url: width: 800 }}"
+              srcset="
+                {{ block.settings.image | image_url: width: 400 }} 400w,
+                {{ block.settings.image | image_url: width: 800 }} 800w,
+                {{ block.settings.image | image_url: width: 1200 }} 1200w
+              "
+              sizes="(max-width: 767px) 50vw, 33vw"
+              alt="{{ block.settings.image.alt | default: block.settings.caption | escape }}"
+              loading="lazy"
+            >
+
+            {% if _show_captions and block.settings.caption != blank %}
+              <figcaption class="s-lookbook__caption">
+                {{ block.settings.caption | escape }}
+              </figcaption>
+            {% endif %}
+
+          {% if block.settings.link != blank %}</a>{% else %}</figure>{% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class LookbookSection extends HTMLElement {
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+
+  init() {
+    // Show captions on mobile (no hover)
+    if (window.matchMedia('(hover: none)').matches) {
+      this.querySelectorAll('.s-lookbook__caption').forEach((c) => {
+        c.classList.add('is-visible');
+      });
+    }
+  }
+
+  onBlockSelect(evt) {
+    const block = this.querySelector(`[data-block-id="${evt.detail.blockId}"]`);
+    if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  onBlockDeselect() {}
+}
+
+if (!customElements.get('lookbook-section')) {
+  customElements.define('lookbook-section', LookbookSection);
+}
+{% endjavascript %}

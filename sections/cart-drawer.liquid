@@ -361,6 +361,9 @@
 
     {% if cart.item_count > 0 %}
       <div class="s-cart-drawer__footer">
+        {% comment %} Free shipping progress {% endcomment %}
+        {% render 'component-shipping-progress', threshold: 7500 %}
+
         <div class="s-cart-drawer__subtotal">
           <span class="s-cart-drawer__subtotal-label">
             {{ 'cart.general.subtotal' | t | default: 'Subtotal' }}
@@ -389,26 +392,22 @@ class CartDrawer extends HTMLElement {
     super();
     this._isOpen = false;
     this._openOnAdd = this.dataset.openOnAdd === 'true';
+    this._cart = null;
+    this._unsubs = [];
   }
 
   connectedCallback() {
     this.cacheDOM();
     this.bindEvents();
+    this.subscribeToPubSub();
 
-    // Subscribe to global cart events
-    if (window.__theme?.PubSub) {
-      this._unsubAdd = window.__theme.PubSub.subscribe('cart:add', () => {
-        if (this._openOnAdd) this.open();
-      });
-      this._unsubToggle = window.__theme.PubSub.subscribe('cart:toggle', () => this.toggle());
-      this._unsubOpen = window.__theme.PubSub.subscribe('cart:open', () => this.open());
-    }
+    // Refresh cart state on load
+    this.refreshCart();
   }
 
   disconnectedCallback() {
-    if (this._unsubAdd) this._unsubAdd();
-    if (this._unsubToggle) this._unsubToggle();
-    if (this._unsubOpen) this._unsubOpen();
+    this._unsubs.forEach((fn) => fn());
+    this._unsubs = [];
   }
 
   cacheDOM() {
@@ -416,6 +415,28 @@ class CartDrawer extends HTMLElement {
     this.itemsContainer = this.querySelector('[data-cart-items]');
     this.countEl = this.querySelector('[data-cart-count]');
     this.subtotalEl = this.querySelector('[data-cart-subtotal]');
+  }
+
+  subscribeToPubSub() {
+    if (!window.__theme?.PubSub) return;
+
+    // Open/close events
+    this._unsubs.push(window.__theme.PubSub.subscribe('cart:add', () => {
+      if (this._openOnAdd) this.open();
+    }));
+    this._unsubs.push(window.__theme.PubSub.subscribe('cart:add-success', () => {
+      this.refreshCart();
+      if (this._openOnAdd) this.open();
+    }));
+    this._unsubs.push(window.__theme.PubSub.subscribe('cart:toggle', () => this.toggle()));
+    this._unsubs.push(window.__theme.PubSub.subscribe('cart:open', () => this.open()));
+    this._unsubs.push(window.__theme.PubSub.subscribe('cart:updated', (cart) => {
+      this._cart = cart;
+      this._renderCounts(cart);
+    }));
+    this._unsubs.push(window.__theme.PubSub.subscribe('cart:item-removed', () => {
+      this.refreshCart();
+    }));
   }
 
   bindEvents() {
@@ -427,6 +448,144 @@ class CartDrawer extends HTMLElement {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this._isOpen) this.close();
     });
+
+    // Delegate item actions (quantity change, remove)
+    this.itemsContainer?.addEventListener('click', async (e) => {
+      const item = e.target.closest('[data-drawer-item]');
+      if (!item) return;
+
+      const key = item.dataset.key;
+      if (!key) return;
+
+      // Quantity decrease
+      if (e.target.matches('[data-qty-decrease]')) {
+        const input = item.querySelector('[data-item-qty]');
+        if (input) {
+          const current = parseInt(input.value, 10) || 1;
+          if (current > 1) {
+            this._updateQuantity(key, current - 1, item);
+          } else {
+            this._removeItem(key, item);
+          }
+        }
+      }
+
+      // Quantity increase
+      if (e.target.matches('[data-qty-increase]')) {
+        const input = item.querySelector('[data-item-qty]');
+        if (input) {
+          const current = parseInt(input.value, 10) || 1;
+          this._updateQuantity(key, current + 1, item);
+        }
+      }
+
+      // Remove
+      if (e.target.matches('[data-item-remove]')) {
+        this._removeItem(key, item);
+      }
+    });
+
+    // Quantity input change
+    this.itemsContainer?.addEventListener('change', async (e) => {
+      if (!e.target.matches('[data-item-qty]')) return;
+      const item = e.target.closest('[data-drawer-item]');
+      if (!item) return;
+      const key = item.dataset.key;
+      const val = parseInt(e.target.value, 10);
+      if (val >= 1 && key) {
+        this._updateQuantity(key, val, item);
+      }
+    });
+  }
+
+  async refreshCart() {
+    if (!window.__theme?.CartAPI) return;
+    try {
+      const cart = await window.__theme.CartAPI.getCart();
+      this._cart = cart;
+      this._renderCounts(cart);
+    } catch (e) {
+      console.warn('[CartDrawer] Failed to refresh cart:', e);
+    }
+  }
+
+  async _updateQuantity(key, quantity, itemEl) {
+    if (!window.__theme?.CartAPI) return;
+    if (!key) return;
+
+    try {
+      const cart = await window.__theme.CartAPI.updateItem(key, quantity);
+      this._cart = cart;
+      this._renderCounts(cart);
+
+      // Update line total
+      const lineTotalEl = itemEl?.querySelector('[data-item-line-total]');
+      if (lineTotalEl && cart.items) {
+        const updatedItem = cart.items.find((i) => i.key === key);
+        if (updatedItem && window.__theme?.formatMoney) {
+          lineTotalEl.textContent = window.__theme.formatMoney(updatedItem.final_line_price);
+        }
+      }
+
+      // Update cart badge in header
+      this.publish('cart:count-updated', { count: cart.item_count });
+    } catch (e) {
+      console.warn('[CartDrawer] Failed to update quantity:', e);
+    }
+  }
+
+  async _removeItem(key, itemEl) {
+    if (!window.__theme?.CartAPI) return;
+    if (!key) return;
+
+    // Visual feedback: fade out
+    if (itemEl) {
+      itemEl.style.opacity = '0.5';
+    }
+
+    try {
+      const cart = await window.__theme.CartAPI.removeItem(key);
+      this._cart = cart;
+      this._renderCounts(cart);
+
+      // If cart is empty, show empty state
+      if (cart.item_count === 0) {
+        this._renderEmpty();
+      } else if (itemEl) {
+        itemEl.remove();
+      }
+
+      this.publish('cart:count-updated', { count: cart.item_count });
+    } catch (e) {
+      console.warn('[CartDrawer] Failed to remove item:', e);
+      if (itemEl) itemEl.style.opacity = '';
+    }
+  }
+
+  _renderCounts(cart) {
+    if (this.countEl) {
+      this.countEl.textContent = cart.item_count || 0;
+    }
+    if (this.subtotalEl && window.__theme?.formatMoney) {
+      this.subtotalEl.textContent = window.__theme.formatMoney(cart.total_price || 0);
+    }
+
+    // Update header cart badge
+    const headerBadges = document.querySelectorAll('.s-header__cart-count, [data-cart-badge]');
+    headerBadges.forEach((el) => {
+      el.textContent = cart.item_count || 0;
+      el.style.display = cart.item_count > 0 ? '' : 'none';
+    });
+  }
+
+  _renderEmpty() {
+    if (!this.itemsContainer) return;
+    this.itemsContainer.innerHTML = `
+      <div class="s-cart-drawer__empty">
+        <p>Your cart is empty</p>
+        <a href="/collections/all" class="c-btn c-btn--primary c-btn--sm">Start shopping</a>
+      </div>
+    `;
   }
 
   open() {
@@ -445,6 +604,10 @@ class CartDrawer extends HTMLElement {
 
   toggle() {
     this._isOpen ? this.close() : this.open();
+  }
+
+  publish(event, data) {
+    window.__theme?.PubSub?.publish(event, data);
   }
 }
 

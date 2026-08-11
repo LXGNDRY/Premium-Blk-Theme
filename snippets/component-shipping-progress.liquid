@@ -1,0 +1,43 @@
+{% comment %}
+  Component: Free shipping progress bar
+  Shows how far the customer is from free shipping.
+
+  Accepts:
+  - threshold: {Number} Default: 7500 — free shipping threshold in cents
+  - cart_total: {Number} — cart total in cents (defaults to cart.total_price)
+
+  Usage:
+  {% render 'component-shipping-progress', threshold: 7500 %}
+{% endcomment %}
+
+{%- liquid
+  assign _threshold = threshold | default: 7500 | times: 1
+  assign _cart_total = cart_total | default: cart.total_price | times: 1
+
+  if _cart_total >= _threshold
+    assign _progress = 100
+    assign _remaining = 0
+  else
+    assign _remaining = _threshold | minus: _cart_total
+    assign _progress_cents = _cart_total | times: 100
+    assign _progress = _progress_cents | divided_by: _threshold
+  endif
+
+  assign _threshold_dollars = _threshold | divided_by: 100.0
+  assign _remaining_dollars = _remaining | divided_by: 100.0
+-%}
+
+<div class="c-shipping-progress" data-shipping-progress data-threshold="{{ _threshold }}">
+  {% if _progress >= 100 %}
+    <p class="c-shipping-progress__text">
+      🎉 {{ 'cart.shipping.free_shipping_unlocked' | t | default: 'Free shipping unlocked!' }}
+    </p>
+  {% else %}
+    <p class="c-shipping-progress__text">
+      {{ 'cart.shipping.remaining' | t: amount: _remaining_dollars | default: 'Spend $' | append: _remaining_dollars | append: ' more for free shipping' }}
+    </p>
+  {% endif %}
+  <div class="c-shipping-progress__bar" role="progressbar" aria-valuenow="{{ _progress }}" aria-valuemin="0" aria-valuemax="100">
+    <div class="c-shipping-progress__fill" style="width: {{ _progress }}%;" data-progress-fill></div>
+  </div>
+</div>

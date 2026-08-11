@@ -32,6 +32,32 @@
         "align": "left"
       }
     },
+    "drop-countdown": {
+      "type": "countdown",
+      "settings": {
+        "heading": "Next drop",
+        "subheading": "The next collection drops soon. Don't miss it.",
+        "button_text": "Shop now",
+        "button_link": "/collections/all",
+        "date": "2026-12-31 23:59:59",
+        "show_days": true,
+        "show_hours": true,
+        "show_minutes": true,
+        "show_seconds": true,
+        "inverted": true,
+        "align": "center"
+      }
+    },
+    "lookbook": {
+      "type": "lookbook",
+      "settings": {
+        "heading": "The Lookbook",
+        "subheading": "This season's essential fits.",
+        "layout": "editorial",
+        "gap": 12,
+        "show_captions": true
+      }
+    },
     "brand": {
       "type": "image-with-text",
       "settings": {
@@ -44,6 +70,17 @@
         "layout": "half",
         "text_align": "middle",
         "stack_on_mobile": true
+      }
+    },
+    "recently-viewed": {
+      "type": "recently-viewed",
+      "settings": {
+        "heading": "Recently viewed",
+        "products_per_row": 4,
+        "products_to_show": 4,
+        "image_ratio": "3/4",
+        "show_vendor": false,
+        "show_badges": true
       }
     },
     "text-banner": {
@@ -65,7 +102,10 @@
   "order": [
     "banner",
     "featured",
+    "drop-countdown",
+    "lookbook",
     "brand",
+    "recently-viewed",
     "text-banner"
   ]
 }

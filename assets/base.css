@@ -1115,3 +1115,182 @@
 .u-pointer-events-none { pointer-events: none; }
 .u-cursor-pointer { cursor: pointer; }
 .u-no-select { user-select: none; }
+
+/* ==========================================================================
+   WISHLIST BUTTON
+   ========================================================================== */
+.c-wishlist-btn {
+  position: absolute;
+  top: var(--t-space-3);
+  right: var(--t-space-3);
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--t-bg);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 0;
+  transition: all var(--t-transition-fast);
+  opacity: 0;
+}
+
+.c-product-card:hover .c-wishlist-btn,
+.c-wishlist-btn:focus-visible,
+.c-wishlist-btn.is-saved {
+  opacity: 1;
+}
+
+.c-wishlist-btn:hover {
+  border-color: var(--t-border-strong);
+}
+
+.c-wishlist-btn.is-saved {
+  color: var(--t-accent-red, #ff3b30);
+  border-color: var(--t-accent-red, #ff3b30);
+}
+
+.c-wishlist-btn__icon {
+  width: 18px;
+  height: 18px;
+}
+
+.c-wishlist-btn.is-saved .c-wishlist-btn__icon {
+  fill: currentColor;
+}
+
+.c-wishlist-btn__label {
+  display: none;
+}
+
+.c-wishlist-btn--lg {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: var(--t-space-2) var(--t-space-3);
+  gap: var(--t-space-2);
+  opacity: 1;
+}
+
+.c-wishlist-btn--lg .c-wishlist-btn__label {
+  display: inline;
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .c-wishlist-btn {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   FREE SHIPPING PROGRESS BAR
+   ========================================================================== */
+.c-shipping-progress {
+  margin-bottom: var(--t-space-3);
+}
+
+.c-shipping-progress__text {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-muted);
+  margin: 0 0 var(--t-space-2);
+  font-weight: 600;
+}
+
+.c-shipping-progress__bar {
+  height: 4px;
+  background: var(--t-border);
+  overflow: hidden;
+}
+
+.c-shipping-progress__fill {
+  height: 100%;
+  background: var(--t-accent-red, #ff3b30);
+  transition: width var(--t-transition-base);
+}
+
+/* ==========================================================================
+   VARIANT SELECTOR
+   ========================================================================== */
+.c-variant-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+}
+
+.c-variant-group__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.c-variant-group__value {
+  font-weight: 400;
+  color: var(--t-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.c-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--t-space-2);
+}
+
+.c-swatch {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 var(--t-space-3);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-small);
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all var(--t-transition-fast);
+}
+
+.c-swatch:hover {
+  border-color: var(--t-border-strong);
+}
+
+.c-swatch.is-active {
+  border-color: var(--t-text);
+  background: var(--t-text);
+  color: var(--t-bg);
+  font-weight: 600;
+}
+
+.c-swatch:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.c-variant-select {
+  width: 100%;
+  height: 46px;
+  padding: 0 var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  font-size: var(--t-font-size-base);
+  font-family: inherit;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.c-variant-select:focus {
+  outline: 2px solid var(--t-accent);
+  outline-offset: 2px;
+}

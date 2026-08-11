@@ -54,6 +54,14 @@
     }
   };
 
+  // Money formatting (Shopify pattern)
+  const formatMoney = (cents, format = '${{ amount }}') => {
+    if (typeof cents !== 'number') cents = parseInt(cents, 10) || 0;
+    const dollars = cents / 100;
+    const amount = dollars.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return format.replace('{{ amount }}', amount);
+  };
+
   // ==========================================================================
   // PUB/SUB EVENT BUS
   // ==========================================================================
@@ -850,13 +858,370 @@
   customElements.define('sticky-header', StickyHeader);
 
   // ==========================================================================
+  // CART API — AJAX cart operations
+  // ==========================================================================
+  // All cart interactions go through this. PubSub events for cross-component sync.
+  // Works with the default Shopify AJAX cart API (/cart.js, /cart/add.js, etc.)
+
+  const CartAPI = {
+    // Get current cart state
+    async getCart() {
+      try {
+        const res = await fetch('/cart.js', {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Cart fetch failed');
+        const cart = await res.json();
+        PubSub.publish('cart:updated', cart);
+        return cart;
+      } catch (e) {
+        console.error('[CartAPI] getCart failed:', e);
+        throw e;
+      }
+    },
+
+    // Add a single item
+    async addItem(variantId, quantity = 1, properties = {}) {
+      try {
+        const res = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            id: variantId,
+            quantity,
+            properties
+          })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.description || 'Failed to add item');
+        }
+        const item = await res.json();
+        PubSub.publish('cart:item-added', item);
+        // Refresh full cart state
+        await this.getCart();
+        return item;
+      } catch (e) {
+        console.error('[CartAPI] addItem failed:', e);
+        PubSub.publish('cart:error', { action: 'add', error: e.message });
+        throw e;
+      }
+    },
+
+    // Add multiple items
+    async addItems(items) {
+      try {
+        const res = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ items })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.description || 'Failed to add items');
+        }
+        const added = await res.json();
+        PubSub.publish('cart:items-added', added);
+        await this.getCart();
+        return added;
+      } catch (e) {
+        console.error('[CartAPI] addItems failed:', e);
+        PubSub.publish('cart:error', { action: 'add', error: e.message });
+        throw e;
+      }
+    },
+
+    // Update item quantity
+    async updateItem(key, quantity) {
+      try {
+        const res = await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            id: key,
+            quantity
+          })
+        });
+        if (!res.ok) throw new Error('Failed to update item');
+        const cart = await res.json();
+        PubSub.publish('cart:updated', cart);
+        return cart;
+      } catch (e) {
+        console.error('[CartAPI] updateItem failed:', e);
+        PubSub.publish('cart:error', { action: 'update', error: e.message });
+        throw e;
+      }
+    },
+
+    // Remove item (set quantity to 0)
+    async removeItem(key) {
+      return this.updateItem(key, 0);
+    },
+
+    // Clear cart
+    async clear() {
+      try {
+        const res = await fetch('/cart/clear.js', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Failed to clear cart');
+        const cart = await res.json();
+        PubSub.publish('cart:updated', cart);
+        return cart;
+      } catch (e) {
+        console.error('[CartAPI] clear failed:', e);
+        throw e;
+      }
+    },
+
+    // Get shipping rates (optional, for progress bar)
+    async getShippingRates(address) {
+      // Basic: use /cart/shipping_rates.json with address params
+      try {
+        const params = new URLSearchParams({
+          'shipping_address[country]': address.country || 'United States',
+          'shipping_address[province]': address.province || '',
+          'shipping_address[zip]': address.zip || ''
+        });
+        const res = await fetch(`/cart/shipping_rates.json?${params.toString()}`, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Failed to get shipping rates');
+        const data = await res.json();
+        return data.shipping_rates || [];
+      } catch (e) {
+        console.warn('[CartAPI] getShippingRates failed:', e);
+        return [];
+      }
+    }
+  };
+
+  // ==========================================================================
+  // VARIANT SELECTOR — product option selection logic
+  // ==========================================================================
+  // Handles option selection, variant lookup, price/image/availability update.
+  // Uses product JSON data embedded on the page.
+
+  class VariantSelector {
+    constructor(productJson, options = {}) {
+      this.product = productJson;
+      this.options = options;
+      this.selectedOptions = {};
+      this.currentVariant = null;
+      this.onVariantChange = options.onVariantChange || (() => {});
+      this._init();
+    }
+
+    _init() {
+      // Start with first available variant's options
+      const firstAvailable = this._getFirstAvailableVariant();
+      if (firstAvailable) {
+        this.product.options.forEach((opt, i) => {
+          this.selectedOptions[opt.name] = firstAvailable.options[i];
+        });
+        this.currentVariant = firstAvailable;
+      } else if (this.product.variants.length > 0) {
+        this.product.options.forEach((opt, i) => {
+          this.selectedOptions[opt.name] = this.product.variants[0].options[i];
+        });
+        this.currentVariant = this.product.variants[0];
+      }
+    }
+
+    _getFirstAvailableVariant() {
+      return this.product.variants.find(v => v.available) || this.product.variants[0];
+    }
+
+    // Select an option value
+    select(optionName, value) {
+      this.selectedOptions[optionName] = value;
+      this._updateVariant();
+    }
+
+    selectByIndex(optionIndex, value) {
+      const optionName = this.product.options[optionIndex];
+      if (optionName) {
+        this.select(optionName.name || optionName, value);
+      }
+    }
+
+    _updateVariant() {
+      const selected = Object.values(this.selectedOptions);
+      const variant = this.product.variants.find(v =>
+        v.options.every((opt, i) => opt === selected[i])
+      );
+
+      if (variant) {
+        this.currentVariant = variant;
+        this.onVariantChange(variant, this._isAvailable(variant));
+      }
+    }
+
+    _isAvailable(variant) {
+      return variant ? variant.available : false;
+    }
+
+    get currentVariantId() {
+      return this.currentVariant ? this.currentVariant.id : null;
+    }
+
+    get available() {
+      return this.currentVariant ? this.currentVariant.available : false;
+    }
+
+    get price() {
+      return this.currentVariant ? this.currentVariant.price : 0;
+    }
+
+    get compareAtPrice() {
+      return this.currentVariant ? this.currentVariant.compare_at_price : 0;
+    }
+
+    // Check if a specific option value is available
+    isValueAvailable(optionIndex, value) {
+      const testOptions = Object.values(this.selectedOptions);
+      testOptions[optionIndex] = value;
+      const variant = this.product.variants.find(v =>
+        v.options.every((opt, i) => opt === testOptions[i])
+      );
+      return variant ? variant.available : false;
+    }
+  }
+
+  // ==========================================================================
+  // WISHLIST — localStorage-powered wishlist
+  // ==========================================================================
+
+  const Wishlist = (() => {
+    const STORAGE_KEY = 'theme-wishlist';
+    let items = [];
+
+    const load = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        items = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        items = [];
+      }
+      return items;
+    };
+
+    const save = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      } catch (e) {
+        console.warn('[Wishlist] Could not save:', e);
+      }
+      PubSub.publish('wishlist:updated', { items: [...items] });
+    };
+
+    const init = () => {
+      load();
+      PubSub.publish('wishlist:updated', { items: [...items] });
+    };
+
+    const has = (id) => items.includes(String(id));
+
+    const toggle = (id) => {
+      id = String(id);
+      if (has(id)) {
+        items = items.filter((i) => i !== id);
+      } else {
+        items.push(id);
+      }
+      save();
+      return has(id);
+    };
+
+    const add = (id) => {
+      id = String(id);
+      if (!has(id)) {
+        items.push(id);
+        save();
+      }
+      return true;
+    };
+
+    const remove = (id) => {
+      id = String(id);
+      items = items.filter((i) => i !== id);
+      save();
+      return false;
+    };
+
+    const getAll = () => [...items];
+
+    return { init, has, toggle, add, remove, getAll };
+  })();
+
+  // ==========================================================================
+  // RECENTLY VIEWED — localStorage-powered product history
+  // ==========================================================================
+
+  const RecentlyViewed = {
+    STORAGE_KEY: 'theme-recently-viewed',
+    MAX_ITEMS: 8,
+
+    getAll() {
+      try {
+        const raw = localStorage.getItem(this.STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    },
+
+    add(product) {
+      if (!product || !product.id) return;
+      let items = this.getAll();
+      items = items.filter((i) => i.id !== product.id);
+      items.unshift({
+        id: product.id,
+        title: product.title,
+        url: product.url,
+        image: product.featured_image ? product.featured_image.src : null,
+        price: product.price,
+        handle: product.handle
+      });
+      items = items.slice(0, this.MAX_ITEMS);
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
+      } catch (e) {
+        console.warn('[RecentlyViewed] Could not save:', e);
+      }
+      PubSub.publish('recently-viewed:updated', { items });
+    },
+
+    clear() {
+      try {
+        localStorage.removeItem(this.STORAGE_KEY);
+      } catch (e) {}
+      PubSub.publish('recently-viewed:updated', { items: [] });
+    }
+  };
+
+  // ==========================================================================
   // EXPOSE PUBLIC API
   // ==========================================================================
 
   window.__theme = {
     ...(window.__theme || {}),
-    version: '0.1.0',
+    version: '1.0.0',
     PubSub,
+    CartAPI,
+    VariantSelector,
+    Wishlist,
+    RecentlyViewed,
     components: {
       ThemeComponent,
       ThemeToggle,
@@ -875,11 +1240,98 @@
       throttle,
       clamp,
       onReady,
+      formatMoney,
     },
   };
 
   // Bootstrap
   onReady(() => {
+    // Init wishlist state
+    Wishlist.init();
+
+    // Global wishlist button handler (delegated)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-wishlist-btn]');
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const id = btn.dataset.productId;
+      if (!id) return;
+
+      const isSaved = Wishlist.toggle(id);
+      btn.classList.toggle('is-saved', isSaved);
+      btn.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
+      btn.setAttribute('aria-label',
+        (isSaved ? 'Remove ' : 'Add ') + (btn.dataset.productTitle || '') + ' ' +
+        (isSaved ? 'from' : 'to') + ' wishlist');
+    });
+
+    // Global quick-add handler (delegated)
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-quick-add]');
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Don't intercept if the button is inside a form (let it submit normally)
+      if (btn.closest('form')) return;
+
+      const variantId = btn.dataset.variantId;
+      if (!variantId || !CartAPI) {
+        // Fallback: navigate to product page
+        const productUrl = btn.dataset.productUrl || btn.closest('[data-product-card]')?.querySelector('a')?.getAttribute('href');
+        if (productUrl) window.location.href = productUrl;
+        return;
+      }
+
+      // Loading state
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+
+      try {
+        await CartAPI.addItem(variantId, 1);
+        PubSub.publish('cart:add-success', { variantId, quantity: 1 });
+        PubSub.publish('cart:open');
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        console.warn('Quick add failed:', err.message);
+      }
+    });
+
+    // Sync all wishlist buttons to current state
+    const syncWishlistButtons = () => {
+      const ids = Wishlist.getAll();
+      document.querySelectorAll('[data-wishlist-btn]').forEach((btn) => {
+        const isSaved = ids.includes(btn.dataset.productId);
+        btn.classList.toggle('is-saved', isSaved);
+        btn.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
+      });
+    };
+
+    Wishlist.init();
+    syncWishlistButtons();
+
+    // Record recently-viewed if on a product page
+    const productJsonEl = document.querySelector('[data-product-json]');
+    if (productJsonEl) {
+      try {
+        const product = JSON.parse(productJsonEl.textContent.trim());
+        if (product && product.id) {
+          RecentlyViewed.add(product);
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+
     PubSub.publish('theme:ready');
+
+    // Refresh cart badge on load
+    if (CartAPI) {
+      CartAPI.getCart().catch(() => {});
+    }
   });
 })();

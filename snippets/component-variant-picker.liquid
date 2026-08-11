@@ -1,0 +1,91 @@
+{% comment %}
+  Component: Variant picker
+  Renders variant option selectors (button/swatch style) with data attributes
+  for JS to handle selection, price update, image swap, and availability.
+
+  Accepts:
+  - product: {Object} Required — product object
+  - option: {Integer} Required — option index (0-based)
+  - option_name: {String} — override option name
+  - style: {String} Default: "buttons" — "buttons" or "select"
+
+  Data attributes output:
+  - data-variant-picker — wrapper
+  - data-option-index — option number
+  - data-option-value — button value
+  - data-variant-product — product JSON in script tag
+
+  Usage:
+  {% for option in product.options %}
+    {% render 'component-variant-picker', product: product, option: forloop.index0 %}
+  {% endfor %}
+{% endcomment %}
+
+{%- liquid
+  if product == nil
+    return
+  endif
+
+  assign _option_index = option | times: 1
+  assign _option = product.options[_option_index]
+  assign _option_name = option_name
+  if _option_name == blank
+    assign _option_name = _option.name
+  endif
+  assign _style = style | default: 'buttons'
+  assign _selected_value = product.selected_or_first_available_variant.options[_option_index]
+-%}
+
+{% if _option and _option.values.size > 0 %}
+  <div class="c-variant-group" data-variant-group data-option-index="{{ _option_index }}">
+    <div class="c-variant-group__label">
+      <span class="c-variant-group__name">{{ _option_name | escape }}</span>
+      <span class="c-variant-group__value" data-variant-value>
+        {{ _selected_value | escape }}
+      </span>
+    </div>
+
+    {% if _style == 'select' %}
+      <select
+        class="c-variant-select"
+        data-variant-select
+        data-option-index="{{ _option_index }}"
+        aria-label="{{ _option_name | escape }}"
+      >
+        {% for value in _option.values %}
+          <option
+            value="{{ value | escape }}"
+            {% if value == _selected_value %}selected{% endif %}
+          >
+            {{ value | escape }}
+          </option>
+        {% endfor %}
+      </select>
+
+    {% else %}{% comment %} buttons / swatches {% endcomment %}
+      <div class="c-swatches" role="radiogroup" aria-label="{{ _option_name | escape }}">
+        {% for value in _option.values %}
+          {%- liquid
+            assign _is_color = false
+            assign _opt_name_downcase = _option.name | downcase
+            if _opt_name_downcase contains 'color' or _opt_name_downcase contains 'colour'
+              assign _is_color = true
+            endif
+          -%}
+          <button
+            type="button"
+            class="c-swatch {% if _is_color %}c-swatch--color{% endif %} {% if value == _selected_value %}is-active{% endif %}"
+            role="radio"
+            aria-checked="{% if value == _selected_value %}true{% else %}false{% endif %}"
+            data-option-value="{{ value | escape }}"
+            data-option-index="{{ _option_index }}"
+            aria-label="{{ value | escape }}"
+            {% if value == _selected_value %}aria-pressed="true"{% endif %}
+          >
+            {{ value | escape }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

@@ -419,6 +419,11 @@
         {% endif %}
       </div>
 
+      {% comment %} Product JSON data (used by JS variant selector) {% endcomment %}
+      <script type="application/json" data-product-json>
+        {{ _product | json }}
+      </script>
+
       {% comment %} === PRODUCT INFO === {% endcomment %}
       <div class="s-main-product__info">
         {% if _show_vendor and _product.vendor %}
@@ -469,17 +474,19 @@
         {% comment %} Quantity + add to cart {% endcomment %}
         <div class="s-main-product__actions">
           {% if _product.available %}
-            <form method="post" action="/cart/add" class="s-main-product__qty-atc">
-              <input type="hidden" name="id" value="{{ _product.selected_or_first_available_variant.id }}">
+            <form method="post" action="/cart/add" class="s-main-product__qty-atc" data-add-to-cart>
+              <input type="hidden" name="id" value="{{ _product.selected_or_first_available_variant.id }}" data-variant-id-input>
+              <input type="hidden" name="form_type" value="product">
               <quantity-input>
                 <div class="c-quantity">
                   <button type="button" class="c-quantity__btn" data-action="decrease" aria-label="Decrease quantity">−</button>
-                  <input type="number" name="quantity" value="1" min="1" class="c-quantity__input" aria-label="Quantity">
+                  <input type="number" name="quantity" value="1" min="1" class="c-quantity__input" aria-label="Quantity" data-quantity-input>
                   <button type="button" class="c-quantity__btn" data-action="increase" aria-label="Increase quantity">+</button>
                 </div>
               </quantity-input>
-              <button type="submit" class="c-btn c-btn--primary">
-                {{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}
+              <button type="submit" class="c-btn c-btn--primary" data-atc-button>
+                <span data-atc-text>{{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}</span>
+                <span data-atc-loading style="display:none;">{{ 'products.product.adding' | t | default: 'Adding...' }}</span>
               </button>
             </form>
           {% else %}
@@ -589,11 +596,16 @@ class MainProductSection extends HTMLElement {
   constructor() {
     super();
     this._currentImageIndex = 0;
+    this.variantSelector = null;
+    this.product = null;
+    this._isAdding = false;
   }
 
   connectedCallback() {
     this.cacheDOM();
+    this.initVariantSelector();
     this.bindEvents();
+    this.bindAddToCart();
   }
 
   disconnectedCallback() {
@@ -605,9 +617,97 @@ class MainProductSection extends HTMLElement {
   cacheDOM() {
     this.mainImage = this.querySelector('[data-main-image] img');
     this.thumbs = this.querySelectorAll('[data-thumb]');
+    this.priceEl = this.querySelector('[data-product-price]');
+    this.variantIdInput = this.querySelector('[data-variant-id-input]');
+    this.atcForm = this.querySelector('[data-add-to-cart]');
+    this.atcButton = this.querySelector('[data-atc-button]');
+    this.atcText = this.querySelector('[data-atc-text]');
+    this.atcLoading = this.querySelector('[data-atc-loading]');
+    this.quantityInput = this.querySelector('[data-quantity-input]');
+    this.stickyAtc = this.querySelector('[data-sticky-atc]');
+
+    // Product JSON
+    const jsonEl = this.querySelector('[data-product-json]');
+    if (jsonEl) {
+      try {
+        this.product = JSON.parse(jsonEl.textContent.trim());
+      } catch (e) {
+        console.warn('Failed to parse product JSON:', e);
+      }
+    }
+  }
+
+  initVariantSelector() {
+    if (!this.product || !this.product.variants) return;
+
+    const { VariantSelector } = window.__theme;
+    if (!VariantSelector) return;
+
+    this.variantSelector = new VariantSelector(this.product, {
+      onVariantChange: (variant, available) => {
+        this._onVariantChange(variant, available);
+      }
+    });
+
+    // Set initial variant
+    if (this.variantSelector.currentVariant) {
+      this._updateVariantUI(this.variantSelector.currentVariant);
+    }
+  }
+
+  _onVariantChange(variant, available) {
+    this._updateVariantUI(variant);
+
+    // Update variant ID input
+    if (this.variantIdInput) {
+      this.variantIdInput.value = variant.id;
+    }
+
+    // Update image if variant has featured image
+    if (variant.featured_image && this.mainImage) {
+      const imgSrc = variant.featured_image.src;
+      if (imgSrc && imgSrc !== this.mainImage.src) {
+        this.mainImage.src = imgSrc;
+      }
+    }
+  }
+
+  _updateVariantUI(variant) {
+    // Update displayed option values
+    const variantLabels = this.querySelectorAll('.s-main-product__variant-value');
+    if (variantLabels.length && variant.options) {
+      variantLabels.forEach((el, i) => {
+        if (variant.options[i]) {
+          el.textContent = variant.options[i];
+        }
+      });
+    }
+
+    // Update price
+    if (this.priceEl && window.__theme?.formatMoney) {
+      this.priceEl.textContent = window.__theme.formatMoney(variant.price);
+    }
+
+    // Update button state
+    if (this.atcButton) {
+      this.atcButton.disabled = !variant.available;
+      if (this.atcText) {
+        this.atcText.textContent = variant.available
+          ? this.atcText.dataset.defaultText || 'Add to cart'
+          : 'Sold out';
+      }
+    }
+
+    // Update URL with variant ID
+    if (variant.id && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('variant', variant.id);
+      window.history.replaceState(null, '', url.toString());
+    }
   }
 
   bindEvents() {
+    // Thumbnail navigation
     if (this.thumbs.length) {
       this._thumbHandler = (e) => {
         const btn = e.currentTarget;
@@ -616,6 +716,93 @@ class MainProductSection extends HTMLElement {
         this.setActiveImage(src, idx);
       };
       this.thumbs.forEach((t) => t.addEventListener('click', this._thumbHandler));
+    }
+
+    // Variant swatch buttons
+    const swatchBtns = this.querySelectorAll('[data-option-value]');
+    swatchBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const optionIndex = parseInt(btn.dataset.optionIndex, 10);
+        const value = btn.dataset.optionValue;
+        this._selectOption(optionIndex, value, btn);
+      });
+    });
+  }
+
+  _selectOption(optionIndex, value, clickedBtn) {
+    if (!this.variantSelector) return;
+
+    this.variantSelector.selectByIndex(optionIndex, value);
+
+    // Update active state of buttons in this group
+    const group = clickedBtn.closest('.c-swatches');
+    if (group) {
+      group.querySelectorAll('[data-option-value]').forEach((b) => {
+        const isActive = b.dataset.optionValue === value;
+        b.classList.toggle('is-active', isActive);
+        b.setAttribute('aria-checked', isActive ? 'true' : 'false');
+      });
+    }
+  }
+
+  bindAddToCart() {
+    if (!this.atcForm) return;
+
+    this.atcForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (this._isAdding) return;
+
+      const variantId = this.variantIdInput?.value;
+      const quantity = parseInt(this.quantityInput?.value || '1', 10);
+
+      if (!variantId || !window.__theme?.CartAPI) {
+        // Fallback: normal form submit
+        this.atcForm.submit();
+        return;
+      }
+
+      this._setAddingState(true);
+
+      try {
+        await window.__theme.CartAPI.addItem(variantId, quantity);
+        this.publish('cart:add-success', { variantId, quantity });
+
+        // Open cart drawer
+        this.publish('cart:open');
+      } catch (err) {
+        console.warn('Add to cart failed:', err.message);
+        this.publish('cart:error', { error: err.message });
+      } finally {
+        this._setAddingState(false);
+      }
+    });
+
+    // Quantity buttons
+    const qtyBtns = this.atcForm.querySelectorAll('.c-quantity__btn');
+    qtyBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (!this.quantityInput) return;
+        const action = btn.dataset.action;
+        let val = parseInt(this.quantityInput.value, 10) || 1;
+        if (action === 'increase') val++;
+        if (action === 'decrease') val = Math.max(1, val - 1);
+        this.quantityInput.value = val;
+      });
+    });
+  }
+
+  _setAddingState(isAdding) {
+    this._isAdding = isAdding;
+    if (this.atcButton) {
+      this.atcButton.disabled = isAdding;
+    }
+    if (this.atcText) {
+      this.atcText.style.display = isAdding ? 'none' : '';
+    }
+    if (this.atcLoading) {
+      this.atcLoading.style.display = isAdding ? '' : 'none';
     }
   }
 

@@ -139,6 +139,8 @@
       </div>
     {% endif %}
 
+    {% render 'component-wishlist-button', product: product %}
+
     {% if _show_quick_add and product.available and product.variants.size == 1 %}
       <div class="c-product-card__quick-add">
         <button
