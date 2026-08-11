@@ -1,0 +1,45 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "rules": {
+    // Best practices
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-debugger": "error",
+    "no-alert": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+
+    // Variables
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-let": "off",
+
+    // Style
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    "no-multiple-empty-lines": ["error", { "max": 2 }],
+    "no-trailing-spaces": "error",
+    "eol-last": "error",
+
+    // Complexity
+    "max-nested-callbacks": ["warn", 4],
+    "complexity": ["warn", 10],
+
+    // Custom elements
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^[A-Z][A-Za-z0-9]*Element$" }]
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    "assets/*.js",
+    "assets/*.map"
+  ]
+}

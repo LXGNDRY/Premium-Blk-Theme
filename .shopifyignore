@@ -1,0 +1,41 @@
+# Dev-only files - not pushed to Shopify
+docs/
+src/
+tests/
+node_modules/
+
+# Config files
+*.config.js
+vite.config.js
+package.json
+package-lock.json
+.prettierrc
+.stylelintrc
+.eslintrc
+.eslintignore
+.theme-check.yml
+.shopifyignore
+.gitignore
+claude.md
+README.md
+ARCHITECTURE.md
+TRANSFORMATION_PLAN.md
+SHOPIFY_COMPLIANCE.md
+
+# Git
+.git/
+.gitignore
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts (if any)
+*.map
+dist/
+build/

@@ -1,0 +1,36 @@
+{
+  "name": "premium-bl-theme",
+  "version": "0.1.0",
+  "description": "Premium-Blk — custom Shopify 2.0 theme. Pure black/white brutalist + editorial magazine design.",
+  "private": true,
+  "scripts": {
+    "dev": "shopify theme dev",
+    "dev:store": "shopify theme dev --store=legendary-branding",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "postcss src/css/base.css -o assets/base.css",
+    "build:js": "vite build",
+    "lint": "npm run lint:css && npm run lint:js && npm run lint:liquid",
+    "lint:css": "stylelint 'src/css/**/*.css'",
+    "lint:js": "eslint 'src/js/**/*.js'",
+    "lint:liquid": "shopify theme check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run lint",
+    "push": "shopify theme push",
+    "pull": "shopify theme pull",
+    "check": "shopify theme check"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "postcss": "^8.4.0",
+    "postcss-nesting": "^12.0.0",
+    "postcss-custom-media": "^10.0.0",
+    "autoprefixer": "^10.4.0",
+    "cssnano": "^6.0.0",
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-recess-order": "^5.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
+  }
+}

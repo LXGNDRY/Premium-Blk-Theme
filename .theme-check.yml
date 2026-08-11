@@ -1,0 +1,59 @@
+# Shopify Theme Check configuration
+# https://shopify.dev/docs/themes/tools/theme-check/configuration
+
+require:
+  - shopify/theme-check
+
+ignore:
+  - node_modules/**
+  - docs/**
+  - src/**
+  - tests/**
+  - assets/*.css.map
+  - assets/*.js.map
+
+rules:
+  # Performance
+  Performance:
+    enabled: true
+    severity: suggestion
+
+  # Accessibility
+  Accessibility:
+    enabled: true
+    severity: suggestion
+
+  # Deprecations
+  Deprecation:
+    enabled: true
+    severity: error
+
+  # Translation
+  Translation:
+    enabled: true
+    severity: suggestion
+
+  # Liquid parsing
+  ValidHTML:
+    enabled: true
+    severity: error
+
+  # Template requirements
+  RequiredLayoutTheme:
+    enabled: true
+    severity: error
+
+  # Section schema validation
+  ValidSchema:
+    enabled: true
+    severity: error
+
+  # No unused snippets
+  UnusedSnippet:
+    enabled: true
+    severity: suggestion
+
+  # Missing template
+  MissingTemplate:
+    enabled: true
+    severity: suggestion

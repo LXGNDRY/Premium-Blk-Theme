@@ -1,0 +1,45 @@
+root: true
+
+extends:
+  - stylelint-config-standard
+  - stylelint-config-recess-order
+
+rules:
+  # BEM naming
+  selector-class-pattern:
+    - '^(c|s|u|t|is|has|js)-[a-z0-9]+(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$'
+    - message: "Class names must follow BEM convention with prefix: c- (component), s- (section), u- (utility), t- (token), is-/has- (state), js- (JavaScript hook)"
+
+  # No IDs in selectors
+  selector-max-id: 0
+
+  # No !important
+  declaration-no-important: true
+
+  # Max specificity: 0,2,0 (two class selectors max)
+  selector-max-specificity: 0,2,0
+
+  # Color values must use custom properties (tokens)
+  color-named: never
+  color-no-hex: true
+  color-no-invalid-hex: true
+
+  # Custom properties (tokens)
+  custom-property-pattern: ^[a-z0-9-]+$
+
+  # Nesting depth
+  max-nesting-depth: 3
+
+  # Font sizes use rem or clamp
+  length-zero-no-unit: true
+
+  # Vendor prefixes handled by autoprefixer
+  property-no-vendor-prefix: true
+  value-no-vendor-prefix: true
+
+  # Cascade layers
+  no-descending-specificity: true
+
+ignoreFiles:
+  - node_modules/**
+  - assets/*.css  # compiled output
