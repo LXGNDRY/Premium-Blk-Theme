@@ -1,0 +1,75 @@
+{% comment %}
+  Component: Product price
+  Renders a product price with compare-at price and sale badge.
+
+  Accepts:
+  - product: {Object} Required — product object
+  - size: {String} Default: md — sm / md / lg / xl
+  - show_badge: {Boolean} Default: true — show sale percentage badge
+  - class: {String} — additional CSS classes
+
+  Usage:
+  {% render 'component-product-price', product: product, size: 'lg' %}
+{% endcomment %}
+
+{%- liquid
+  assign _size = size | default: 'md'
+  assign _show_badge = show_badge
+  if _show_badge == nil
+    assign _show_badge = true
+  endif
+  assign _class = class | default: ''
+
+  assign _classes = 'c-price'
+  case _size
+    when 'sm'
+      assign _classes = _classes | append: ' c-price--sm'
+    when 'lg'
+      assign _classes = _classes | append: ' c-price--lg'
+    when 'xl'
+      assign _classes = _classes | append: ' c-price--xl'
+  endcase
+
+  assign _on_sale = false
+  if product.compare_at_price > product.price and product.available
+    assign _on_sale = true
+  endif
+
+  if product.available == false
+    assign _classes = _classes | append: ' c-price--sold-out'
+  endif
+
+  if _class != ''
+    assign _classes = _classes | append: ' ' | append: _class
+  endif
+-%}
+
+<div class="{{ _classes }}">
+  {% if product.available %}
+    <span class="c-price__regular" data-product-price>
+      {{ product.price | money }}
+    </span>
+
+    {% if _on_sale %}
+      <span class="c-price__compare">
+        <s>{{ product.compare_at_price | money }}</s>
+      </span>
+
+      {% if _show_badge %}
+        {%- liquid
+          assign _compare = product.compare_at_price | divided_by: 100.0
+          assign _current = product.price | divided_by: 100.0
+          assign _savings = _compare | minus: _current
+          assign _percent = _savings | divided_by: _compare | times: 100 | round
+        -%}
+        <span class="c-price__sale-badge">
+          -{{ _percent }}%
+        </span>
+      {% endif %}
+    {% endif %}
+  {% else %}
+    <span class="c-price__regular">
+      {{ 'products.product.sold_out' | t | default: 'Sold out' }}
+    </span>
+  {% endif %}
+</div>

@@ -1,0 +1,80 @@
+{% comment %}
+  Component: Breadcrumbs
+  Renders breadcrumb navigation for the current page.
+
+  Accepts:
+  - page: {Object} Optional — page object (adds "Page" to trail)
+  - class: {String} — additional CSS classes
+
+  Usage:
+  {% render 'layout-breadcrumbs' %}
+{% endcomment %}
+
+<nav class="c-breadcrumbs" aria-label="Breadcrumb">
+  <ol style="display:flex;flex-wrap:wrap;gap:var(--t-space-2);list-style:none;padding:0;margin:0;">
+    <li class="c-breadcrumbs__item">
+      <a href="{{ routes.root_url }}" class="c-breadcrumbs__link">
+        {{ 'general.breadcrumbs.home' | t | default: 'Home' }}
+      </a>
+    </li>
+
+    {% if template contains 'product' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        {% if collection %}
+          <a href="{{ collection.url }}" class="c-breadcrumbs__link">{{ collection.title }}</a>
+        {% endif %}
+      </li>
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <span class="c-breadcrumbs__current">{{ product.title }}</span>
+      </li>
+
+    {% elsif template contains 'collection' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <span class="c-breadcrumbs__current">{{ collection.title }}</span>
+      </li>
+
+    {% elsif template contains 'blog' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <a href="{{ blog.url }}" class="c-breadcrumbs__link">{{ blog.title }}</a>
+      </li>
+      {% if article %}
+        <li class="c-breadcrumbs__item">
+          <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+          <span class="c-breadcrumbs__current">{{ article.title }}</span>
+        </li>
+      {% endif %}
+
+    {% elsif template contains 'article' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <a href="{{ blog.url }}" class="c-breadcrumbs__link">{{ blog.title }}</a>
+      </li>
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <span class="c-breadcrumbs__current">{{ article.title }}</span>
+      </li>
+
+    {% elsif template contains 'page' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <span class="c-breadcrumbs__current">{{ page.title }}</span>
+      </li>
+
+    {% elsif template contains 'cart' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <span class="c-breadcrumbs__current">{{ 'cart.general.title' | t | default: 'Cart' }}</span>
+      </li>
+
+    {% elsif template contains 'search' %}
+      <li class="c-breadcrumbs__item">
+        <span class="c-breadcrumbs__separator" aria-hidden="true">/</span>
+        <span class="c-breadcrumbs__current">{{ 'general.search.title' | t | default: 'Search' }}</span>
+      </li>
+    {% endif %}
+  </ol>
+</nav>

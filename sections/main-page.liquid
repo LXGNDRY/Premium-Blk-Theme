@@ -2,20 +2,32 @@
 {
   "name": "Page",
   "tag": "section",
-  "class": "section-main-page",
+  "class": "s-main-page",
   "enabled_on": {
-    "groups": [
-      "*"
-    ]
+    "templates": ["page"]
   },
-  "max_blocks": 16,
-  "settings": [],
-  "blocks": [
+  "settings": [
     {
-      "type": "app",
-      "name": "App",
-      "limit": 16,
-      "settings": []
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show page title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_width",
+      "label": "Narrow content width",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
     }
   ],
   "presets": [
@@ -28,109 +40,158 @@
 {% endschema %}
 
 {% stylesheet %}
-.section-main-page {
-  padding: var(--spacing-xl) 0;
-  position: relative;
+.s-main-page {
+  padding: var(--t-space-10) 0 var(--t-space-12);
 }
 
-.section-main-page .section__header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
+.s-main-page__header {
+  margin-bottom: var(--t-space-8);
 }
 
-.section-main-page .section__heading {
-  font-size: calc(var(--font-size-h2) * 1px);
+.s-main-page__title {
+  font-size: var(--t-font-size-h1);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-4);
+}
+
+.s-main-page__content {
+  line-height: var(--t-line-height-normal);
+}
+
+.s-main-page__content--narrow {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.s-main-page__content h1,
+.s-main-page__content h2,
+.s-main-page__content h3,
+.s-main-page__content h4 {
+  font-family: var(--t-font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: var(--t-space-8);
+  margin-bottom: var(--t-space-4);
+}
+
+.s-main-page__content h1 { font-size: var(--t-font-size-h2); }
+.s-main-page__content h2 { font-size: var(--t-font-size-h3); }
+.s-main-page__content h3 { font-size: 1.25rem; }
+
+.s-main-page__content p {
+  margin-bottom: var(--t-space-4);
+  color: var(--t-text);
+}
+
+.s-main-page__content a {
+  color: var(--t-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.s-main-page__content a:hover {
+  color: var(--t-text-muted);
+}
+
+.s-main-page__content ul,
+.s-main-page__content ol {
+  margin-bottom: var(--t-space-4);
+  padding-left: var(--t-space-6);
+}
+
+.s-main-page__content ul { list-style: disc; }
+.s-main-page__content ol { list-style: decimal; }
+
+.s-main-page__content li {
+  margin-bottom: var(--t-space-2);
+}
+
+.s-main-page__content blockquote {
+  border-left: 3px solid var(--t-border-strong);
+  padding-left: var(--t-space-5);
+  margin: var(--t-space-6) 0;
+  font-style: italic;
+  color: var(--t-text-muted);
+}
+
+.s-main-page__content img {
+  max-width: 100%;
+  height: auto;
+  margin: var(--t-space-6) 0;
+}
+
+.s-main-page__content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--t-space-6) 0;
+}
+
+.s-main-page__content th,
+.s-main-page__content td {
+  padding: var(--t-space-3);
+  border-bottom: 1px solid var(--t-border);
+  text-align: left;
+}
+
+.s-main-page__content th {
   font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-text);
+  border-bottom: 2px solid var(--t-border-strong);
 }
 
-.section-main-page .section__subheading {
-  color: var(--color-text-subdued);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.section-main-page .container {
-  max-width: calc(var(--container-max-width) * 1px);
-  margin: 0 auto;
-  padding: 0 calc(var(--content-padding) * 1px);
+.s-main-page__content hr {
+  border: none;
+  border-top: 1px solid var(--t-border);
+  margin: var(--t-space-8) 0;
 }
 {% endstylesheet %}
 
+{%- liquid
+  assign _show_title = section.settings.show_title
+  assign _narrow = section.settings.narrow_width
+  assign _show_breadcrumbs = section.settings.show_breadcrumbs
+
+  assign _content_class = 's-main-page__content'
+  if _narrow
+    assign _content_class = _content_class | append: ' s-main-page__content--narrow'
+  endif
+-%}
+
 <section
   id="section-{{ section.id }}"
-  class="section-main-page"
-  style="
-    {% if section.settings.background_color %}
-      background-color: {{ section.settings.background_color }};
-    {% endif %}
-    {% if section.settings.top_padding %}
-      padding-top: {{ section.settings.top_padding }}px;
-    {% endif %}
-    {% if section.settings.bottom_padding %}
-      padding-bottom: {{ section.settings.bottom_padding }}px;
-    {% endif %}
-  "
+  class="s-main-page"
+  data-section-id="{{ section.id }}"
+  data-section-type="main-page"
 >
-  <div class="container">
-    {% if section.settings.heading %}
-      <div class="section__header">
-        <h2 class="section__heading">{{ section.settings.heading | escape }}</h2>
-        {% if section.settings.subheading %}
-          <p class="section__subheading">{{ section.settings.subheading | escape }}</p>
-        {% endif %}
+  <div class="c-container">
+    {% if _show_breadcrumbs %}
+      {% render 'layout-breadcrumbs' with page %}
+    {% endif %}
+
+    {% if _show_title %}
+      <div class="s-main-page__header">
+        <h1 class="s-main-page__title">{{ page.title | escape }}</h1>
       </div>
     {% endif %}
 
-    <div class="blocks blocks--main-page">
-      {% for block in section.blocks %}
-        <div
-          class="block block--{{ block.type }}"
-          style="
-            {% if block.settings.alignment %}text-align: {{ block.settings.alignment }};{% endif %}
-          "
-        >
-          {% case block.type %}
-{%- when 'app' -%}
-  <div class="block__content">
-    {% if block.settings.content %}
-      {{ block.settings.content }}
-    {% else %}
-      App
-    {% endif %}
-  </div>
-          {% endcase %}
-        </div>
-      {% endfor %}
+    <div class="{{ _content_class }}">
+      {{ page.content }}
     </div>
   </div>
 </section>
 
 {% javascript %}
 class MainPageSection extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    // Section initialization logic
-  }
-
-  onBlockSelect(evt) {
-    // Block selected in editor
-  }
-
-  onBlockDeselect(evt) {
-    // Block deselected in editor
-  }
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() { /* No JS needed for basic page */ }
+  onBlockSelect() {}
+  onBlockDeselect() {}
 }
 
-if (!customElements.get('section-main-page')) {
-  customElements.define('section-main-page', MainPageSection);
+if (!customElements.get('main-page-section')) {
+  customElements.define('main-page-section', MainPageSection);
 }
 {% endjavascript %}
