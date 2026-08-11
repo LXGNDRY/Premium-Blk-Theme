@@ -1,127 +1,368 @@
 <!doctype html>
-<html class="no-js" lang="{{ shop.locale }}">
+<html class="no-js" lang="{{ shop.locale }}" dir="ltr">
 <head>
+  {% comment %}
+    Theme: Premium Blk
+    Master layout — all pages use this as their shell
+    Critical: content_for_header must be right before </head>
+  {% endcomment %}
+
+  {% comment %}
+    NO-FOUC THEME TOGGLE
+    Must run before CSS renders to prevent flash of wrong theme.
+    Reads localStorage user choice, falls back to system preference.
+  {% endcomment %}
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem('theme-mode');
+        if (stored === 'dark' || stored === 'light') {
+          document.documentElement.setAttribute('data-theme', stored);
+        }
+      } catch (e) {}
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="{{ settings.color_background }}">
-  <title>{% if page_title %}{{ page_title }} - {% endif %}{{ shop.name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="{{ settings.color_background | default: '#000000' }}">
+
+  {% comment %} === SEO META TAGS === {% endcomment %}
+  {%- if page_title -%}
+    <title>{{ page_title }}{% if current_page > 1 %} — Page {{ current_page }}{% endif %} — {{ shop.name }}</title>
+  {%- else -%}
+    <title>{{ shop.name }}</title>
+  {%- endif -%}
 
   {%- if page_description -%}
     <meta name="description" content="{{ page_description | truncate: 160 }}">
+  {%- else -%}
+    <meta name="description" content="{{ shop.description | truncate: 160 }}">
   {%- endif -%}
 
   {%- if canonical_url -%}
     <link rel="canonical" href="{{ canonical_url }}">
   {%- endif -%}
 
+  {% comment %} === OG / Twitter Cards === {% endcomment %}
+  <meta property="og:site_name" content="{{ shop.name }}">
+  <meta property="og:type" content="{% if template contains 'product' %}product{% elsif template contains 'article' %}article{% else %}website{% endif %}">
+  <meta property="og:title" content="{{ page_title | default: shop.name }}">
+  <meta property="og:url" content="{{ canonical_url | default: shop.url }}">
+  {%- if page_description -%}<meta property="og:description" content="{{ page_description | truncate: 160 }}">{%- endif -%}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title | default: shop.name }}">
+  {%- if page_description -%}<meta name="twitter:description" content="{{ page_description | truncate: 160 }}">{%- endif -%}
+
+  {% comment %} === PRECONNECT / DNS-PREFETCH === {% endcomment %}
   <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
   <link rel="preconnect" href="https://fonts.shopifycdn.com">
 
-  {{ 'base.css' | asset_url | stylesheet_tag }}
-  {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
-  {{ 'component-list-payment.css' | asset_url | stylesheet_tag }}
-  {{ 'component-menu-drawer.css' | asset_url | stylesheet_tag }}
-  {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-  {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
-  {{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}
-  {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
-  {{ 'component-facets.css' | asset_url | stylesheet_tag }}
-  {{ 'component-card.css' | asset_url | stylesheet_tag }}
-  {{ 'component-price.css' | asset_url | stylesheet_tag }}
-  {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
-  {{ 'section-image-banner.css' | asset_url | stylesheet_tag }}
-  {{ 'section-featured-product.css' | asset_url | stylesheet_tag }}
-  {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
-  {{ 'section-footer.css' | asset_url | stylesheet_tag }}
-  {{ 'template-collection.css' | asset_url | stylesheet_tag }}
-  {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
-  {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
-  {{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
-  {{ 'collage.css' | asset_url | stylesheet_tag }}
-  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
-  {{ 'component-slider.css' | asset_url | stylesheet_tag }}
-  {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
-
-  {%- style -%}
+  {% comment %}
+    CRITICAL CSS (inlined in head)
+    Tokens + reset + base + header + hero + layout grid.
+    Renders immediately — no external request blocking first paint.
+    Non-critical CSS loads via base.css below with media=print trick.
+  {% endcomment %}
+  <style>
     :root {
-      --color-background: {{ settings.color_background }};
-      --color-foreground: {{ settings.color_primary }};
-      --color-border: {{ settings.color_border }};
-      --color-base-text: {{ settings.color_primary }};
-      --color-base-text--inverse: {{ settings.color_background }};
-      --color-base-background-1: {{ settings.color_background }};
-      --color-base-background-2: {{ settings.color_secondary }};
-      --color-base-accent-1: {{ settings.color_primary }};
-      --color-base-button-label: {{ settings.color_background }};
-      --color-base-button-background: {{ settings.color_primary }};
-      --font-body-family: {{ settings.font_body }};
-      --font-heading-family: {{ settings.font_heading }};
-      --spacing-unit: {{ settings.spacing_unit }}px;
-      --page-width: {{ settings.container_max_width }}px;
-      --page-gutter: {{ settings.content_padding }}px;
+      /* === Level 1: Primitives === */
+      --t-color-black: #000000;
+      --t-color-white: #ffffff;
+      --t-color-gray-50: #fafafa;
+      --t-color-gray-100: #f5f5f5;
+      --t-color-gray-200: #e5e5e5;
+      --t-color-gray-300: #d4d4d4;
+      --t-color-gray-400: #a3a3a3;
+      --t-color-gray-500: #737373;
+      --t-color-gray-600: #525252;
+      --t-color-gray-700: #404040;
+      --t-color-gray-800: #262626;
+      --t-color-gray-900: #171717;
+      --t-color-gray-950: #0a0a0a;
+      --t-color-red-500: #ff3b30;
+      --t-color-green-500: #30d158;
+      --t-color-orange-500: #ff9500;
+
+      /* === Level 2: Semantic (dark mode = default) === */
+      --t-bg: var(--t-color-black);
+      --t-surface: var(--t-color-gray-950);
+      --t-surface-2: var(--t-color-gray-900);
+      --t-border: var(--t-color-gray-800);
+      --t-border-strong: var(--t-color-white);
+      --t-text: var(--t-color-white);
+      --t-text-muted: var(--t-color-gray-400);
+      --t-text-subtle: var(--t-color-gray-600);
+      --t-accent: var(--t-color-white);
+      --t-accent-red: var(--t-color-red-500);
+      --t-sale: var(--t-color-red-500);
+      --t-success: var(--t-color-green-500);
+      --t-warning: var(--t-color-orange-500);
+      --t-error: var(--t-color-red-500);
+
+      /* === Typography === */
+      --t-font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --t-font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --t-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+      --t-font-size-base: 16px;
+      --t-font-size-display: clamp(3rem, 8vw, 7rem);
+      --t-font-size-h1: clamp(2rem, 5vw, 4rem);
+      --t-font-size-h2: clamp(1.5rem, 3vw, 2.5rem);
+      --t-font-size-h3: clamp(1.125rem, 2vw, 1.5rem);
+      --t-font-size-small: 14px;
+      --t-font-size-meta: 12px;
+      --t-font-size-micro: 10px;
+
+      --t-line-height-tight: 1.05;
+      --t-line-height-snug: 1.25;
+      --t-line-height-normal: 1.6;
+
+      /* === Spacing === */
+      --t-space-1: 4px;
+      --t-space-2: 8px;
+      --t-space-3: 12px;
+      --t-space-4: 16px;
+      --t-space-5: 24px;
+      --t-space-6: 32px;
+      --t-space-8: 48px;
+      --t-space-10: 64px;
+      --t-space-12: 80px;
+      --t-space-16: 128px;
+
+      /* === Layout === */
+      --t-container-max: 1440px;
+      --t-container-pad: clamp(16px, 4vw, 40px);
+      --t-grid-gutter: clamp(12px, 2vw, 24px);
+      --t-radius: 0px;
+
+      /* === Transitions === */
+      --t-transition-fast: 100ms ease;
+      --t-transition-base: 200ms ease;
+      --t-transition-slow: 300ms ease;
+
+      /* === z-index scale === */
+      --t-z-dropdown: 100;
+      --t-z-sticky: 200;
+      --t-z-drawer: 300;
+      --t-z-modal: 400;
+      --t-z-toast: 500;
     }
-  {%- endstyle -%}
+
+    /* Light mode (when user explicitly chooses) */
+    :root[data-theme="light"] {
+      --t-bg: var(--t-color-white);
+      --t-surface: var(--t-color-gray-50);
+      --t-surface-2: var(--t-color-gray-100);
+      --t-border: var(--t-color-gray-200);
+      --t-border-strong: var(--t-color-black);
+      --t-text: var(--t-color-black);
+      --t-text-muted: var(--t-color-gray-600);
+      --t-text-subtle: var(--t-color-gray-400);
+      --t-accent: var(--t-color-black);
+      --t-success: #248a3d;
+      --t-warning: #b26a00;
+      --t-error: #d70015;
+    }
+
+    /* Respect system preference when no user choice stored */
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme]) {
+        --t-bg: var(--t-color-white);
+        --t-surface: var(--t-color-gray-50);
+        --t-surface-2: var(--t-color-gray-100);
+        --t-border: var(--t-color-gray-200);
+        --t-border-strong: var(--t-color-black);
+        --t-text: var(--t-color-black);
+        --t-text-muted: var(--t-color-gray-600);
+        --t-text-subtle: var(--t-color-gray-400);
+        --t-accent: var(--t-color-black);
+        --t-success: #248a3d;
+        --t-warning: #b26a00;
+        --t-error: #d70015;
+      }
+    }
+
+    /* === RESET === */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--t-bg);
+      color: var(--t-text);
+      font-family: var(--t-font-body);
+      font-size: var(--t-font-size-base);
+      line-height: var(--t-line-height-normal);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    img, picture, video, canvas, svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    input, button, textarea, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul, ol { list-style: none; }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--t-font-display);
+      font-weight: 700;
+      line-height: var(--t-line-height-tight);
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: var(--t-font-size-h1); }
+    h2 { font-size: var(--t-font-size-h2); }
+    h3 { font-size: var(--t-font-size-h3); }
+
+    p { margin-bottom: var(--t-space-4); }
+
+    /* === UTILITIES === */
+    .c-visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .skip-to-content-link {
+      position: absolute;
+      top: -100%;
+      left: var(--t-space-4);
+      z-index: var(--t-z-toast);
+      padding: var(--t-space-3) var(--t-space-5);
+      background: var(--t-accent);
+      color: var(--t-bg);
+      font-weight: 600;
+      transition: top var(--t-transition-base);
+    }
+
+    .skip-to-content-link:focus {
+      top: var(--t-space-4);
+    }
+
+    /* === LAYOUT PRIMITIVES === */
+    .c-container {
+      width: 100%;
+      max-width: var(--t-container-max);
+      margin: 0 auto;
+      padding: 0 var(--t-container-pad);
+    }
+
+    .c-section {
+      padding: var(--t-space-10) 0;
+    }
+
+    @media (min-width: 768px) {
+      .c-section {
+        padding: var(--t-space-12) 0;
+      }
+    }
+
+    .c-grid {
+      display: grid;
+      gap: var(--t-grid-gutter);
+    }
+
+    .c-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .c-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .c-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    @media (max-width: 767px) {
+      .c-grid--3, .c-grid--4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* === Reduced motion === */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+
+  {% comment %}
+    NON-CRITICAL CSS (deferred, non-blocking)
+    Components + section styles.
+    media="print" + onload trick = doesn't block rendering.
+  {% endcomment %}
+  <link
+    rel="stylesheet"
+    href="{{ 'base.css' | asset_url }}"
+    media="print"
+    onload="this.media='all'"
+  >
+  <noscript>
+    <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
+  </noscript>
+
+  {{ content_for_header }}
 </head>
-<body class="gradient template--{{ template.name }} {{ settings.page_width }}"
-      data-type="{{ template.type | replace: '404', '404' }}"
-      data-theme-motion="{{ settings.animations_reduce | default: false | json }}">
+
+<body class="template--{{ template.name }} template--{{ template.type }}">
 
   <a href="#MainContent" class="skip-to-content-link">
     Skip to content
   </a>
 
-  <div class="announcement-bar-section">
-    {% sections 'announcement-bar' %}
-  </div>
+  {% comment %} === HEADER SECTION GROUP (PLURAL tag) === {% endcomment %}
+  {% sections 'header-group' %}
 
-  <div class="header-wrapper">
-    {% sections 'header-group' %}
-  </div>
+  {% comment %} === MAIN CONTENT === {% endcomment %}
+  <main id="MainContent" class="content-for-layout focus-none" tabindex="-1" role="main">
+    {{ content_for_layout }}
+  </main>
 
-  <div class="template">
-    <main id="MainContent" class="content-for-layout focus-none" tabindex="-1" role="main">
-      {{ content_for_layout }}
-    </main>
+  {% comment %} === FOOTER SECTION GROUP (PLURAL tag) === {% endcomment %}
+  {% sections 'footer-group' %}
 
-    {% sections 'footer-group' %}
-  </div>
-
-  <div class="cart-notification-wrapper">
-    {% section 'cart-notification-product' %}
-    {% section 'cart-notification-button' %}
-  </div>
-
+  {% comment %} === GLOBAL OVERLAYS (rendered once) === {% endcomment %}
   {% section 'cart-drawer' %}
   {% section 'predictive-search' %}
   {% section 'cart-icon-bubble' %}
   {% section 'cart-live-region-text' %}
 
-  <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'components.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'disclosures.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'share.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'customer.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'main-search.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+  {% comment %} === SCRIPTS (all deferred) === {% endcomment %}
+  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
 
-  {{ content_for_header }}
 </body>
 </html>

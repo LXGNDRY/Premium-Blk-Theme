@@ -1,0 +1,140 @@
+<!doctype html>
+<html class="no-js" lang="{{ shop.locale }}" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ page_title | default: shop.name }}</title>
+  <meta name="robots" content="noindex,nofollow">
+
+  <style>
+    :root {
+      --t-bg: #000000;
+      --t-text: #ffffff;
+      --t-text-muted: #a3a3a3;
+      --t-border: #262626;
+      --t-accent: #ffffff;
+      --t-font-body: system-ui, -apple-system, sans-serif;
+      --t-font-display: system-ui, -apple-system, sans-serif;
+      --t-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme]) {
+        --t-bg: #ffffff;
+        --t-text: #000000;
+        --t-text-muted: #525252;
+        --t-border: #e5e5e5;
+        --t-accent: #000000;
+      }
+    }
+
+    :root[data-theme="light"] {
+      --t-bg: #ffffff;
+      --t-text: #000000;
+      --t-text-muted: #525252;
+      --t-border: #e5e5e5;
+      --t-accent: #000000;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--t-bg);
+      color: var(--t-text);
+      font-family: var(--t-font-body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .gift-card {
+      width: 100%;
+      max-width: 480px;
+      border: 2px solid var(--t-border);
+      padding: 48px 32px;
+      text-align: center;
+    }
+
+    .gift-card__logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--t-font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 32px;
+    }
+
+    .gift-card__label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--t-text-muted);
+      margin-bottom: 8px;
+    }
+
+    .gift-card__code {
+      font-family: var(--t-font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 16px;
+      border: 1px solid var(--t-border);
+      margin-bottom: 32px;
+      word-break: break-all;
+    }
+
+    .gift-card__amount {
+      font-size: 3rem;
+      font-weight: 700;
+      font-family: var(--t-font-display);
+      margin-bottom: 8px;
+    }
+
+    .gift-card__expiry {
+      font-size: 0.875rem;
+      color: var(--t-text-muted);
+      margin-bottom: 32px;
+    }
+
+    .gift-card__divider {
+      height: 1px;
+      background: var(--t-border);
+      margin: 24px 0;
+    }
+
+    .gift-card__footer {
+      font-size: 0.75rem;
+      color: var(--t-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+
+  {{ content_for_header }}
+</head>
+<body>
+  <div class="gift-card">
+    <div class="gift-card__logo">{{ shop.name }}</div>
+
+    <div class="gift-card__label">Gift card</div>
+    <div class="gift-card__amount">{{ gift_card.balance | money }}</div>
+
+    {% if gift_card.expires_on %}
+      <div class="gift-card__expiry">
+        Expires {{ gift_card.expires_on | date: "%B %d, %Y" }}
+      </div>
+    {% endif %}
+
+    <div class="gift-card__divider"></div>
+
+    <div class="gift-card__label">Gift card code</div>
+    <div class="gift-card__code">{{ gift_card.code }}</div>
+
+    <div class="gift-card__footer">
+      Redeem online at {{ shop.url }}
+    </div>
+  </div>
+</body>
+</html>

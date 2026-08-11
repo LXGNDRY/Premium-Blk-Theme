@@ -1,0 +1,23 @@
+{% comment %}
+  robots.txt template
+  Mirrors Shopify's default robots.txt + adds custom rules
+  Uses robots Liquid object for default rules
+{% endcomment %}
+User-agent: *
+
+{% comment %}--- Default Shopify rules ---{% endcomment %}
+{% for rule in robots.rules %}
+{{ rule }}
+{% endfor %}
+
+{% comment %}--- Custom rules ---{% endcomment %}
+Disallow: /cart
+Disallow: /checkout
+Disallow: /search
+Disallow: /policies/
+Disallow: /collections/*+*
+Disallow: /collections/*&*
+Disallow: /account/
+
+{% comment %}--- Sitemap ---{% endcomment %}
+Sitemap: {{ shop.url }}/sitemap.xml
