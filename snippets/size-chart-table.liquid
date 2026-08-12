@@ -1,0 +1,55 @@
+{% comment %}
+  size-chart-table.liquid
+  The actual table content used by both inline and modal size chart variants.
+  Reads from product.metafields.product.size_chart if available,
+  otherwise renders a default size chart.
+{% endcomment %}
+
+{%- liquid
+  assign _rows = ''
+  if product and product.metafields.product.size_chart
+    assign _rows = product.metafields.product.size_chart
+  endif
+-%}
+
+{% if _rows != blank and _rows contains '|' %}
+  {% assign _lines = _rows | newline_to_br | split: '<br />' %}
+  <table>
+    {% for line in _lines %}
+      {% assign line = line | strip %}
+      {% if line != blank %}
+        {% assign cells = line | split: '|' %}
+        <tr>
+          {% for cell in cells %}
+            {% assign cell = cell | strip %}
+            {% if forloop.first %}
+              <th scope="row">{{ cell }}</th>
+            {% else %}
+              <td>{{ cell }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+{% else %}
+  {% comment %} Default size chart for apparel {% endcomment %}
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Size</th>
+        <th scope="col">Chest (in)</th>
+        <th scope="col">Length (in)</th>
+        <th scope="col">Sleeve (in)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">XS</th><td>34-36</td><td>26</td><td>24</td></tr>
+      <tr><th scope="row">S</th><td>36-38</td><td>27</td><td>24.5</td></tr>
+      <tr><th scope="row">M</th><td>38-40</td><td>28</td><td>25</td></tr>
+      <tr><th scope="row">L</th><td>40-42</td><td>29</td><td>25.5</td></tr>
+      <tr><th scope="row">XL</th><td>42-44</td><td>30</td><td>26</td></tr>
+      <tr><th scope="row">XXL</th><td>44-46</td><td>31</td><td>26.5</td></tr>
+    </tbody>
+  </table>
+{% endif %}

@@ -1327,7 +1327,108 @@
       }
     }
 
-    PubSub.publish('theme:ready');
+    /**
+   * InstantPage — hover prefetch for instant navigation feel
+   * Prefetches internal links on hover so they load instantly when clicked.
+   * Respects reduced-motion and data-disable-prefetch attributes.
+   */
+  const InstantPage = (() => {
+    const prefetched = new Set();
+    let enabled = true;
+
+    const init = () => {
+      // Respect reduced motion preference
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        enabled = false;
+        return;
+      }
+
+      // Don't prefetch on slow connections
+      if (navigator.connection &&
+          (navigator.connection.saveData ||
+           navigator.connection.effectiveType === 'slow-2g' ||
+           navigator.connection.effectiveType === '2g')) {
+        enabled = false;
+        return;
+      }
+
+      // Use event delegation on document
+      document.addEventListener('mouseover', handleMouseOver, { passive: true });
+      document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    };
+
+    const shouldPrefetch = (url) => {
+      if (!enabled) return false;
+      if (!url) return false;
+
+      // Only prefetch same-origin
+      try {
+        const u = new URL(url, window.location.origin);
+        if (u.origin !== window.location.origin) return false;
+
+        // Skip non-page links
+        if (u.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|pdf|zip|js|css|json)$/i)) return false;
+
+        // Skip hash links
+        if (u.hash && u.pathname === window.location.pathname) return false;
+
+        // Skip already prefetched
+        if (prefetched.has(u.pathname)) return false;
+
+        // Skip pages with disable attribute
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+
+    const prefetch = (url) => {
+      try {
+        const u = new URL(url, window.location.origin);
+        const key = u.pathname;
+        if (prefetched.has(key)) return;
+        prefetched.add(key);
+
+        // Use link prefetch for best browser support
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = url;
+        link.as = 'document';
+        document.head.appendChild(link);
+      } catch (e) {
+        // Silently fail — prefetch is a progressive enhancement
+      }
+    };
+
+    let hoverTimer = null;
+
+    const handleMouseOver = (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      if (link.dataset.disablePrefetch !== undefined) return;
+      if (!shouldPrefetch(link.href)) return;
+
+      // Wait 80ms before prefetching to avoid prefetching on quick mouse-through
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => {
+        prefetch(link.href);
+      }, 80);
+    };
+
+    const handleTouchStart = (e) => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      if (!shouldPrefetch(link.href)) return;
+      prefetch(link.href);
+    };
+
+    return { init, prefetch };
+  })();
+
+  window.__theme.InstantPage = InstantPage;
+  InstantPage.init();
+
+  PubSub.publish('theme:ready');
 
     // Refresh cart badge on load
     if (CartAPI) {

@@ -81,6 +81,41 @@
       "id": "show_returns",
       "label": "Show returns accordion",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_chart",
+      "label": "Show size chart accordion",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "size_chart_modal",
+      "label": "Open size chart in modal",
+      "default": false,
+      "info": "If enabled, shows a link that opens the size chart in a modal popup."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_indicator",
+      "label": "Show stock indicator",
+      "default": true,
+      "info": "Shows inventory count and low-stock warnings on the product page."
+    },
+    {
+      "type": "number",
+      "id": "low_stock_threshold",
+      "label": "Low stock threshold",
+      "default": 5,
+      "min": 1,
+      "max": 50,
+      "info": "Show 'Only X left' when inventory falls below this number."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Show share buttons",
+      "default": true
     }
   ],
   "blocks": [
@@ -263,6 +298,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--t-space-3);
+}
+
+.s-main-product__stock {
+  margin: var(--t-space-3) 0;
+}
+
+.s-main-product__share {
+  margin-top: var(--t-space-5);
+  padding-top: var(--t-space-5);
+  border-top: 1px solid var(--t-border);
 }
 
 .s-main-product__qty-atc {
@@ -471,6 +516,17 @@
           {% endfor %}
         {% endif %}
 
+        {% comment %} Stock indicator {% endcomment %}
+        {% if section.settings.show_stock_indicator %}
+          <div class="s-main-product__stock">
+            {% render 'component-stock-indicator',
+              product: _product,
+              show_count: true,
+              low_threshold: section.settings.low_stock_threshold
+            %}
+          </div>
+        {% endif %}
+
         {% comment %} Quantity + add to cart {% endcomment %}
         <div class="s-main-product__actions">
           {% if _product.available %}
@@ -550,6 +606,20 @@
               </div>
             {% endif %}
 
+            {% if section.settings.show_size_chart %}
+              <div class="c-accordion__item" aria-expanded="false">
+                <button class="c-accordion__trigger">
+                  <span>{{ 'products.product.size_chart' | t | default: 'Size chart' }}</span>
+                  <span class="c-accordion__icon" aria-hidden="true"></span>
+                </button>
+                <div class="c-accordion__content">
+                  <div class="c-accordion__body">
+                    {% render 'size-chart-table', product: product %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
             {% for block in section.blocks %}
               {% if block.type == 'accordion' %}
                 <div class="c-accordion__item" aria-expanded="false" data-block-id="{{ block.id }}">
@@ -567,6 +637,16 @@
             {% endfor %}
           </ui-accordion>
         </div>
+
+        {% comment %} Share buttons {% endcomment %}
+        {% if section.settings.show_share %}
+          <div class="s-main-product__share">
+            {% render 'component-share-buttons',
+              title: _product.title,
+              url: _product.url | absolute_url
+            %}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>

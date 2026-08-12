@@ -91,6 +91,13 @@
     },
     {
       "type": "checkbox",
+      "id": "show_currency",
+      "label": "Show currency switcher",
+      "default": false,
+      "info": "Requires Shopify Markets to be enabled with multiple currencies."
+    },
+    {
+      "type": "checkbox",
       "id": "show_account",
       "label": "Show account",
       "default": false
@@ -602,6 +609,7 @@
   assign has_cart = section.settings.show_cart
   assign has_account = section.settings.show_account
   assign has_theme_toggle = section.settings.show_theme_toggle
+  assign has_currency = section.settings.show_currency
 
   assign header_class = 's-header'
   if has_separator
@@ -783,6 +791,10 @@
           </theme-toggle>
         {% endif %}
 
+        {% if has_currency %}
+          {% render 'component-currency-switcher' %}
+        {% endif %}
+
         {% if has_cart %}
           <a
             href="/cart"
@@ -865,6 +877,11 @@
               <line x1="12" y1="21" x2="12" y2="23"></line>
             </svg>
           </theme-toggle>
+        {% endif %}
+        {% if has_currency %}
+          <div class="s-header__currency-mobile">
+            {% render 'component-currency-switcher' %}
+          </div>
         {% endif %}
         {% if has_cart %}
           <a href="/cart" class="s-header__icon-btn" aria-label="Cart">

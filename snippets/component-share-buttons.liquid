@@ -1,0 +1,206 @@
+{% comment %}
+  component-share-buttons.liquid
+  Social media share buttons for product pages and blog posts.
+  Accepts:
+    - title: text to share (default: product.title or page.title)
+    - url: URL to share (default: canonical URL)
+    - platforms: list of platforms (default: facebook, twitter, pinterest, email)
+{% endcomment %}
+
+{%- liquid
+  assign _title = title | default: product.title
+  assign _url = url
+  if _url == blank
+    assign _url = shop.url | append: request.path
+  endif
+  assign _encoded_title = _title | url_param_escape
+  assign _encoded_url = _url | url_param_escape
+-%}
+
+{% stylesheet %}
+.c-share {
+  display: flex;
+  align-items: center;
+  gap: var(--t-space-3);
+  flex-wrap: wrap;
+}
+
+.c-share__label {
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: var(--t-space-2);
+}
+
+.c-share__list {
+  display: flex;
+  gap: var(--t-space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.c-share__item {
+  margin: 0;
+}
+
+.c-share__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--t-border);
+  color: var(--t-text);
+  background: var(--t-bg);
+  transition: all var(--t-transition-fast);
+}
+
+.c-share__link:hover {
+  background: var(--t-text);
+  color: var(--t-bg);
+  border-color: var(--t-text);
+}
+
+.c-share__link svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 768px) {
+  .c-share {
+    gap: var(--t-space-2);
+  }
+
+  .c-share__link {
+    width: 32px;
+    height: 32px;
+  }
+}
+{% endstylesheet %}
+
+<div class="c-share">
+  <span class="c-share__label">{{ 'products.general.share' | t | default: 'Share' }}</span>
+  <ul class="c-share__list" data-share-buttons>
+    <li class="c-share__item">
+      <a
+        class="c-share__link"
+        href="https://www.facebook.com/sharer/sharer.php?u={{ _encoded_url }}&t={{ _encoded_title }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on Facebook"
+        title="Share on Facebook"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+      </a>
+    </li>
+    <li class="c-share__item">
+      <a
+        class="c-share__link"
+        href="https://twitter.com/intent/tweet?text={{ _encoded_title }}&url={{ _encoded_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on Twitter"
+        title="Share on Twitter"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+    </li>
+    <li class="c-share__item">
+      <a
+        class="c-share__link"
+        href="https://pinterest.com/pin/create/button/?url={{ _encoded_url }}&description={{ _encoded_title }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on Pinterest"
+        title="Share on Pinterest"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+        </svg>
+      </a>
+    </li>
+    <li class="c-share__item">
+      <a
+        class="c-share__link"
+        href="mailto:?subject={{ _encoded_title }}&body={{ _encoded_url }}"
+        aria-label="Share via email"
+        title="Share via email"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </a>
+    </li>
+    <li class="c-share__item">
+      <button
+        type="button"
+        class="c-share__link"
+        data-share-copy
+        aria-label="Copy link"
+        title="Copy link"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      </button>
+    </li>
+  </ul>
+</div>
+
+{% javascript %}
+class ShareButtons extends HTMLElement {
+  constructor() { super(); }
+
+  connectedCallback() {
+    this.copyBtn = this.querySelector('[data-share-copy]');
+    if (this.copyBtn) {
+      this.copyBtn.addEventListener('click', () => this.copyLink());
+    }
+
+    // Open share links in popup
+    this.querySelectorAll('a[target="_blank"]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const url = link.getAttribute('href');
+        if (url && (url.includes('facebook.com') || url.includes('twitter.com') || url.includes('pinterest.com'))) {
+          e.preventDefault();
+          window.open(url, 'share', 'width=600,height=400,scrollbars=yes');
+        }
+      });
+    });
+  }
+
+  async copyLink() {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      const original = this.copyBtn.innerHTML;
+      this.copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      this.copyBtn.setAttribute('aria-label', 'Link copied');
+      setTimeout(() => {
+        this.copyBtn.innerHTML = original;
+        this.copyBtn.setAttribute('aria-label', 'Copy link');
+      }, 2000);
+    } catch (err) {
+      // Fallback
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+    }
+  }
+}
+
+if (!customElements.get('share-buttons')) {
+  customElements.define('share-buttons', ShareButtons);
+}
+{% endjavascript %}

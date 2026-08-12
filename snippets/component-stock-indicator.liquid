@@ -1,0 +1,138 @@
+{% comment %}
+  component-stock-indicator.liquid
+  Shows stock status with urgency indicators.
+  Accepts:
+    - product: product object
+    - variant: variant object (optional, defaults to first available)
+    - show_count: whether to show exact count (default: true)
+    - low_threshold: count at which to show "low stock" warning (default: 5)
+{% endcomment %}
+
+{%- liquid
+  assign _variant = variant
+  if _variant == nil
+    assign _variant = product.selected_or_first_available_variant
+  endif
+  assign _show_count = show_count | default: true
+  assign _low = low_threshold | default: 5
+  assign _inventory = 0
+  if _variant and _variant.inventory_quantity
+    assign _inventory = _variant.inventory_quantity
+  endif
+  assign _available = false
+  if _variant and _variant.available
+    assign _available = true
+  endif
+  assign _inventory_policy = _variant.inventory_policy | default: 'deny'
+  assign _tracked = _variant.inventory_management | default: ''
+-%}
+
+{% stylesheet %}
+.c-stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-font-size-small);
+}
+
+.c-stock--low {
+  color: var(--t-accent-red);
+  font-weight: 600;
+}
+
+.c-stock--out {
+  color: var(--t-error);
+  font-weight: 600;
+}
+
+.c-stock--in {
+  color: var(--t-success);
+  font-weight: 500;
+}
+
+.c-stock__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.c-stock__bar {
+  flex: 1;
+  height: 4px;
+  background: var(--t-border);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 120px;
+}
+
+.c-stock__bar-fill {
+  height: 100%;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.c-stock__label {
+  flex-shrink: 0;
+}
+{% endstylesheet %}
+
+<div class="c-stock {% if _available == false %}c-stock--out{% elsif _inventory > 0 and _inventory <= _low %}c-stock--low{% else %}c-stock--in{% endif %}" data-stock-indicator data-variant-id="{{ _variant.id }}">
+  <span class="c-stock__dot" aria-hidden="true"></span>
+  <span class="c-stock__label">
+    {% if _available == false %}
+      {{ 'product.stock.out_of_stock' | t | default: 'Out of stock' }}
+    {% elsif _tracked == blank or _tracked == nil %}
+      {{ 'product.stock.in_stock' | t | default: 'In stock' }}
+    {% elsif _inventory <= 0 and _inventory_policy == 'continue' %}
+      {{ 'product.stock.available_on_backorder' | t | default: 'Available on backorder' }}
+    {% elsif _inventory <= _low and _inventory > 0 %}
+      {% if _show_count %}
+        {{ 'product.stock.only_x_left' | t | default: 'Only {{ count }} left in stock' | replace: '{{ count }}', _inventory }}
+      {% else %}
+        {{ 'product.stock.low_stock' | t | default: 'Low stock — order soon' }}
+      {% endif %}
+    {% else %}
+      {% if _show_count %}
+        {{ 'product.stock.x_in_stock' | t | default: '{{ count }} in stock' | replace: '{{ count }}', _inventory }}
+      {% else %}
+        {{ 'product.stock.in_stock' | t | default: 'In stock' }}
+      {% endif %}
+    {% endif %}
+  </span>
+  {% if _tracked != blank and _inventory > 0 and _inventory <= 20 %}
+    <span class="c-stock__bar" aria-hidden="true">
+      <span class="c-stock__bar-fill" style="width: {{ _inventory | times: 5 }}%"></span>
+    </span>
+  {% endif %}
+</div>
+
+{% javascript %}
+class StockIndicator extends HTMLElement {
+  constructor() { super(); }
+  connectedCallback() { this.init(); }
+  init() {
+    this.variantId = this.dataset.variantId;
+    // Listen for variant change events to update stock
+    document.addEventListener('variant:change', (e) => {
+      if (!e.detail || !e.detail.variant) return;
+      this.update(e.detail.variant);
+    });
+  }
+
+  update(variant) {
+    if (!variant) return;
+    // For now, the server renders the correct variant's stock.
+    // Full dynamic update requires fetching inventory via AJAX —
+    // which needs the Storefront API. This is a UI shell that updates
+    // when the parent product page re-renders the indicator.
+    this.variantId = variant.id;
+  }
+}
+
+if (!customElements.get('stock-indicator')) {
+  customElements.define('stock-indicator', StockIndicator);
+}
+{% endjavascript %}
