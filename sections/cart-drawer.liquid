@@ -91,6 +91,12 @@
       "type": "image_picker",
       "id": "gwp_image",
       "label": "Gift image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount",
+      "label": "Show discount code field",
+      "default": false
     }
   ],
   "presets": [
@@ -502,6 +508,32 @@
   background: var(--t-accent);
   transition: width 0.5s var(--t-ease-out);
 }
+
+/* Discount code */
+.s-cart-drawer__discount {
+  margin: var(--t-space-3) 0;
+}
+
+.s-cart-drawer__discount-form {
+  display: flex;
+  gap: var(--t-space-2);
+}
+
+.s-cart-drawer__discount-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: var(--t-font-size-small);
+  min-width: 0;
+}
+
+.s-cart-drawer__discount-input:focus {
+  outline: none;
+  border-color: var(--t-text);
+}
 {% endstylesheet %}
 
 <div
@@ -674,6 +706,24 @@
             {{ cart.total_price | money }}
           </span>
         </div>
+
+        {% comment %} Discount code {% endcomment %}
+        {% if section.settings.show_discount and cart.item_count > 0 %}
+          <div class="s-cart-drawer__discount" data-discount-code>
+            <form class="s-cart-drawer__discount-form" method="post" action="/cart/update">
+              <input type="hidden" name="discount" value="">
+              <input
+                type="text"
+                class="s-cart-drawer__discount-input"
+                name="discount_code"
+                placeholder="{{ 'cart.general.discount_placeholder' | t | default: 'Discount code' }}"
+              >
+              <button type="submit" class="c-btn c-btn--secondary c-btn--sm">
+                {{ 'cart.general.apply' | t | default: 'Apply' }}
+              </button>
+            </form>
+          </div>
+        {% endif %}
 
         {% comment %} App block: cart drawer above checkout {% endcomment %}
         <div class="s-cart-drawer__app-block">

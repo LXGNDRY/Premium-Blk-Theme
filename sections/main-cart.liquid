@@ -44,6 +44,46 @@
       "id": "show_discount",
       "label": "Show discount code field",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Gift with purchase"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gwp",
+      "label": "Show gift-with-purchase progress",
+      "default": false
+    },
+    {
+      "type": "number",
+      "id": "gwp_threshold",
+      "label": "Threshold ($)",
+      "default": 100,
+      "info": "Free gift when cart subtotal reaches this amount"
+    },
+    {
+      "type": "text",
+      "id": "gwp_title",
+      "label": "Gift title",
+      "default": "Free gift"
+    },
+    {
+      "type": "text",
+      "id": "gwp_message",
+      "label": "Progress message",
+      "default": "Spend {remaining} more to get your free gift!"
+    },
+    {
+      "type": "text",
+      "id": "gwp_achieved_message",
+      "label": "Achieved message",
+      "default": "You got your free gift!"
+    },
+    {
+      "type": "image_picker",
+      "id": "gwp_image",
+      "label": "Gift image"
     }
   ],
   "presets": [
@@ -355,6 +395,73 @@
 .s-main-cart__discount-message.is-error {
   color: #ef4444;
 }
+
+/* Gift with purchase */
+.s-main-cart__gwp {
+  display: flex;
+  align-items: center;
+  gap: var(--t-space-4);
+  padding: var(--t-space-4);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  margin: var(--t-space-3) 0;
+}
+
+.s-main-cart__gwp-image {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  background: var(--t-bg);
+  overflow: hidden;
+}
+
+.s-main-cart__gwp-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-main-cart__gwp-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.s-main-cart__gwp-title {
+  font-size: var(--t-font-size-base);
+  font-weight: 700;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.s-main-cart__gwp-message {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+  margin: 0 0 var(--t-space-2);
+}
+
+.s-main-cart__gwp-bar {
+  height: 6px;
+  background: var(--t-border);
+  overflow: hidden;
+}
+
+.s-main-cart__gwp-bar-fill {
+  height: 100%;
+  background: var(--t-accent);
+  transition: width 0.5s var(--t-ease-out);
+}
+
+@media (max-width: 639px) {
+  .s-main-cart__gwp {
+    padding: var(--t-space-3);
+    gap: var(--t-space-3);
+  }
+  .s-main-cart__gwp-image {
+    width: 56px;
+    height: 56px;
+  }
+}
 {% endstylesheet %}
 
 {%- liquid
@@ -363,6 +470,17 @@
   assign _sticky_checkout = section.settings.sticky_checkout
   assign _show_trust = section.settings.show_trust_badges
   assign _show_discount = section.settings.show_discount
+  assign _show_gwp = section.settings.show_gwp
+  assign _gwp_threshold = section.settings.gwp_threshold | times: 100
+  assign _gwp_total = cart.total_price
+  assign _gwp_pct = 0
+  if _gwp_threshold > 0
+    assign _gwp_pct = _gwp_total | divided_by: _gwp_threshold | times: 100
+    if _gwp_pct > 100
+      assign _gwp_pct = 100
+    endif
+  endif
+  assign _gwp_remaining = _gwp_threshold | minus: _gwp_total
 
   assign _section_class = 's-main-cart'
   if _sticky_checkout
@@ -509,6 +627,30 @@
           <div class="s-main-cart__app-block s-main-cart__app-block--above-checkout">
             {% @themeapp 'cart_above_checkout' %}
           </div>
+
+          {% comment %} Gift with purchase {% endcomment %}
+          {% if _show_gwp %}
+            <div class="s-main-cart__gwp" data-gwp data-threshold="{{ _gwp_threshold }}">
+              {% if section.settings.gwp_image %}
+                <div class="s-main-cart__gwp-image">
+                  <img src="{{ section.settings.gwp_image | img_url: '200x' }}" alt="{{ section.settings.gwp_title | escape }}" loading="lazy">
+                </div>
+              {% endif %}
+              <div class="s-main-cart__gwp-content">
+                <p class="s-main-cart__gwp-title">{{ section.settings.gwp_title | escape }}</p>
+                <p class="s-main-cart__gwp-message">
+                  {% if cart.total_price >= _gwp_threshold %}
+                    {{ section.settings.gwp_achieved_message | escape }}
+                  {% else %}
+                    {{ section.settings.gwp_message | replace: '{remaining}', _gwp_remaining | money }}
+                  {% endif %}
+                </p>
+                <div class="s-main-cart__gwp-bar">
+                  <div class="s-main-cart__gwp-bar-fill" style="width: {{ _gwp_pct }}%;" data-gwp-fill></div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
 
           {% comment %} Discount code {% endcomment %}
           {% if section.settings.show_discount %}
