@@ -158,6 +158,20 @@
       "id": "show_share",
       "label": "Show share buttons",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "back_in_stock",
+      "label": "Show back-in-stock form",
+      "default": true,
+      "info": "Show an email signup form when a product/variant is sold out"
+    },
+    {
+      "type": "text",
+      "id": "back_in_stock_form_action",
+      "label": "Back-in-stock form endpoint",
+      "default": "",
+      "info": "Klaviyo / Mailchimp / custom endpoint URL. Leave blank for demo."
     }
   ],
   "blocks": [
@@ -323,6 +337,53 @@
 
 .s-main-product__video-close:hover {
   background: rgba(255,255,255,0.2);
+}
+
+/* Back in stock form */
+.s-main-product__back-in-stock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+}
+
+.s-main-product__bis-text {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.s-main-product__bis-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+  margin-top: var(--t-space-1);
+}
+
+.s-main-product__bis-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: var(--t-font-size-body);
+  box-sizing: border-box;
+}
+
+.s-main-product__bis-input:focus {
+  outline: none;
+  border-color: var(--t-text);
+}
+
+.s-main-product__bis-success {
+  margin: 0;
+  padding: var(--t-space-3);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  font-size: var(--t-font-size-small);
+  color: var(--t-text);
+  text-align: center;
+  font-weight: 600;
 }
 
 /* Image Zoom (from component-image-zoom) */
@@ -930,9 +991,52 @@
               </div>
             </form>
           {% else %}
-            <button type="button" class="c-btn c-btn--primary" disabled>
-              {{ 'products.product.sold_out' | t | default: 'Sold out' }}
-            </button>
+            {% if section.settings.back_in_stock %}
+              <div class="s-main-product__back-in-stock" data-back-in-stock>
+                <button type="button" class="c-btn c-btn--primary c-btn--full" disabled>
+                  {{ 'products.product.sold_out' | t | default: 'Sold out' }}
+                </button>
+                <p class="s-main-product__bis-text">
+                  {{ 'products.product.bis_note' | t | default: 'Get notified when this is back in stock.' }}
+                </p>
+                <form
+                  class="s-main-product__bis-form"
+                  data-bis-form
+                  action="{{ section.settings.back_in_stock_form_action }}"
+                  method="post"
+                >
+                  <input
+                    type="hidden"
+                    name="product"
+                    value="{{ _product.title | escape }}"
+                  >
+                  <input
+                    type="hidden"
+                    name="variant"
+                    value="{{ _product.selected_or_first_available_variant.title | escape }}"
+                    data-bis-variant
+                  >
+                  <input
+                    type="email"
+                    name="email"
+                    class="s-main-product__bis-input"
+                    placeholder="{{ 'products.product.bis_email' | t | default: 'Enter your email' }}"
+                    required
+                    data-bis-email
+                  >
+                  <button type="submit" class="c-btn c-btn--secondary c-btn--full">
+                    {{ 'products.product.bis_submit' | t | default: 'Notify me' }}
+                  </button>
+                </form>
+                <p class="s-main-product__bis-success" data-bis-success hidden>
+                  {{ 'products.product.bis_success' | t | default: 'Thanks! We\u2019ll email you when it\u2019s back.' }}
+                </p>
+              </div>
+            {% else %}
+              <button type="button" class="c-btn c-btn--primary" disabled>
+                {{ 'products.product.sold_out' | t | default: 'Sold out' }}
+              </button>
+            {% endif %}
           {% endif %}
         </div>
 
@@ -1225,6 +1329,7 @@ class MainProductSection extends HTMLElement {
     this.bindEvents();
     this.bindAddToCart();
     this.initImageZoom();
+    this.initBackInStock();
   }
 
   disconnectedCallback() {
@@ -1257,8 +1362,15 @@ class MainProductSection extends HTMLElement {
         this.product = JSON.parse(jsonEl.textContent.trim());
       } catch (e) {
         console.warn('Failed to parse product JSON:', e);
+        this.product = null;
       }
     }
+
+    // Back in stock
+    this.bisForm = this.querySelector('[data-bis-form]');
+    this.bisSuccess = this.querySelector('[data-bis-success]');
+    this.bisEmailInput = this.querySelector('[data-bis-email]');
+    this.bisVariantInput = this.querySelector('[data-bis-variant]');
   }
 
   initVariantSelector() {
@@ -1433,6 +1545,29 @@ class MainProductSection extends HTMLElement {
       this.thumbs[0].classList.add('is-active');
       this.thumbs[0].setAttribute('aria-selected', 'true');
     }
+  }
+
+  initBackInStock() {
+    if (!this.bisForm) return;
+
+    this.bisForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = this.bisEmailInput?.value;
+      if (!email) return;
+
+      // If form has action URL, submit via fetch
+      const action = this.bisForm.getAttribute('action');
+      if (action && action !== '') {
+        fetch(action, {
+          method: 'POST',
+          body: new FormData(this.bisForm)
+        }).catch(() => {}); // Silent fail for demo
+      }
+
+      // Show success
+      this.bisForm.style.display = 'none';
+      if (this.bisSuccess) this.bisSuccess.hidden = false;
+    });
   }
 
   initImageZoom() {

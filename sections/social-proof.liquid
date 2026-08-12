@@ -1,0 +1,450 @@
+{% comment %}
+  social-proof.liquid
+  Floating social proof / recent activity notification widget.
+  Shows recent purchases, signups, or product views with timed cycling.
+  Block-based: each block is a notification.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Social proof",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "Enable social proof",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "default": "bottom-left",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "display_duration",
+      "label": "Display duration (seconds)",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "cycle_interval",
+      "label": "Cycle interval (seconds)",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "default": 15
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show product image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "activity_type",
+      "label": "Default activity type",
+      "default": "purchased",
+      "options": [
+        { "value": "purchased", "label": "Someone purchased" },
+        { "value": "viewing", "label": "Someone is viewing" },
+        { "value": "added", "label": "Someone added to cart" },
+        { "value": "signed_up", "label": "Someone signed up" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "notification",
+      "name": "Notification",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Product image"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Product / person name",
+          "default": "Graphic Tee"
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Location (city, state)",
+          "default": "Los Angeles, CA"
+        },
+        {
+          "type": "select",
+          "id": "activity",
+          "label": "Activity",
+          "default": "purchased",
+          "options": [
+            { "value": "purchased", "label": "Purchased" },
+            { "value": "viewing", "label": "Viewing" },
+            { "value": "added", "label": "Added to cart" },
+            { "value": "signed_up", "label": "Signed up" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "time_ago",
+          "label": "Time ago text",
+          "default": "2 minutes ago"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social proof",
+      "category": "Promotional",
+      "blocks": [
+        { "type": "notification", "settings": { "name": "Oversized Hoodie", "location": "Brooklyn, NY", "activity": "purchased", "time_ago": "3 minutes ago" } },
+        { "type": "notification", "settings": { "name": "Cargo Pants", "location": "Austin, TX", "activity": "viewing", "time_ago": "just now" } },
+        { "type": "notification", "settings": { "name": "Leather Jacket", "location": "Seattle, WA", "activity": "added", "time_ago": "1 hour ago" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-social-proof {
+  position: fixed;
+  bottom: 24px;
+  z-index: 9000;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+
+.s-social-proof--bottom-left { left: 24px; }
+.s-social-proof--bottom-right { right: 24px; }
+
+.s-social-proof__card {
+  background: var(--t-bg);
+  color: var(--t-text);
+  border: 1px solid var(--t-border);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s var(--t-ease-out);
+}
+
+.s-social-proof.is-visible .s-social-proof__card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.s-social-proof__image {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  background: var(--t-surface);
+  overflow: hidden;
+}
+
+.s-social-proof__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-social-proof__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.s-social-proof__activity {
+  font-size: var(--t-font-size-meta);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--t-accent);
+  margin: 0;
+}
+
+.s-social-proof__name {
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-social-proof__meta {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.s-social-proof__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  display: inline-block;
+  animation: s-social-proof-pulse 2s ease-in-out infinite;
+}
+
+@keyframes s-social-proof-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.s-social-proof__close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  color: var(--t-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.s-social-proof__close:hover {
+  color: var(--t-text);
+}
+
+.s-social-proof__link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+@media (max-width: 639px) {
+  .s-social-proof {
+    width: 280px;
+  }
+
+  .s-social-proof--bottom-left { left: 12px; }
+  .s-social-proof--bottom-right { right: 12px; }
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _enable = section.settings.enable
+  assign _position = section.settings.position
+  assign _duration = section.settings.display_duration
+  assign _interval = section.settings.cycle_interval
+  assign _show_image = section.settings.show_image
+  assign _default_activity = section.settings.activity_type
+  assign _notifications = section.blocks
+-%}
+
+{% if _enable and _notifications.size > 0 %}
+<div
+  class="s-social-proof s-social-proof--{{ _position }}"
+  data-social-proof
+  data-duration="{{ _duration }}"
+  data-interval="{{ _interval }}"
+  data-position="{{ _position }}"
+>
+  <div class="s-social-proof__card">
+    <button type="button" class="s-social-proof__close" data-social-proof-close aria-label="Close notification">&times;</button>
+
+    {% if _show_image %}
+      <div class="s-social-proof__image" data-sp-image></div>
+    {% endif %}
+
+    <div class="s-social-proof__content">
+      <p class="s-social-proof__activity" data-sp-activity>
+        <span class="s-social-proof__dot"></span>
+        <span data-sp-activity-text>Someone purchased</span>
+      </p>
+      <p class="s-social-proof__name" data-sp-name>Product name</p>
+      <p class="s-social-proof__meta" data-sp-meta>Location — 2 min ago</p>
+    </div>
+  </div>
+
+  <script type="application/json" data-sp-data>
+    {
+      "notifications": [
+        {% for block in _notifications %}
+          {
+            "image": "{{ block.settings.image | img_url: '200x' }}",
+            "name": {{ block.settings.name | json }},
+            "location": {{ block.settings.location | json }},
+            "activity": {{ block.settings.activity | json }},
+            "timeAgo": {{ block.settings.time_ago | json }},
+            "link": {{ block.settings.link | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    }
+  </script>
+</div>
+{% endif %}
+
+{% javascript %}
+class SocialProof extends HTMLElement {
+  constructor() {
+    super();
+    this.currentIndex = 0;
+    this.dismissed = false;
+    this.notifications = [];
+  }
+
+  connectedCallback() {
+    // Check cookie
+    if (this._getCookie('social_proof_dismissed') === 'true') {
+      this.dismissed = true;
+      return;
+    }
+
+    this.duration = (parseFloat(this.dataset.duration) || 6) * 1000;
+    this.interval = (parseFloat(this.dataset.interval) || 15) * 1000;
+
+    // Load data
+    const dataEl = this.querySelector('[data-sp-data]');
+    if (dataEl) {
+      try {
+        const data = JSON.parse(dataEl.textContent);
+        this.notifications = data.notifications || [];
+      } catch (e) {
+        this.notifications = [];
+      }
+    }
+
+    if (this.notifications.length === 0) return;
+
+    // Elements
+    this.imageEl = this.querySelector('[data-sp-image]');
+    this.activityTextEl = this.querySelector('[data-sp-activity-text]');
+    this.nameEl = this.querySelector('[data-sp-name]');
+    this.metaEl = this.querySelector('[data-sp-meta]');
+
+    // Close button
+    this.querySelector('[data-social-proof-close]')?.addEventListener('click', () => this._dismiss());
+
+    // Start cycle
+    this._showCurrent();
+    this._startCycle();
+  }
+
+  _showCurrent() {
+    if (this.dismissed) return;
+
+    const n = this.notifications[this.currentIndex];
+    if (!n) return;
+
+    // Activity text
+    const activityText = this._activityLabel(n.activity);
+    if (this.activityTextEl) this.activityTextEl.textContent = activityText;
+
+    // Name
+    if (this.nameEl) this.nameEl.textContent = n.name;
+
+    // Meta
+    if (this.metaEl) {
+      this.metaEl.textContent = n.location ? `${n.location} — ${n.timeAgo}` : n.timeAgo;
+    }
+
+    // Image
+    if (this.imageEl && n.image) {
+      this.imageEl.innerHTML = `<img src="${n.image}" alt="${n.name}" loading="lazy">`;
+    } else if (this.imageEl) {
+      this.imageEl.innerHTML = '';
+    }
+
+    // Show
+    this.classList.add('is-visible');
+
+    // Hide after duration
+    if (this._showTimer) clearTimeout(this._showTimer);
+    this._showTimer = setTimeout(() => {
+      this.classList.remove('is-visible');
+    }, this.duration);
+  }
+
+  _startCycle() {
+    if (this._cycleTimer) clearInterval(this._cycleTimer);
+    this._cycleTimer = setInterval(() => {
+      this.currentIndex = (this.currentIndex + 1) % this.notifications.length;
+      // Slight delay after hiding before showing next
+      setTimeout(() => this._showCurrent(), 500);
+    }, this.interval);
+  }
+
+  _activityLabel(activity) {
+    const labels = {
+      'purchased': 'Someone just purchased',
+      'viewing': 'Someone is viewing',
+      'added': 'Someone added to cart',
+      'signed_up': 'Someone just signed up'
+    };
+    return labels[activity] || 'Recent activity';
+  }
+
+  _dismiss() {
+    this.dismissed = true;
+    this.classList.remove('is-visible');
+    this._setCookie('social_proof_dismissed', 'true', 1); // 1 day
+    if (this._cycleTimer) clearInterval(this._cycleTimer);
+    if (this._showTimer) clearTimeout(this._showTimer);
+  }
+
+  _getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  _setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+  }
+
+  disconnectedCallback() {
+    if (this._cycleTimer) clearInterval(this._cycleTimer);
+    if (this._showTimer) clearTimeout(this._showTimer);
+  }
+}
+
+if (!customElements.get('social-proof-widget')) {
+  customElements.define('social-proof-widget', SocialProof);
+}
+{% endjavascript %}

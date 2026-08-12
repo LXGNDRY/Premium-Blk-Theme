@@ -49,10 +49,48 @@
     {
       "type": "number",
       "id": "cross_sell_count",
-      "label": "Number of products to show",
-      "default": 2,
-      "min": 1,
-      "max": 4
+      "label": "Number of cross-sell products",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Gift with purchase"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gwp",
+      "label": "Show gift-with-purchase progress",
+      "default": false
+    },
+    {
+      "type": "number",
+      "id": "gwp_threshold",
+      "label": "Threshold ($)",
+      "default": 100,
+      "info": "Free gift when cart subtotal reaches this amount"
+    },
+    {
+      "type": "text",
+      "id": "gwp_title",
+      "label": "Gift title",
+      "default": "Free gift"
+    },
+    {
+      "type": "text",
+      "id": "gwp_message",
+      "label": "Progress message",
+      "default": "Spend {remaining} more to get your free gift!"
+    },
+    {
+      "type": "text",
+      "id": "gwp_achieved_message",
+      "label": "Achieved message",
+      "default": "🎉 You got your free gift!"
+    },
+    {
+      "type": "image_picker",
+      "id": "gwp_image",
+      "label": "Gift image"
     }
   ],
   "presets": [
@@ -413,6 +451,57 @@
 .s-cart-drawer__cross-sell-add:hover {
   opacity: 0.85;
 }
+
+/* Gift with purchase */
+.s-cart-drawer__gwp {
+  display: flex;
+  align-items: center;
+  gap: var(--t-space-3);
+  padding: var(--t-space-3);
+  background: var(--t-surface);
+  border: 1px solid var(--t-border);
+  margin-bottom: var(--t-space-3);
+}
+
+.s-cart-drawer__gwp-image {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  background: var(--t-bg);
+  overflow: hidden;
+}
+
+.s-cart-drawer__gwp-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-cart-drawer__gwp-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.s-cart-drawer__gwp-title {
+  font-size: var(--t-font-size-meta);
+  font-weight: 600;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--t-text);
+}
+
+.s-cart-drawer__gwp-bar {
+  height: 4px;
+  background: var(--t-border);
+  overflow: hidden;
+}
+
+.s-cart-drawer__gwp-bar-fill {
+  height: 100%;
+  background: var(--t-accent);
+  transition: width 0.5s var(--t-ease-out);
+}
 {% endstylesheet %}
 
 <div
@@ -543,6 +632,39 @@
       <div class="s-cart-drawer__footer">
         {% comment %} Free shipping progress {% endcomment %}
         {% render 'component-shipping-progress', threshold: 7500 %}
+
+        {% comment %} Gift with purchase {% endcomment %}
+        {% if section.settings.show_gwp %}
+          {% assign _gwp_threshold = section.settings.gwp_threshold | times: 100 %}
+          {% assign _gwp_total = cart.total_price %}
+          {% assign _gwp_pct = 0 %}
+          {% if _gwp_threshold > 0 %}
+            {% assign _gwp_pct = _gwp_total | divided_by: _gwp_threshold | times: 100 %}
+            {% if _gwp_pct > 100 %}{% assign _gwp_pct = 100 %}{% endif %}
+          {% endif %}
+          {% assign _gwp_achieved = _gwp_total >= _gwp_threshold %}
+          {% assign _gwp_remaining = _gwp_threshold | minus: _gwp_total %}
+
+          <div class="s-cart-drawer__gwp" data-gwp data-threshold="{{ _gwp_threshold }}">
+            {% if section.settings.gwp_image %}
+              <div class="s-cart-drawer__gwp-image">
+                <img src="{{ section.settings.gwp_image | img_url: '100x' }}" alt="{{ section.settings.gwp_title | escape }}" loading="lazy">
+              </div>
+            {% endif %}
+            <div class="s-cart-drawer__gwp-content">
+              <p class="s-cart-drawer__gwp-title">
+                {% if _gwp_achieved %}
+                  {{ section.settings.gwp_achieved_message | escape }}
+                {% else %}
+                  {{ section.settings.gwp_message | replace: '{remaining}', _gwp_remaining | money }}
+                {% endif %}
+              </p>
+              <div class="s-cart-drawer__gwp-bar">
+                <div class="s-cart-drawer__gwp-bar-fill" style="width: {{ _gwp_pct }}%;" data-gwp-fill></div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
 
         <div class="s-cart-drawer__subtotal">
           <span class="s-cart-drawer__subtotal-label">

@@ -56,6 +56,28 @@
       "id": "show_badges",
       "label": "Show badges",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Search facets"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort dropdown",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_type_tabs",
+      "label": "Show result type tabs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_result_count",
+      "label": "Show result count",
+      "default": true
     }
   ],
   "presets": [
@@ -141,6 +163,83 @@
   display: flex;
   justify-content: center;
 }
+
+/* Search facets */
+.s-main-search__facets {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--t-space-6);
+  gap: var(--t-space-4);
+  flex-wrap: wrap;
+}
+
+.s-main-search__tabs {
+  display: flex;
+  gap: var(--t-space-1);
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-main-search__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--t-space-2) var(--t-space-3);
+  color: var(--t-text-muted);
+  text-decoration: none;
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--t-transition-fast);
+}
+
+.s-main-search__tab:hover {
+  color: var(--t-text);
+}
+
+.s-main-search__tab.is-active {
+  color: var(--t-text);
+  border-bottom-color: var(--t-text);
+}
+
+.s-main-search__tab-count {
+  font-size: var(--t-font-size-meta);
+  background: var(--t-surface);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.s-main-search__sort select {
+  padding: 8px 12px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: var(--t-font-size-small);
+  cursor: pointer;
+}
+
+.s-main-search__sort select:focus {
+  outline: none;
+  border-color: var(--t-text);
+}
+
+@media (max-width: 639px) {
+  .s-main-search__facets {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .s-main-search__tabs {
+    overflow-x: auto;
+  }
+  .s-main-search__sort select {
+    width: 100%;
+  }
+}
 {% endstylesheet %}
 
 {%- liquid
@@ -149,9 +248,31 @@
   assign _ratio = section.settings.image_ratio
   assign _show_vendor = section.settings.show_vendor
   assign _show_badges = section.settings.show_badges
+  assign _show_sort = section.settings.show_sort
+  assign _show_tabs = section.settings.show_type_tabs
+  assign _show_count = section.settings.show_result_count
 
   assign _grid_class = 's-main-search__grid'
   assign _grid_class = _grid_class | append: ' s-main-search__grid--cols-' | append: _cols
+
+  assign _search_type = 'product'
+  if request.query_params.type
+    assign _search_type = request.query_params.type
+  endif
+
+  # Count results by type
+  assign _product_count = 0
+  assign _page_count = 0
+  assign _article_count = 0
+  for result in search.results
+    if result.object_type == 'product'
+      assign _product_count = _product_count | plus: 1
+    elsif result.object_type == 'page'
+      assign _page_count = _page_count | plus: 1
+    elsif result.object_type == 'article'
+      assign _article_count = _article_count | plus: 1
+    endif
+  endfor
 -%}
 
 <section
@@ -165,11 +286,11 @@
       <h1 class="s-main-search__title">
         {{ 'general.search.title' | t | default: 'Search' }}
       </h1>
-      <p class="s-main-search__results-count">
-        {% if search.terms %}
+      {% if search.terms and _show_count %}
+        <p class="s-main-search__results-count">
           {{ search.results_count }} {{ 'general.search.results_for' | t | default: 'results for' }} "{{ search.terms }}"
-        {% endif %}
-      </p>
+        </p>
+      {% endif %}
     </div>
 
     <form class="s-main-search__form" role="search" method="get" action="{{ routes.search_url }}">
@@ -182,6 +303,53 @@
         autofocus
       >
     </form>
+
+    {% if search.terms and search.results_count > 0 %}
+      {% if _show_tabs or _show_sort %}
+        <div class="s-main-search__facets">
+          {% if _show_tabs %}
+            <div class="s-main-search__tabs" data-search-tabs>
+              <a href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=product"
+                 class="s-main-search__tab{% if _search_type == 'product' or _search_type == blank %} is-active{% endif %}"
+                 data-search-tab="product">
+                {{ 'general.search.products' | t | default: 'Products' }}
+                <span class="s-main-search__tab-count">{{ _product_count }}</span>
+              </a>
+              <a href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=page"
+                 class="s-main-search__tab{% if _search_type == 'page' %} is-active{% endif %}"
+                 data-search-tab="page">
+                {{ 'general.search.pages' | t | default: 'Pages' }}
+                <span class="s-main-search__tab-count">{{ _page_count }}</span>
+              </a>
+            </div>
+          {% endif %}
+
+          {% if _show_sort %}
+            <div class="s-main-search__sort">
+              <select name="sort_by" data-search-sort onchange="window.location.href = this.value">
+                <option value="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type={{ _search_type }}&sort_by=relevance" {% if sort_by == blank %}selected{% endif %}>
+                  {{ 'general.search.sort_relevance' | t | default: 'Relevance' }}
+                </option>
+                <option value="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type={{ _search_type }}&sort_by=title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>
+                  {{ 'general.search.sort_az' | t | default: 'A-Z' }}
+                </option>
+                <option value="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type={{ _search_type }}&sort_by=title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>
+                  {{ 'general.search.sort_za' | t | default: 'Z-A' }}
+                </option>
+                <option value="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type={{ _search_type }}&sort_by=price-ascending" {% if sort_by == 'price-ascending' %}selected{% endif %}>
+                  {{ 'general.search.sort_price_low' | t | default: 'Price: Low to high' }}
+                </option>
+                <option value="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type={{ _search_type }}&sort_by=price-descending" {% if sort_by == 'price-descending' %}selected{% endif %}>
+                  {{ 'general.search.sort_price_high' | t | default: 'Price: High to low' }}
+                </option>
+                <option value="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type={{ _search_type }}&sort_by=created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>
+                  {{ 'general.search.sort_newest' | t | default: 'Newest' }}
+                </option>
+              </select>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
 
     {% if search.terms and search.results_count > 0 %}
       {% paginate search.results by _per_page %}

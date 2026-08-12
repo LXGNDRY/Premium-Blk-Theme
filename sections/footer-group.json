@@ -37,6 +37,31 @@
         "submit_text": "Get my discount"
       }
     },
+    "age-verifier": {
+      "type": "age-verifier",
+      "settings": {
+        "enable": false,
+        "heading": "Are you 18 or older?",
+        "message": "You must be 18 years or older to enter this site.",
+        "confirm_text": "I am 18 or older",
+        "deny_text": "I am under 18",
+        "deny_url": "https://www.google.com",
+        "minimum_age": "18",
+        "cookie_days": 30,
+        "show_reminder": true
+      }
+    },
+    "social-proof": {
+      "type": "social-proof",
+      "settings": {
+        "enable": false,
+        "position": "bottom-left",
+        "display_duration": 6,
+        "cycle_interval": 15,
+        "show_image": true,
+        "activity_type": "purchased"
+      }
+    },
     "footer": {
       "type": "footer",
       "settings": {

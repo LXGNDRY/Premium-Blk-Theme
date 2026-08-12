@@ -38,6 +38,12 @@
       "id": "show_trust_badges",
       "label": "Show trust badges below checkout",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount",
+      "label": "Show discount code field",
+      "default": true
     }
   ],
   "presets": [
@@ -311,6 +317,44 @@
   letter-spacing: 0;
   text-transform: none;
 }
+
+/* Discount code */
+.s-main-cart__discount {
+  margin: var(--t-space-3) 0;
+}
+
+.s-main-cart__discount-form {
+  display: flex;
+  gap: var(--t-space-2);
+}
+
+.s-main-cart__discount-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: var(--t-font-size-small);
+}
+
+.s-main-cart__discount-input:focus {
+  outline: none;
+  border-color: var(--t-text);
+}
+
+.s-main-cart__discount-message {
+  font-size: var(--t-font-size-small);
+  margin: var(--t-space-2) 0 0;
+}
+
+.s-main-cart__discount-message.is-success {
+  color: #16a34a;
+}
+
+.s-main-cart__discount-message.is-error {
+  color: #ef4444;
+}
 {% endstylesheet %}
 
 {%- liquid
@@ -318,6 +362,7 @@
   assign _show_savings = section.settings.show_savings
   assign _sticky_checkout = section.settings.sticky_checkout
   assign _show_trust = section.settings.show_trust_badges
+  assign _show_discount = section.settings.show_discount
 
   assign _section_class = 's-main-cart'
   if _sticky_checkout
@@ -464,6 +509,26 @@
           <div class="s-main-cart__app-block s-main-cart__app-block--above-checkout">
             {% @themeapp 'cart_above_checkout' %}
           </div>
+
+          {% comment %} Discount code {% endcomment %}
+          {% if section.settings.show_discount %}
+            <div class="s-main-cart__discount" data-discount-code>
+              <form class="s-main-cart__discount-form" data-discount-form method="post" action="/cart/update">
+                <input type="hidden" name="discount" value="">
+                <input
+                  type="text"
+                  class="s-main-cart__discount-input"
+                  name="discount_code"
+                  data-discount-input
+                  placeholder="{{ 'cart.general.discount_placeholder' | t | default: 'Discount code' }}"
+                >
+                <button type="submit" class="c-btn c-btn--secondary c-btn--sm">
+                  {{ 'cart.general.apply' | t | default: 'Apply' }}
+                </button>
+              </form>
+              <p class="s-main-cart__discount-message" data-discount-message hidden></p>
+            </div>
+          {% endif %}
 
           <button
             type="button"

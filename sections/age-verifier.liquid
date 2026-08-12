@@ -1,0 +1,358 @@
+{% comment %}
+  age-verifier.liquid
+  Age verification gate / modal.
+  Shows on first visit, sets cookie on confirm/deny.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Age verifier",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Are you 18 or older?"
+    },
+    {
+      "type": "textarea",
+      "id": "message",
+      "label": "Message",
+      "default": "You must be 18 years or older to enter this site."
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "confirm_text",
+      "label": "Confirm button",
+      "default": "I am 18 or older"
+    },
+    {
+      "type": "text",
+      "id": "deny_text",
+      "label": "Deny button",
+      "default": "I am under 18"
+    },
+    {
+      "type": "url",
+      "id": "deny_url",
+      "label": "Deny redirect URL",
+      "default": "https://www.google.com"
+    },
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "Enable age verifier",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "minimum_age",
+      "label": "Minimum age",
+      "default": "18",
+      "options": [
+        { "value": "16", "label": "16" },
+        { "value": "18", "label": "18" },
+        { "value": "21", "label": "21" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "label": "Remember for (days)",
+      "min": 1,
+      "max": 365,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reminder",
+      "label": "Show 'Not showing again' option",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-age-verifier {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--t-space-4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.s-age-verifier.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.s-age-verifier__dialog {
+  background: var(--t-bg);
+  color: var(--t-text);
+  width: 100%;
+  max-width: 480px;
+  padding: var(--t-space-10) var(--t-space-8);
+  text-align: center;
+  position: relative;
+  border: 1px solid var(--t-border);
+  transform: translateY(20px);
+  transition: transform 0.4s var(--t-ease-out);
+}
+
+.s-age-verifier.is-visible .s-age-verifier__dialog {
+  transform: translateY(0);
+}
+
+.s-age-verifier__logo {
+  max-width: 120px;
+  margin: 0 auto var(--t-space-5);
+  display: block;
+}
+
+.s-age-verifier__heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-3);
+  line-height: var(--t-line-height-tight);
+}
+
+.s-age-verifier__message {
+  font-size: var(--t-font-size-body);
+  color: var(--t-text-muted);
+  margin: 0 0 var(--t-space-6);
+  line-height: var(--t-line-height-body);
+}
+
+.s-age-verifier__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+  margin-bottom: var(--t-space-4);
+}
+
+.s-age-verifier__btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-family: inherit;
+  font-size: var(--t-font-size-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border: 1px solid var(--t-text);
+  transition: all var(--t-transition-fast);
+}
+
+.s-age-verifier__btn--confirm {
+  background: var(--t-text);
+  color: var(--t-bg);
+}
+
+.s-age-verifier__btn--confirm:hover {
+  opacity: 0.9;
+}
+
+.s-age-verifier__btn--deny {
+  background: transparent;
+  color: var(--t-text);
+}
+
+.s-age-verifier__btn--deny:hover {
+  background: var(--t-surface);
+}
+
+.s-age-verifier__reminder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: var(--t-space-3);
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+}
+
+.s-age-verifier__reminder input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.s-age-verifier__reminder label {
+  cursor: pointer;
+  font-size: var(--t-font-size-meta);
+}
+
+.s-age-verifier__fine-print {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-muted);
+  margin-top: var(--t-space-4);
+  line-height: 1.4;
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _enable = section.settings.enable
+  assign _heading = section.settings.heading
+  assign _msg = section.settings.message
+  assign _confirm = section.settings.confirm_text
+  assign _deny = section.settings.deny_text
+  assign _deny_url = section.settings.deny_url
+  assign _min_age = section.settings.minimum_age
+  assign _cookie_days = section.settings.cookie_days
+  assign _reminder = section.settings.show_reminder
+  assign _logo = section.settings.logo
+-%}
+
+{% if _enable %}
+<div
+  class="s-age-verifier"
+  data-age-verifier
+  data-cookie-days="{{ _cookie_days }}"
+  data-min-age="{{ _min_age }}"
+  data-deny-url="{{ _deny_url }}"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="age-verifier-title-{{ section.id }}"
+  hidden
+>
+  <div class="s-age-verifier__dialog">
+    {% if _logo %}
+      <img src="{{ _logo | img_url: '240x' }}" alt="{{ shop.name }}" class="s-age-verifier__logo" loading="eager">
+    {% endif %}
+
+    <h2 class="s-age-verifier__heading" id="age-verifier-title-{{ section.id }}">
+      {{ _heading | escape }}
+    </h2>
+
+    <p class="s-age-verifier__message">{{ _msg | escape }}</p>
+
+    <div class="s-age-verifier__buttons">
+      <button type="button" class="s-age-verifier__btn s-age-verifier__btn--confirm" data-age-confirm>
+        {{ _confirm | escape }}
+      </button>
+      <button type="button" class="s-age-verifier__btn s-age-verifier__btn--deny" data-age-deny>
+        {{ _deny | escape }}
+      </button>
+    </div>
+
+    {% if _reminder %}
+      <div class="s-age-verifier__reminder">
+        <input type="checkbox" id="age-remember-{{ section.id }}" data-age-remember checked>
+        <label for="age-remember-{{ section.id }}">Don't show again on this device</label>
+      </div>
+    {% endif %}
+
+    <p class="s-age-verifier__fine-print">
+      By entering, you agree to our Terms of Service and Privacy Policy.
+    </p>
+  </div>
+</div>
+{% endif %}
+
+{% javascript %}
+class AgeVerifier extends HTMLElement {
+  constructor() {
+    super();
+    this._confirmed = false;
+  }
+
+  connectedCallback() {
+    this.cookieDays = parseInt(this.dataset.cookieDays, 10) || 30;
+    this.minAge = this.dataset.minAge || '18';
+    this.denyUrl = this.dataset.denyUrl || 'https://www.google.com';
+
+    // Check if already verified
+    if (this._getCookie('age_verified') === 'true') {
+      this._confirmed = true;
+      return;
+    }
+
+    // Show modal
+    this._show();
+
+    // Bind buttons
+    this.querySelector('[data-age-confirm]')?.addEventListener('click', () => this._confirm());
+    this.querySelector('[data-age-deny]')?.addEventListener('click', () => this._deny());
+  }
+
+  _show() {
+    this.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+      this.classList.add('is-visible');
+    });
+
+    // Focus first button for accessibility
+    setTimeout(() => {
+      this.querySelector('[data-age-confirm]')?.focus();
+    }, 100);
+  }
+
+  _confirm() {
+    this._confirmed = true;
+    const remember = this.querySelector('[data-age-remember]')?.checked;
+
+    if (remember) {
+      this._setCookie('age_verified', 'true', this.cookieDays);
+    }
+
+    this.classList.remove('is-visible');
+    document.body.style.overflow = '';
+
+    setTimeout(() => {
+      this.hidden = true;
+    }, 300);
+  }
+
+  _deny() {
+    this._setCookie('age_verified', 'false', 1);
+    window.location.href = this.denyUrl;
+  }
+
+  _getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  _setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+  }
+}
+
+if (!customElements.get('age-verifier')) {
+  customElements.define('age-verifier', AgeVerifier);
+}
+{% endjavascript %}
