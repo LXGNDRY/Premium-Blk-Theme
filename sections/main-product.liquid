@@ -33,6 +33,48 @@
       ]
     },
     {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Enable image zoom & lightbox",
+      "default": true,
+      "info": "Hover zoom on desktop, click to open fullscreen lightbox with thumbnails."
+    },
+    {
+      "type": "header",
+      "content": "Product video"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_video",
+      "label": "Show product video",
+      "default": false,
+      "info": "Embed a video in the product gallery."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Video URL",
+      "default": "",
+      "info": "YouTube, Vimeo, or direct MP4 URL. Supports metafield dynamic source."
+    },
+    {
+      "type": "select",
+      "id": "video_source",
+      "label": "Video source",
+      "default": "url",
+      "options": [
+        { "value": "url", "label": "URL setting" },
+        { "value": "metafield", "label": "Metafield" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "video_metafield",
+      "label": "Video metafield",
+      "default": "product.video_url",
+      "info": "Namespace.key format for metafield-based video URL."
+    },
+    {
       "type": "header",
       "content": "Product info"
     },
@@ -202,6 +244,85 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  transition: transform 0.4s var(--t-ease-out);
+}
+
+/* Image zoom container fills main image */
+.s-main-product__main-image .c-zoom {
+  width: 100%;
+  height: 100%;
+}
+
+.s-main-product__main-image .c-zoom__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Video thumb */
+.s-main-product__thumb--video {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--t-surface);
+  color: var(--t-text);
+  border: 2px solid var(--t-border);
+  padding: 0;
+}
+
+.s-main-product__thumb--video svg {
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+}
+
+.s-main-product__thumb--video.is-active {
+  border-color: var(--t-text);
+}
+
+/* Video player overlay */
+.s-main-product__video-player {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s-main-product__video-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.s-main-product__video-container iframe,
+.s-main-product__video-container video {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.s-main-product__video-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.s-main-product__video-close:hover {
+  background: rgba(255,255,255,0.2);
 }
 
 .s-main-product__thumbs {
@@ -413,6 +534,12 @@
       <div class="s-main-product__gallery">
         {% if _product.images.size > 0 %}
           <div class="s-main-product__main-image" data-main-image>
+            {% if section.settings.enable_zoom %}
+              {% render 'component-image-zoom',
+                images: _product.images,
+                alt: _product.title
+              %}
+            {% else %}
             <img
               id="ProductImage-{{ section.id }}"
               src="{{ _product.featured_image | image_url: width: 800 }}"
@@ -429,6 +556,27 @@
               loading="eager"
               fetchpriority="high"
             >
+            {% endif %}
+
+            {% comment %} Video player overlay {% endcomment %}
+            {% if _show_vid and _vid_url != blank %}
+              <div class="s-main-product__video-player" data-video-player hidden>
+                <div class="s-main-product__video-container">
+                  <div data-video-embed></div>
+                </div>
+                <button
+                  type="button"
+                  class="s-main-product__video-close"
+                  data-video-close
+                  aria-label="Close video"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            {% endif %}
           </div>
 
           {% if _gallery_style == 'thumbnails' and _product.images.size > 1 %}
@@ -453,6 +601,39 @@
                   >
                 </button>
               {% endfor %}
+
+              {% comment %} Video thumbnail {% endcomment %}
+              {% assign _show_vid = section.settings.show_video %}
+              {% assign _vid_url = '' %}
+              {% if _show_vid %}
+                {% if section.settings.video_source == 'metafield' %}
+                  {% assign _mf_parts = section.settings.video_metafield | split: '.' %}
+                  {% if _mf_parts.size == 2 %}
+                    {% assign _mf = _product.metafields[_mf_parts[0]][_mf_parts[1]] %}
+                    {% if _mf and _mf != blank %}
+                      {% assign _vid_url = _mf %}
+                    {% endif %}
+                  {% endif %}
+                {% else %}
+                  {% assign _vid_url = section.settings.video_url %}
+                {% endif %}
+              {% endif %}
+
+              {% if _show_vid and _vid_url != blank %}
+                <button
+                  type="button"
+                  class="s-main-product__thumb s-main-product__thumb--video"
+                  data-video-thumb
+                  data-video-url="{{ _vid_url }}"
+                  role="tab"
+                  aria-selected="false"
+                  aria-label="View product video"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                </button>
+              {% endif %}
             </div>
           {% endif %}
         {% else %}
@@ -808,6 +989,87 @@ class MainProductSection extends HTMLElement {
         this._selectOption(optionIndex, value, btn);
       });
     });
+
+    // Video thumbnail / player
+    this.videoThumb = this.querySelector('[data-video-thumb]');
+    this.videoPlayer = this.querySelector('[data-video-player]');
+    this.videoEmbed = this.querySelector('[data-video-embed]');
+    this.videoCloseBtn = this.querySelector('[data-video-close]');
+
+    if (this.videoThumb && this.videoPlayer) {
+      this.videoThumb.addEventListener('click', () => this._openVideo());
+      this.videoCloseBtn?.addEventListener('click', () => this._closeVideo());
+    }
+  }
+
+  _openVideo() {
+    if (!this.videoPlayer || !this.videoEmbed) return;
+
+    const url = this.videoThumb.dataset.videoUrl;
+    if (!url) return;
+
+    // Build embed
+    let embed = '';
+
+    // YouTube
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = '';
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtu.be')) {
+          videoId = u.pathname.slice(1);
+        } else {
+          videoId = u.searchParams.get('v') || '';
+        }
+      } catch (e) { videoId = url.split('v=')[1]?.split('&')[0] || ''; }
+      if (videoId) {
+        embed = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+      }
+    }
+    // Vimeo
+    else if (url.includes('vimeo.com')) {
+      let vimeoId = '';
+      try {
+        const u = new URL(url);
+        vimeoId = u.pathname.replace(/\//g, '');
+      } catch (e) {}
+      if (vimeoId) {
+        embed = `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+      }
+    }
+    // Native video (mp4, webm, etc.)
+    else if (url.match(/\.(mp4|webm|ogg)$/i)) {
+      embed = `<video src="${url}" controls autoplay playsinline></video>`;
+    }
+    // Fallback: iframe
+    else {
+      embed = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+    }
+
+    this.videoEmbed.innerHTML = embed;
+    this.videoPlayer.hidden = false;
+
+    // Deactivate all image thumbs, activate video thumb
+    this.thumbs.forEach(t => {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    this.videoThumb.classList.add('is-active');
+    this.videoThumb.setAttribute('aria-selected', 'true');
+  }
+
+  _closeVideo() {
+    if (!this.videoPlayer || !this.videoEmbed) return;
+    this.videoEmbed.innerHTML = '';
+    this.videoPlayer.hidden = true;
+
+    // Re-activate first image thumb
+    this.videoThumb.classList.remove('is-active');
+    this.videoThumb.setAttribute('aria-selected', 'false');
+    if (this.thumbs[0]) {
+      this.thumbs[0].classList.add('is-active');
+      this.thumbs[0].setAttribute('aria-selected', 'true');
+    }
   }
 
   _selectOption(optionIndex, value, clickedBtn) {

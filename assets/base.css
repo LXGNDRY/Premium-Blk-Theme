@@ -906,6 +906,31 @@
   border: 1px solid var(--t-border);
 }
 
+.c-product-card__quick-view {
+  margin-top: var(--t-space-2);
+}
+
+.c-product-card__quick-view-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-size: var(--t-font-size-small);
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  transition: all var(--t-transition-fast);
+}
+
+.c-product-card__quick-view-btn:hover {
+  background: var(--t-text);
+  color: var(--t-bg);
+  border-color: var(--t-text);
+}
+
 @media (max-width: 767px) {
   .c-product-card__quick-add {
     display: none;

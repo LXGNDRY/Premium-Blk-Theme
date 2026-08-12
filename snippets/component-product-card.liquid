@@ -39,6 +39,11 @@
   if _show_quick_add == nil
     assign _show_quick_add = false
   endif
+
+  assign _show_quick_view = show_quick_view
+  if _show_quick_view == nil
+    assign _show_quick_view = true
+  endif
   assign _show_swatches = show_swatches
   if _show_swatches == nil
     assign _show_swatches = false
@@ -178,6 +183,19 @@
           {% endfor %}
         </div>
       {% endif %}
+    {% endif %}
+
+    {% if _show_quick_view and product.available %}
+      <div class="c-product-card__quick-view">
+        <button
+          type="button"
+          class="c-product-card__quick-view-btn"
+          data-quick-view-trigger
+          data-product-handle="{{ product.handle }}"
+        >
+          {{ 'products.product.quick_view' | t | default: 'Quick view' }}
+        </button>
+      </div>
     {% endif %}
   </div>
 </article>

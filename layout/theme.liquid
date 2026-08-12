@@ -368,8 +368,7 @@
   {% comment %} === GLOBAL OVERLAYS (rendered once) === {% endcomment %}
   {% section 'cart-drawer' %}
   {% section 'predictive-search' %}
-  {% section 'cart-icon-bubble' %}
-  {% section 'cart-live-region-text' %}
+  {% render 'component-quick-view' %}
 
   {% comment %} === SCRIPTS (all deferred) === {% endcomment %}
   <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
