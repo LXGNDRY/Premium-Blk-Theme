@@ -552,6 +552,12 @@
             {{ cart.total_price | money }}
           </span>
         </div>
+
+        {% comment %} App block: cart drawer above checkout {% endcomment %}
+        <div class="s-cart-drawer__app-block">
+          {% @themeapp 'cart_drawer_above_checkout' %}
+        </div>
+
         <button type="button" class="c-btn c-btn--primary c-btn--full" onclick="window.location.href='/checkout'">
           {{ 'cart.general.checkout' | t | default: 'Checkout' }}
         </button>

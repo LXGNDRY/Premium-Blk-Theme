@@ -36,6 +36,17 @@
         "show_review_form": false
       }
     },
+    "metafields": {
+      "type": "product-metafields",
+      "settings": {
+        "show_heading": true,
+        "heading": "Product details",
+        "layout": "accordion",
+        "columns": 3,
+        "namespace": "custom",
+        "metafield_keys": "material,size_fit,care_instructions,features,shipping_info"
+      }
+    },
     "recently-viewed": {
       "type": "recently-viewed",
       "settings": {
@@ -50,6 +61,7 @@
   },
   "order": [
     "main",
+    "metafields",
     "related",
     "reviews",
     "recently-viewed"

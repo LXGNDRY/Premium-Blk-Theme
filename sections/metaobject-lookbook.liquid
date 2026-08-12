@@ -1,0 +1,204 @@
+{% comment %}
+  metaobject-lookbook.liquid
+  Single lookbook metaobject display section.
+  Renders images, captions, and linked products from a lookbook metaobject.
+  Expected fields: title, description, images (file list), products (product list reference)
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Lookbook metaobject",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "grid",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "masonry", "label": "Masonry" },
+        { "value": "slideshow", "label": "Slideshow" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_products",
+      "label": "Show linked products",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_caption",
+      "label": "Show image captions",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-lookbook {
+  padding: var(--t-space-12) 0;
+}
+
+.s-lookbook__grid {
+  display: grid;
+  gap: var(--t-space-4);
+}
+
+.s-lookbook__grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.s-lookbook__grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.s-lookbook__grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.s-lookbook__item {
+  position: relative;
+  overflow: hidden;
+  background: var(--t-surface);
+  aspect-ratio: 4/5;
+}
+
+.s-lookbook__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--t-ease-out);
+}
+
+.s-lookbook__item:hover img {
+  transform: scale(1.05);
+}
+
+.s-lookbook__caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--t-space-4);
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+  color: #fff;
+}
+
+.s-lookbook__products {
+  margin-top: var(--t-space-12);
+}
+
+.s-lookbook__products-heading {
+  font-size: var(--t-font-size-h2);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-6);
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  .s-lookbook__grid--cols-3,
+  .s-lookbook__grid--cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .s-lookbook__grid--cols-2,
+  .s-lookbook__grid--cols-3,
+  .s-lookbook__grid--cols-4 {
+    grid-template-columns: 1fr;
+  }
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _obj = metaobject
+  assign _layout = section.settings.layout
+  assign _cols = section.settings.columns
+  assign _show_products = section.settings.show_products
+  assign _show_caption = section.settings.show_caption
+  assign _show_desc = section.settings.show_description
+  assign _title = _obj.title
+  assign _description = _obj.description
+  assign _images = _obj.images
+  assign _products = _obj.products
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="s-lookbook"
+  data-section-id="{{ section.id }}"
+  data-section-type="metaobject-lookbook"
+>
+  <div class="c-container">
+    {% if _show_desc and _description.value %}
+      <div style="text-align:center;max-width:640px;margin:0 auto var(--t-space-10);">
+        {% if _title.value %}
+          <h1 class="s-lookbook__title" style="font-size:clamp(2rem,5vw,3.5rem);font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;margin:0 0 var(--t-space-3);">
+            {{ _title.value }}
+          </h1>
+        {% endif %}
+        {% if _description.value %}
+          <p style="font-size:var(--t-font-size-body);color:var(--t-text-muted);margin:0;">
+            {{ _description.value }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if _images and _images.value != blank %}
+      <div class="s-lookbook__grid s-lookbook__grid--cols-{{ _cols }}">
+        {% for img in _images.value %}
+          <div class="s-lookbook__item">
+            <img src="{{ img | img_url: '800x' }}" alt="{{ _title.value }} {{ forloop.index }}" loading="lazy">
+            {% if _show_caption and _title.value %}
+              <div class="s-lookbook__caption">
+                <p style="margin:0;font-weight:600;">{{ _title.value }}</p>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center;padding:var(--t-space-8) 0;color:var(--t-text-muted);border:1px dashed var(--t-border);">
+        No images yet. Add images to your lookbook metaobject.
+      </div>
+    {% endif %}
+
+    {% if _show_products and _products and _products.value != blank %}
+      <div class="s-lookbook__products">
+        <h2 class="s-lookbook__products-heading">Shop the look</h2>
+        <div class="s-lookbook__products-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--t-space-4);">
+          {% for product in _products.value limit: 3 %}
+            {% if product %}
+              {% render 'component-product-card', product: product, media_aspect: '4:5', show_vendor: true, show_secondary_image: true, show_badges: true, show_swatches: false, show_quick_add: false, image_size: 500 %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% javascript %}
+// Metaobject lookbook — static, no JS required
+if (!customElements.get('metaobject-lookbook')) {
+  customElements.define('metaobject-lookbook', class extends HTMLElement {
+    constructor() { super(); }
+    connectedCallback() {}
+  });
+}
+{% endjavascript %}

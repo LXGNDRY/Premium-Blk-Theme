@@ -1,0 +1,443 @@
+{% comment %}
+  product-metafields.liquid
+  Product page section that renders metafields and metaobject references.
+  Dynamically renders common metafield types:
+  - single_line_text, multi_line_text, number, date
+  - file_reference (image)
+  - list.single_line_text
+  - metaobject_reference
+  - list.metaobject_reference
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Product metafields",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show section heading",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Details"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "grid",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "list", "label": "List" },
+        { "value": "accordion", "label": "Accordion" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "info": "For grid layout only"
+    },
+    {
+      "type": "header",
+      "content": "Metafields to show"
+    },
+    {
+      "type": "text",
+      "id": "namespace",
+      "label": "Metafield namespace",
+      "default": "custom",
+      "info": "Leave as 'custom' for standard custom metafields"
+    },
+    {
+      "type": "text",
+      "id": "metafield_keys",
+      "label": "Metafield keys (comma separated)",
+      "default": "size_chart, material, care_instructions",
+      "info": "Leave blank to show all custom metafields with values"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-product-metafields {
+  padding: var(--t-space-10) 0;
+  border-top: 1px solid var(--t-border);
+}
+
+.s-product-metafields__heading {
+  font-size: var(--t-font-size-h3);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--t-space-6);
+  text-align: center;
+}
+
+.s-product-metafields__grid {
+  display: grid;
+  gap: var(--t-space-6);
+}
+
+.s-product-metafields__grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.s-product-metafields__grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.s-product-metafields__grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.s-product-metafields__list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--t-border);
+}
+
+.s-product-metafields__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+}
+
+.s-product-metafields__list .s-product-metafields__item {
+  padding: var(--t-space-4) 0;
+  border-bottom: 1px solid var(--t-border);
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--t-space-6);
+}
+
+.s-product-metafields__label {
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.s-product-metafields__value {
+  font-size: var(--t-font-size-small);
+  color: var(--t-text);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.s-product-metafields__value ul,
+.s-product-metafields__value ol {
+  padding-left: var(--t-space-4);
+  margin: 0;
+}
+
+.s-product-metafields__value img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--t-border);
+}
+
+.s-product-metafields__metaobject-card {
+  padding: var(--t-space-4);
+  border: 1px solid var(--t-border);
+  background: var(--t-surface);
+}
+
+.s-product-metafields__metaobject-card h4 {
+  font-size: var(--t-font-size-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--t-space-2);
+}
+
+.s-product-metafields__metaobject-card p {
+  font-size: var(--t-font-size-small);
+  margin: 0 0 var(--t-space-2);
+  color: var(--t-text-muted);
+}
+
+.s-product-metafields__metaobject-card a {
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  color: var(--t-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Accordion */
+.s-product-metafields__accordion {
+  border-top: 1px solid var(--t-border);
+}
+
+.s-product-metafields__accordion-item {
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-product-metafields__accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--t-space-3) 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--t-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.s-product-metafields__accordion-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform var(--t-transition-fast);
+}
+
+.s-product-metafields__accordion-header[aria-expanded="true"] .s-product-metafields__accordion-icon {
+  transform: rotate(180deg);
+}
+
+.s-product-metafields__accordion-body {
+  padding: 0 0 var(--t-space-4);
+  display: none;
+}
+
+.s-product-metafields__accordion-body.is-open {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .s-product-metafields__grid--cols-3,
+  .s-product-metafields__grid--cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .s-product-metafields__list .s-product-metafields__item {
+    flex-direction: column;
+    gap: var(--t-space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .s-product-metafields__grid--cols-2,
+  .s-product-metafields__grid--cols-3,
+  .s-product-metafields__grid--cols-4 {
+    grid-template-columns: 1fr;
+  }
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _product = product
+  assign _namespace = section.settings.namespace | default: 'custom'
+  assign _keys_input = section.settings.metafield_keys | strip
+  assign _layout = section.settings.layout
+  assign _cols = section.settings.columns
+  assign _show_heading = section.settings.show_heading
+  assign _heading = section.settings.heading
+
+  # Determine which metafields to show
+  assign _metafields_to_show = ''
+  if _keys_input != blank
+    assign _keys_list = _keys_input | split: ','
+    for key in _keys_list
+      assign _key = key | strip
+      assign _mf = _product.metafields[_namespace][_key]
+      if _mf and _mf.value != blank
+        assign _metafields_to_show = _metafields_to_show | append: _key | append: '|'
+      endif
+    endfor
+  else
+    # Try to find all custom metafields with values (best effort)
+    assign _common_keys = 'material,size_fit,care_instructions,description,features,shipping_info,return_policy,color,size' | split: ','
+    for key in _common_keys
+      assign _mf = _product.metafields[_namespace][key]
+      if _mf and _mf.value != blank
+        assign _metafields_to_show = _metafields_to_show | append: key | append: '|'
+      endif
+    endfor
+  endif
+  assign _keys = _metafields_to_show | split: '|'
+  assign _has_metafields = false
+  if _keys.size > 0 and _keys[0] != blank
+    assign _has_metafields = true
+  endif
+-%}
+
+{% if _has_metafields %}
+<section
+  id="section-{{ section.id }}"
+  class="s-product-metafields"
+  data-section-id="{{ section.id }}"
+  data-section-type="product-metafields"
+  data-layout="{{ _layout }}"
+>
+  <div class="c-container">
+    {% if _show_heading and _heading %}
+      <h3 class="s-product-metafields__heading">{{ _heading | escape }}</h3>
+    {% endif %}
+
+    {% if _layout == 'accordion' %}
+      <div class="s-product-metafields__accordion">
+        {% for key in _keys %}
+          {% if key != blank %}
+            {% assign _mf = _product.metafields[_namespace][key] %}
+            {% if _mf and _mf.value != blank %}
+              <div class="s-product-metafields__accordion-item">
+                <button
+                  type="button"
+                  class="s-product-metafields__accordion-header"
+                  data-accordion-header
+                  aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                >
+                  <span>{{ key | replace: '_', ' ' | capitalize }}</span>
+                  <svg class="s-product-metafields__accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="s-product-metafields__accordion-body{% if forloop.first %} is-open{% endif %}" data-accordion-body>
+                  <div class="s-product-metafields__value">
+                    {% if _mf.type contains 'metaobject' %}
+                      {% assign _ref = _mf.value %}
+                      <div class="s-product-metafields__metaobject-card">
+                        <h4>{{ _ref.title }}</h4>
+                        {% if _ref.description.value %}
+                          <p>{{ _ref.description.value | truncate: 120 }}</p>
+                        {% endif %}
+                        <a href="{{ _ref.url }}">View details →</a>
+                      </div>
+                    {% elsif _mf.type contains 'file_reference' or _mf.type contains 'image' %}
+                      <img src="{{ _mf.value | img_url: '500x' }}" alt="{{ key }}" loading="lazy">
+                    {% elsif _mf.type contains 'list' %}
+                      <ul>
+                        {% for item in _mf.value %}
+                          <li>{{ item }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      {{ _mf.value }}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% elsif _layout == 'list' %}
+      <div class="s-product-metafields__list">
+        {% for key in _keys %}
+          {% if key != blank %}
+            {% assign _mf = _product.metafields[_namespace][key] %}
+            {% if _mf and _mf.value != blank %}
+              <div class="s-product-metafields__item">
+                <p class="s-product-metafields__label">{{ key | replace: '_', ' ' | capitalize }}</p>
+                <div class="s-product-metafields__value">
+                  {% if _mf.type contains 'metaobject' %}
+                    {% assign _ref = _mf.value %}
+                    <a href="{{ _ref.url }}">{{ _ref.title }} →</a>
+                  {% elsif _mf.type contains 'file_reference' %}
+                    <img src="{{ _mf.value | img_url: '500x' }}" alt="{{ key }}" loading="lazy" style="max-width:200px;">
+                  {% elsif _mf.type contains 'list' %}
+                    {% for item in _mf.value %}{{ item }}{% unless forloop.last %}, {% endunless %}{% endfor %}
+                  {% else %}
+                    {{ _mf.value }}
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="s-product-metafields__grid s-product-metafields__grid--cols-{{ _cols }}">
+        {% for key in _keys %}
+          {% if key != blank %}
+            {% assign _mf = _product.metafields[_namespace][key] %}
+            {% if _mf and _mf.value != blank %}
+              <div class="s-product-metafields__item">
+                <p class="s-product-metafields__label">{{ key | replace: '_', ' ' | capitalize }}</p>
+                <div class="s-product-metafields__value">
+                  {% if _mf.type contains 'metaobject' %}
+                    {% assign _ref = _mf.value %}
+                    <div class="s-product-metafields__metaobject-card">
+                      <h4>{{ _ref.title }}</h4>
+                      {% if _ref.description.value %}
+                        <p>{{ _ref.description.value | truncate: 80 }}</p>
+                      {% endif %}
+                    </div>
+                  {% elsif _mf.type contains 'file_reference' %}
+                    <img src="{{ _mf.value | img_url: '500x' }}" alt="{{ key }}" loading="lazy">
+                  {% elsif _mf.type contains 'list' %}
+                    <ul>
+                      {% for item in _mf.value %}
+                        <li>{{ item }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    {{ _mf.value }}
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{% javascript %}
+class ProductMetafieldsSection extends HTMLElement {
+  constructor() { super(); }
+
+  connectedCallback() {
+    if (this.dataset.layout === 'accordion') {
+      this._initAccordion();
+    }
+  }
+
+  _initAccordion() {
+    const headers = this.querySelectorAll('[data-accordion-header]');
+    const bodies = this.querySelectorAll('[data-accordion-body]');
+
+    headers.forEach((header, idx) => {
+      header.addEventListener('click', () => {
+        const isOpen = header.getAttribute('aria-expanded') === 'true';
+        // Close all
+        headers.forEach(h => h.setAttribute('aria-expanded', 'false'));
+        bodies.forEach(b => b.classList.remove('is-open'));
+        // Toggle clicked
+        if (!isOpen) {
+          header.setAttribute('aria-expanded', 'true');
+          bodies[idx]?.classList.add('is-open');
+        }
+      });
+    });
+  }
+
+  onBlockSelect() {}
+  onBlockDeselect() {}
+}
+
+if (!customElements.get('product-metafields-section')) {
+  customElements.define('product-metafields-section', ProductMetafieldsSection);
+}
+{% endjavascript %}

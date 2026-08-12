@@ -1,0 +1,15 @@
+{
+  "name": "FAQ",
+  "sections": {
+    "faq": {
+      "type": "metaobject-faq",
+      "settings": {
+        "show_category": true,
+        "show_updated": false
+      }
+    }
+  },
+  "order": [
+    "faq"
+  ]
+}

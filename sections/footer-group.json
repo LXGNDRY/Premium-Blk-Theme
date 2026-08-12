@@ -20,6 +20,23 @@
         "show_image": true
       }
     },
+    "promo-popup": {
+      "type": "promo-popup",
+      "settings": {
+        "enable_popup": false,
+        "trigger": "exit_intent",
+        "delay_seconds": 5,
+        "scroll_percent": 50,
+        "cookie_days": 7,
+        "show_on_mobile": true,
+        "eyebrow": "LIMITED TIME",
+        "heading": "Get 15% off your first order",
+        "subheading": "Sign up for early access to drops, restocks, and member-only discounts.",
+        "discount_code": "WELCOME15",
+        "email_placeholder": "Enter your email",
+        "submit_text": "Get my discount"
+      }
+    },
     "footer": {
       "type": "footer",
       "settings": {

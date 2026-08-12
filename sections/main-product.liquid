@@ -913,10 +913,21 @@
                   <button type="button" class="c-quantity__btn" data-action="increase" aria-label="Increase quantity">+</button>
                 </div>
               </quantity-input>
+
+              {% comment %} App block: above add to cart {% endcomment %}
+              <div class="s-main-product__app-block s-main-product__app-block--above-atc" data-app-above-atc>
+                {% @themeapp 'above_add_to_cart' %}
+              </div>
+
               <button type="submit" class="c-btn c-btn--primary" data-atc-button>
                 <span data-atc-text>{{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}</span>
                 <span data-atc-loading style="display:none;">{{ 'products.product.adding' | t | default: 'Adding...' }}</span>
               </button>
+
+              {% comment %} App block: below add to cart {% endcomment %}
+              <div class="s-main-product__app-block s-main-product__app-block--below-atc" data-app-below-atc>
+                {% @themeapp 'below_add_to_cart' %}
+              </div>
             </form>
           {% else %}
             <button type="button" class="c-btn c-btn--primary" disabled>
@@ -1233,6 +1244,11 @@ class MainProductSection extends HTMLElement {
     this.atcLoading = this.querySelector('[data-atc-loading]');
     this.quantityInput = this.querySelector('[data-quantity-input]');
     this.stickyAtc = this.querySelector('[data-sticky-atc]');
+
+    // App block hooks
+    this.appAboveAtc = this.querySelector('[data-app-above-atc]');
+    this.appBelowAtc = this.querySelector('[data-app-below-atc]');
+    this.appProduct = this.querySelector('[data-app-product]');
 
     // Product JSON
     const jsonEl = this.querySelector('[data-product-json]');

@@ -1,0 +1,224 @@
+{% comment %}
+  metaobject-size-chart.liquid
+  Single size chart metaobject display.
+  Expected fields: title, description, table (rich text / metafield), units, notes
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Size chart metaobject",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_units",
+      "label": "Show units selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_notes",
+      "label": "Show notes",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-size-chart-meta {
+  padding: var(--t-space-16) 0;
+}
+
+.s-size-chart-meta__inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.s-size-chart-meta__title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--t-space-3);
+  text-align: center;
+}
+
+.s-size-chart-meta__description {
+  text-align: center;
+  color: var(--t-text-muted);
+  margin: 0 0 var(--t-space-8);
+}
+
+.s-size-chart-meta__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--t-border);
+  margin-bottom: var(--t-space-6);
+}
+
+.s-size-chart-meta__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-font-size-small);
+}
+
+.s-size-chart-meta__table th,
+.s-size-chart-meta__table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--t-border);
+}
+
+.s-size-chart-meta__table th {
+  background: var(--t-surface);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--t-font-size-meta);
+  letter-spacing: 0.05em;
+}
+
+.s-size-chart-meta__table tr:last-child td {
+  border-bottom: none;
+}
+
+.s-size-chart-meta__table tr:hover td {
+  background: var(--t-surface);
+}
+
+.s-size-chart-meta__units {
+  display: flex;
+  justify-content: center;
+  gap: var(--t-space-2);
+  margin-bottom: var(--t-space-6);
+}
+
+.s-size-chart-meta__unit-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: var(--t-font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all var(--t-transition-fast);
+}
+
+.s-size-chart-meta__unit-btn.is-active {
+  background: var(--t-text);
+  color: var(--t-bg);
+  border-color: var(--t-text);
+}
+
+.s-size-chart-meta__notes {
+  background: var(--t-surface);
+  padding: var(--t-space-5);
+  border-left: 3px solid var(--t-text);
+}
+
+.s-size-chart-meta__notes-title {
+  font-size: var(--t-font-size-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--t-space-2);
+}
+
+.s-size-chart-meta__notes p {
+  margin: 0;
+  font-size: var(--t-font-size-small);
+  color: var(--t-text-muted);
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _obj = metaobject
+  assign _title = _obj.title
+  assign _description = _obj.description
+  assign _table = _obj.table
+  assign _units = _obj.units
+  assign _notes = _obj.notes
+  assign _show_units = section.settings.show_units
+  assign _show_notes = section.settings.show_notes
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="s-size-chart-meta"
+  data-section-id="{{ section.id }}"
+  data-section-type="metaobject-size-chart"
+>
+  <div class="c-container">
+    <div class="s-size-chart-meta__inner">
+      {% if _title.value %}
+        <h1 class="s-size-chart-meta__title">{{ _title.value }}</h1>
+      {% endif %}
+      {% if _description.value %}
+        <p class="s-size-chart-meta__description">{{ _description.value }}</p>
+      {% endif %}
+
+      {% if _show_units and _units.value %}
+        <div class="s-size-chart-meta__units" data-size-units>
+          <button type="button" class="s-size-chart-meta__unit-btn is-active" data-unit="in" data-unit-value="inches">Inches</button>
+          <button type="button" class="s-size-chart-meta__unit-btn" data-unit="cm" data-unit-value="centimeters">Centimeters</button>
+        </div>
+      {% endif %}
+
+      <div class="s-size-chart-meta__table-wrap">
+        {% if _table.value %}
+          {{ _table.value }}
+        {% else %}
+          <table class="s-size-chart-meta__table">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Chest</th>
+                <th>Waist</th>
+                <th>Hip</th>
+                <th>Length</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>S</td><td>38"</td><td>30"</td><td>40"</td><td>27"</td></tr>
+              <tr><td>M</td><td>40"</td><td>32"</td><td>42"</td><td>27.5"</td></tr>
+              <tr><td>L</td><td>42"</td><td>34"</td><td>44"</td><td>28"</td></tr>
+              <tr><td>XL</td><td>44"</td><td>36"</td><td>46"</td><td>28.5"</td></tr>
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+
+      {% if _show_notes and _notes.value %}
+        <div class="s-size-chart-meta__notes">
+          <p class="s-size-chart-meta__notes-title">Notes</p>
+          <p>{{ _notes.value }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+class SizeChartMeta extends HTMLElement {
+  constructor() { super(); }
+
+  connectedCallback() {
+    const unitBtns = this.querySelectorAll('[data-unit]');
+    if (unitBtns.length) {
+      unitBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          unitBtns.forEach(b => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
+        });
+      });
+    }
+  }
+}
+
+if (!customElements.get('metaobject-size-chart')) {
+  customElements.define('metaobject-size-chart', SizeChartMeta);
+}
+{% endjavascript %}

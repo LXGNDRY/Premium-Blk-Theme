@@ -1,0 +1,541 @@
+{% comment %}
+  promo-popup.liquid
+  Email capture / promo modal popup.
+  Features:
+  - Exit-intent or timed display
+  - Email signup with Klaviyo/Mailchimp form embed area
+  - Discount code display
+  - Dismissible with cookie persistence
+  - Image + text layout options
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Promo popup",
+  "tag": "section",
+  "class": "s-promo-popup-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Limited time"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Get 15% off your first order"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Sign up for our newsletter and get exclusive access to drops, restocks, and member-only discounts."
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount code",
+      "default": "WELCOME15"
+    },
+    {
+      "type": "header",
+      "content": "Email form"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "submit_text",
+      "label": "Submit button text",
+      "default": "Get my discount"
+    },
+    {
+      "type": "text",
+      "id": "form_action",
+      "label": "Form action URL",
+      "default": "",
+      "info": "Klaviyo / Mailchimp / Shopify form endpoint URL. Leave blank for demo."
+    },
+    {
+      "type": "header",
+      "content": "Display rules"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_popup",
+      "label": "Enable popup",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "trigger",
+      "label": "Trigger",
+      "default": "exit_intent",
+      "options": [
+        { "value": "exit_intent", "label": "Exit intent" },
+        { "value": "timed", "label": "After time on page" },
+        { "value": "scroll", "label": "After scroll %" },
+        { "value": "immediate", "label": "Immediately" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "delay_seconds",
+      "label": "Delay (seconds)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "default": 5,
+      "info": "For timed trigger only"
+    },
+    {
+      "type": "range",
+      "id": "scroll_percent",
+      "label": "Scroll percentage",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "info": "For scroll trigger only"
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "label": "Dismiss for (days)",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 7,
+      "info": "How long to hide the popup after user dismisses"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "Show on mobile",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo popup",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-promo-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--t-space-4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.s-promo-popup.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.s-promo-popup__dialog {
+  background: var(--t-bg);
+  color: var(--t-text);
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.4s var(--t-ease-out);
+}
+
+.s-promo-popup.is-visible .s-promo-popup__dialog {
+  transform: translateY(0);
+}
+
+.s-promo-popup__media {
+  position: relative;
+  min-height: 300px;
+  background: var(--t-surface);
+}
+
+.s-promo-popup__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.s-promo-popup__content {
+  padding: var(--t-space-10) var(--t-space-8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--t-space-4);
+}
+
+.s-promo-popup__eyebrow {
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--t-accent);
+  margin: 0;
+}
+
+.s-promo-popup__heading {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  line-height: var(--t-line-height-tight);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.s-promo-popup__subheading {
+  font-size: var(--t-font-size-body);
+  color: var(--t-text-muted);
+  line-height: var(--t-line-height-body);
+  margin: 0;
+}
+
+.s-promo-popup__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+  margin-top: var(--t-space-2);
+}
+
+.s-promo-popup__input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--t-border);
+  background: var(--t-bg);
+  color: var(--t-text);
+  font-family: inherit;
+  font-size: var(--t-font-size-body);
+  box-sizing: border-box;
+}
+
+.s-promo-popup__input:focus {
+  outline: none;
+  border-color: var(--t-text);
+}
+
+.s-promo-popup__submit {
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--t-text);
+  color: var(--t-bg);
+  border: none;
+  font-family: inherit;
+  font-size: var(--t-font-size-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity var(--t-transition-fast);
+}
+
+.s-promo-popup__submit:hover {
+  opacity: 0.9;
+}
+
+.s-promo-popup__discount {
+  margin-top: var(--t-space-2);
+  padding: var(--t-space-3);
+  border: 2px dashed var(--t-border);
+  text-align: center;
+  font-family: var(--t-font-mono);
+  font-size: var(--t-font-size-body);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  user-select: all;
+}
+
+.s-promo-popup__legal {
+  font-size: var(--t-font-size-meta);
+  color: var(--t-text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+.s-promo-popup__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: var(--t-bg);
+  color: var(--t-text);
+  border: 1px solid var(--t-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: all var(--t-transition-fast);
+}
+
+.s-promo-popup__close:hover {
+  background: var(--t-text);
+  color: var(--t-bg);
+}
+
+@media (max-width: 767px) {
+  .s-promo-popup__dialog {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+
+  .s-promo-popup__media {
+    min-height: 200px;
+  }
+
+  .s-promo-popup__content {
+    padding: var(--t-space-6) var(--t-space-5);
+  }
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _enable = section.settings.enable_popup
+  assign _trigger = section.settings.trigger
+  assign _delay = section.settings.delay_seconds
+  assign _scroll = section.settings.scroll_percent
+  assign _cookie_days = section.settings.cookie_days
+  assign _mobile = section.settings.show_on_mobile
+  assign _img = section.settings.image
+  assign _eyebrow = section.settings.eyebrow
+  assign _heading = section.settings.heading
+  assign _sub = section.settings.subheading
+  assign _discount = section.settings.discount_code
+  assign _placeholder = section.settings.email_placeholder
+  assign _submit = section.settings.submit_text
+  assign _action = section.settings.form_action
+-%}
+
+{% if _enable %}
+<div
+  class="s-promo-popup"
+  data-promo-popup
+  data-trigger="{{ _trigger }}"
+  data-delay="{{ _delay }}"
+  data-scroll="{{ _scroll }}"
+  data-cookie-days="{{ _cookie_days }}"
+  data-mobile="{{ _mobile }}"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="promo-popup-title-{{ section.id }}"
+  hidden
+>
+  <div class="s-promo-popup__dialog">
+    <button
+      type="button"
+      class="s-promo-popup__close"
+      data-promo-close
+      aria-label="Close popup"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    {% if _img %}
+      <div class="s-promo-popup__media">
+        <img src="{{ _img | img_url: '800x' }}" alt="{{ _heading | escape }}" loading="lazy">
+      </div>
+    {% endif %}
+
+    <div class="s-promo-popup__content">
+      {% if _eyebrow %}
+        <p class="s-promo-popup__eyebrow">{{ _eyebrow | escape }}</p>
+      {% endif %}
+
+      <h2 class="s-promo-popup__heading" id="promo-popup-title-{{ section.id }}">
+        {{ _heading | escape }}
+      </h2>
+
+      {% if _sub %}
+        <p class="s-promo-popup__subheading">{{ _sub | escape }}</p>
+      {% endif %}
+
+      <form
+        class="s-promo-popup__form"
+        data-promo-form
+        action="{{ _action }}"
+        method="post"
+        accept-charset="utf-8"
+      >
+        <input
+          type="email"
+          class="s-promo-popup__input"
+          name="email"
+          placeholder="{{ _placeholder | escape }}"
+          required
+        >
+        <button type="submit" class="s-promo-popup__submit">
+          {{ _submit | escape }}
+        </button>
+        {% if _discount %}
+          <div class="s-promo-popup__discount">{{ _discount | escape }}</div>
+        {% endif %}
+        <p class="s-promo-popup__legal">
+          By subscribing, you agree to receive marketing emails.
+          Unsubscribe anytime.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% javascript %}
+class PromoPopup extends HTMLElement {
+  constructor() {
+    super();
+    this._shown = false;
+    this._dismissed = false;
+  }
+
+  connectedCallback() {
+    this.trigger = this.dataset.trigger || 'exit_intent';
+    this.delay = parseFloat(this.dataset.delay) || 5;
+    this.scrollPercent = parseFloat(this.dataset.scroll) || 50;
+    this.cookieDays = parseInt(this.dataset.cookieDays, 10) || 7;
+    this.mobile = this.dataset.mobile !== 'false';
+
+    // Check if dismissed
+    if (this._getCookie('promo_popup_dismissed')) {
+      this._dismissed = true;
+      return;
+    }
+
+    // Mobile check
+    if (!this.mobile && window.innerWidth < 768) return;
+
+    // Init trigger
+    this._initTrigger();
+
+    // Close buttons
+    this.querySelector('[data-promo-close]')?.addEventListener('click', () => this.close());
+
+    // Close on backdrop click
+    this.addEventListener('click', (e) => {
+      if (e.target === this) this.close();
+    });
+
+    // ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this._shown) this.close();
+    });
+  }
+
+  _initTrigger() {
+    switch (this.trigger) {
+      case 'immediate':
+        setTimeout(() => this.open(), 100);
+        break;
+
+      case 'timed':
+        setTimeout(() => this.open(), this.delay * 1000);
+        break;
+
+      case 'scroll':
+        this._scrollHandler = () => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const percent = (scrollTop / docHeight) * 100;
+          if (percent >= this.scrollPercent) {
+            window.removeEventListener('scroll', this._scrollHandler);
+            this.open();
+          }
+        };
+        window.addEventListener('scroll', this._scrollHandler, { passive: true });
+        break;
+
+      case 'exit_intent':
+      default:
+        this._exitHandler = (e) => {
+          if (e.clientY <= 10 && e.target.tagName !== 'SELECT' && e.target.tagName !== 'INPUT') {
+            document.removeEventListener('mouseleave', this._exitHandler);
+            this.open();
+          }
+        };
+        document.addEventListener('mouseleave', this._exitHandler);
+        break;
+    }
+  }
+
+  open() {
+    if (this._shown || this._dismissed) return;
+    this._shown = true;
+    this.hidden = false;
+
+    // Allow render before adding class
+    requestAnimationFrame(() => {
+      this.classList.add('is-visible');
+    });
+
+    document.body.style.overflow = 'hidden';
+
+    // Focus first input
+    const firstInput = this.querySelector('input[type="email"]');
+    if (firstInput) setTimeout(() => firstInput.focus(), 500);
+  }
+
+  close() {
+    this.classList.remove('is-visible');
+    document.body.style.overflow = '';
+    this._dismissed = true;
+    this._setCookie('promo_popup_dismissed', 'true', this.cookieDays);
+
+    setTimeout(() => {
+      this.hidden = true;
+    }, 300);
+  }
+
+  _getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  _setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+  }
+}
+
+if (!customElements.get('promo-popup')) {
+  customElements.define('promo-popup', PromoPopup);
+}
+{% endjavascript %}

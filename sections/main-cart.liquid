@@ -456,9 +456,14 @@
             <span>{{ cart.total_price | money }}</span>
           </div>
 
-          <p style="font-size:var(--t-font-size-meta);color:var(--t-text-muted);margin:0;">
+          <p class="s-main-cart__tax-note">
             {{ 'cart.general.taxes_at_checkout' | t | default: 'Taxes and shipping calculated at checkout.' }}
           </p>
+
+          {% comment %} App block: above checkout {% endcomment %}
+          <div class="s-main-cart__app-block s-main-cart__app-block--above-checkout">
+            {% @themeapp 'cart_above_checkout' %}
+          </div>
 
           <button
             type="button"
@@ -467,6 +472,11 @@
           >
             {{ 'cart.general.checkout' | t | default: 'Checkout' }}
           </button>
+
+          {% comment %} App block: below checkout {% endcomment %}
+          <div class="s-main-cart__app-block s-main-cart__app-block--below-checkout">
+            {% @themeapp 'cart_below_checkout' %}
+          </div>
 
           {% if _show_trust %}
             <div class="s-main-cart__trust">

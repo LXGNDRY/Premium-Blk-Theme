@@ -1,0 +1,25 @@
+{
+  "name": "Lookbook",
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "show_title": true,
+        "show_description": true,
+        "text_alignment": "center"
+      }
+    },
+    "lookbook": {
+      "type": "metaobject-lookbook",
+      "settings": {
+        "layout": "grid",
+        "show_products": true,
+        "show_caption": true
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "lookbook"
+  ]
+}

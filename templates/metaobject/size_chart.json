@@ -1,0 +1,15 @@
+{
+  "name": "Size chart",
+  "sections": {
+    "size-chart": {
+      "type": "metaobject-size-chart",
+      "settings": {
+        "show_units": true,
+        "show_notes": true
+      }
+    }
+  },
+  "order": [
+    "size-chart"
+  ]
+}

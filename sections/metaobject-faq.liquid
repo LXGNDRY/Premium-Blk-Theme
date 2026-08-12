@@ -1,0 +1,141 @@
+{% comment %}
+  metaobject-faq.liquid
+  Single FAQ metaobject display.
+  Expected fields: question, answer, category (single line text)
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "FAQ metaobject",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_category",
+      "label": "Show category",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Show share link",
+      "default": false
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.s-faq-meta {
+  padding: var(--t-space-16) 0;
+}
+
+.s-faq-meta__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.s-faq-meta__category {
+  display: inline-block;
+  font-size: var(--t-font-size-meta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--t-accent);
+  margin: 0 0 var(--t-space-3);
+}
+
+.s-faq-meta__question {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: var(--t-line-height-tight);
+  margin: 0 0 var(--t-space-6);
+}
+
+.s-faq-meta__answer {
+  font-size: var(--t-font-size-body);
+  line-height: var(--t-line-height-body);
+  color: var(--t-text);
+}
+
+.s-faq-meta__answer p {
+  margin: 0 0 var(--t-space-4);
+}
+
+.s-faq-meta__answer p:last-child {
+  margin-bottom: 0;
+}
+
+.s-faq-meta__answer ul,
+.s-faq-meta__answer ol {
+  margin: var(--t-space-4) 0;
+  padding-left: var(--t-space-5);
+}
+
+.s-faq-meta__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--t-text-muted);
+  text-decoration: none;
+  font-size: var(--t-font-size-small);
+  margin-bottom: var(--t-space-6);
+  transition: color var(--t-transition-fast);
+}
+
+.s-faq-meta__back:hover {
+  color: var(--t-text);
+}
+{% endstylesheet %}
+
+{%- liquid
+  assign _obj = metaobject
+  assign _question = _obj.question
+  assign _answer = _obj.answer
+  assign _category = _obj.category
+  assign _show_cat = section.settings.show_category
+-%}
+
+<section
+  id="section-{{ section.id }}"
+  class="s-faq-meta"
+  data-section-id="{{ section.id }}"
+  data-section-type="metaobject-faq"
+>
+  <div class="c-container">
+    <div class="s-faq-meta__inner">
+      <a href="{{ collection.url | default: '/pages/faq' }}" class="s-faq-meta__back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        {{ 'faq.back' | t | default: 'Back to all FAQs' }}
+      </a>
+
+      {% if _show_cat and _category.value %}
+        <p class="s-faq-meta__category">{{ _category.value }}</p>
+      {% endif %}
+
+      <h1 class="s-faq-meta__question">{{ _question.value }}</h1>
+
+      <div class="s-faq-meta__answer">
+        {% if _answer.value %}
+          {{ _answer.value }}
+        {% else %}
+          <p style="color:var(--t-text-muted);">No answer yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% javascript %}
+if (!customElements.get('metaobject-faq')) {
+  customElements.define('metaobject-faq', class extends HTMLElement {
+    constructor() { super(); }
+    connectedCallback() {}
+  });
+}
+{% endjavascript %}

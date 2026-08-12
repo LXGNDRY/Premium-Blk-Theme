@@ -1,0 +1,74 @@
+{% comment %}
+  testimonial-card.liquid
+  Single testimonial card.
+  Usage: {% render 'testimonial-card', block: block, show_rating: true, show_avatar: true %}
+{% endcomment %}
+
+{%- liquid
+  assign _quote = block.settings.quote
+  assign _name = block.settings.name
+  assign _role = block.settings.role
+  assign _avatar = block.settings.avatar
+  assign _rating = block.settings.rating | default: 5
+  assign _show_rating = show_rating | default: true
+  assign _show_avatar = show_avatar | default: true
+  assign _show_name = show_name | default: true
+  assign _show_role = show_role | default: true
+
+  # Avatar initials fallback
+  assign _initials = ''
+  if _name != blank
+    assign _parts = _name | split: ' '
+    for part in _parts limit: 2
+      assign _first = part | slice: 0, 1
+      assign _initials = _initials | append: _first
+    endfor
+  endif
+-%}
+
+<article class="s-testimonials__card" data-testimonial-id="{{ block.id }}">
+  {% if _show_rating %}
+    <div class="s-testimonials__rating" aria-label="{{ _rating }} out of 5 stars">
+      {% for i in (1..5) %}
+        {% if i <= _rating %}
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        {% else %}
+          <svg class="is-empty" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if _quote %}
+    <p class="s-testimonials__quote">"{{ _quote | escape }}"</p>
+  {% endif %}
+
+  {% if _show_name or _show_avatar %}
+    <div class="s-testimonials__author">
+      {% if _show_avatar %}
+        <div class="s-testimonials__avatar">
+          {% if _avatar %}
+            <img src="{{ _avatar | img_url: '100x100_crop_center' }}" alt="{{ _name | escape }}" loading="lazy">
+          {% else %}
+            {{ _initials }}
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if _show_name or _show_role %}
+        <div class="s-testimonials__author-info">
+          {% if _show_name and _name %}
+            <p class="s-testimonials__name">{{ _name | escape }}</p>
+          {% endif %}
+          {% if _show_role and _role %}
+            <p class="s-testimonials__role">{{ _role | escape }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</article>
