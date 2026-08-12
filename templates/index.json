@@ -1,20 +1,51 @@
 {
   "sections": {
-    "banner": {
-      "type": "image-banner",
+    "hero": {
+      "type": "slideshow",
       "settings": {
-        "heading": "New arrivals",
-        "subheading": "Shop the latest drop before it's gone.",
-        "kicker": "Just in",
-        "button_text": "Shop now",
-        "button_link": "/collections/all",
-        "text_position": "left",
-        "text_position_vertical": "middle",
-        "style": "editorial",
-        "heading_size": "h1",
-        "min_height_desktop": 600,
-        "min_height_mobile": 480
-      }
+        "height_desktop": "full",
+        "height_mobile": "adapt",
+        "autoplay": true,
+        "autoplay_speed": 7000,
+        "show_arrows": true,
+        "show_dots": true,
+        "slide_count": 3
+      },
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Legendary Branding",
+            "subheading": "Streetwear redefined. Built different.",
+            "button_text": "Shop the drop",
+            "button_link": "/collections/all",
+            "text_position": "center",
+            "overlay_opacity": 40
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "New Arrivals",
+            "subheading": "The latest collection just dropped.",
+            "button_text": "Shop new",
+            "button_link": "/collections/new",
+            "text_position": "left",
+            "overlay_opacity": 50
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Limited Edition",
+            "subheading": "Exclusive pieces. Limited runs.",
+            "button_text": "Explore",
+            "button_link": "/collections/limited",
+            "text_position": "right",
+            "overlay_opacity": 30
+          }
+        }
+      ]
     },
     "featured": {
       "type": "featured-collection",
@@ -32,21 +63,40 @@
         "align": "left"
       }
     },
-    "drop-countdown": {
-      "type": "countdown",
+    "collage": {
+      "type": "collage",
       "settings": {
-        "heading": "Next drop",
-        "subheading": "The next collection drops soon. Don't miss it.",
-        "button_text": "Shop now",
-        "button_link": "/collections/all",
-        "date": "2026-12-31 23:59:59",
-        "show_days": true,
-        "show_hours": true,
-        "show_minutes": true,
-        "show_seconds": true,
-        "inverted": true,
-        "align": "center"
-      }
+        "heading": "The Collection",
+        "layout": "mixed",
+        "gap": 8,
+        "show_product_price": true
+      },
+      "blocks": [
+        {
+          "type": "collection",
+          "settings": {
+            "collection": "tops",
+            "title": "Tops",
+            "link_text": "Shop tops"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "collection": "bottoms",
+            "title": "Bottoms",
+            "link_text": "Shop bottoms"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "collection": "outerwear",
+            "title": "Outerwear",
+            "link_text": "Shop outerwear"
+          }
+        }
+      ]
     },
     "lookbook": {
       "type": "lookbook",
@@ -56,20 +106,152 @@
         "layout": "editorial",
         "gap": 12,
         "show_captions": true
+      },
+      "blocks": [
+        {
+          "type": "image",
+          "settings": {
+            "caption": "Look 01 — The Essentials",
+            "link": "/products/essentials-hoodie"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "caption": "Look 02 — Monochrome",
+            "link": "/products/monochrome-tee"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "caption": "Look 03 — Statement",
+            "link": "/products/statement-jacket"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "caption": "Look 04 — Everyday",
+            "link": "/products/everyday-sweatpants"
+          }
+        }
+      ]
+    },
+    "drop-countdown": {
+      "type": "countdown",
+      "settings": {
+        "heading": "Next drop",
+        "subheading": "The next collection drops soon. Don't miss it.",
+        "button_text": "Notify me",
+        "button_link": "#",
+        "date": "2026-12-31 23:59:59",
+        "show_days": true,
+        "show_hours": true,
+        "show_minutes": true,
+        "show_seconds": true,
+        "inverted": true,
+        "align": "center"
       }
     },
-    "brand": {
-      "type": "image-with-text",
+    "multirow": {
+      "type": "multirow",
       "settings": {
-        "kicker": "Our story",
-        "heading": "Built different.",
-        "text": "<p>Legendary Branding was founded in 2023 with one goal: make streetwear that actually lasts. Premium fabrics, honest construction, and zero compromise on quality.</p>",
-        "button_text": "About us",
-        "button_link": "/pages/about",
-        "image_position": "left",
-        "layout": "half",
-        "text_align": "middle",
-        "stack_on_mobile": true
+        "heading": "Why Legendary",
+        "layout": "two-column",
+        "gap": 24
+      },
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "heading": "Premium materials",
+            "description": "We source only the highest quality fabrics — 400GSM heavyweight cotton, French terry, and ring-spun blends.",
+            "image_position": "left"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "heading": "Limited runs",
+            "description": "Every drop is limited edition. No reprints, no restocks. Once it's gone, it's gone.",
+            "image_position": "right"
+          }
+        }
+      ]
+    },
+    "multicolumn": {
+      "type": "multicolumn",
+      "settings": {
+        "heading": "",
+        "columns": 3,
+        "gap": 24,
+        "align": "center"
+      },
+      "blocks": [
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Free shipping",
+            "description": "On all orders over $100.",
+            "icon": "truck"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Easy returns",
+            "description": "30-day return window, no questions asked.",
+            "icon": "refresh"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Secure checkout",
+            "description": "Shop with confidence. All payments encrypted.",
+            "icon": "lock"
+          }
+        }
+      ]
+    },
+    "video": {
+      "type": "video",
+      "settings": {
+        "heading": "The Drop",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "autoplay": false,
+        "mute": true,
+        "loop": false
+      }
+    },
+    "logos": {
+      "type": "logo-list",
+      "settings": {
+        "heading": "As seen in",
+        "logo_count": 5,
+        "grayscale": true,
+        "marquee": false,
+        "marquee_speed": 30
+      },
+      "blocks": [
+        { "type": "logo", "settings": { "name": "Highsnobiety" } },
+        { "type": "logo", "settings": { "name": "Complex" } },
+        { "type": "logo", "settings": { "name": "Hypebeast" } },
+        { "type": "logo", "settings": { "name": "GQ" } },
+        { "type": "logo", "settings": { "name": "Vogue" } }
+      ]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Join the list",
+        "subheading": "Be the first to know about new drops, exclusive access, and secret sales.",
+        "placeholder": "Enter your email",
+        "button_text": "Subscribe",
+        "layout": "centered",
+        "style": "brutalist",
+        "show_social": true
       }
     },
     "recently-viewed": {
@@ -82,30 +264,19 @@
         "show_vendor": false,
         "show_badges": true
       }
-    },
-    "text-banner": {
-      "type": "rich-text",
-      "settings": {
-        "kicker": "Join the list",
-        "heading": "Get 10% off your first order.",
-        "text": "<p>Sign up for exclusive drops, early access, and member-only deals. No spam — just heat.</p>",
-        "button_text": "Shop the collection",
-        "button_link": "/collections/all",
-        "align": "center",
-        "max_width": "medium",
-        "size": "large",
-        "inverted": true,
-        "show_rule": true
-      }
     }
   },
   "order": [
-    "banner",
+    "hero",
     "featured",
-    "drop-countdown",
+    "collage",
     "lookbook",
-    "brand",
-    "recently-viewed",
-    "text-banner"
+    "drop-countdown",
+    "multirow",
+    "multicolumn",
+    "video",
+    "logos",
+    "newsletter",
+    "recently-viewed"
   ]
 }

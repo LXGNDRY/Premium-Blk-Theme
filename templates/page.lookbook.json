@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "lookbook": {
+      "type": "lookbook",
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "layout": "masonry",
+        "gap": 12,
+        "show_captions": true
+      },
+      "blocks": [
+        { "type": "image", "settings": { "caption": "Look 01", "link": "" } },
+        { "type": "image", "settings": { "caption": "Look 02", "link": "" } },
+        { "type": "image", "settings": { "caption": "Look 03", "link": "" } },
+        { "type": "image", "settings": { "caption": "Look 04", "link": "" } },
+        { "type": "image", "settings": { "caption": "Look 05", "link": "" } },
+        { "type": "image", "settings": { "caption": "Look 06", "link": "" } }
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "lookbook"
+  ]
+}

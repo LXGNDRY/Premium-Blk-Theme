@@ -1,0 +1,72 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "story": {
+      "type": "image-with-text",
+      "settings": {
+        "heading": "Our story",
+        "text": "Legendary Branding was born from a simple idea: streetwear should feel premium without the premium markup. Every piece is designed in-house, cut from heavyweight fabrics, and released in limited runs.",
+        "image_position": "left",
+        "style": "editorial",
+        "button_text": "Shop the collection",
+        "button_link": "/collections/all"
+      }
+    },
+    "values": {
+      "type": "multicolumn",
+      "settings": {
+        "heading": "What we stand for",
+        "columns": 3,
+        "gap": 24,
+        "align": "center"
+      },
+      "blocks": [
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Quality first",
+            "description": "Premium materials. Built to last.",
+            "icon": "shield"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Limited runs",
+            "description": "No restocks. No reprints.",
+            "icon": "bolt"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Ethical production",
+            "description": "Fair wages. Sustainable practices.",
+            "icon": "leaf"
+          }
+        }
+      ]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Stay connected",
+        "subheading": "Join the list for exclusive drops and early access.",
+        "placeholder": "Your email",
+        "button_text": "Subscribe",
+        "layout": "centered",
+        "style": "minimal",
+        "show_social": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "story",
+    "values",
+    "newsletter"
+  ]
+}

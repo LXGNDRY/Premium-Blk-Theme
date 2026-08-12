@@ -1,8 +1,0 @@
-{%- comment -%}
-  Wraps money output with a price container.
-  Usage: {% render 'money', price: price %}
-{%- endcomment -%}
-
-<span class="money" data-currency="{{ cart.currency.iso_code }}">
-  {{ price | money }}
-</span>

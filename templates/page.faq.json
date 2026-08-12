@@ -1,0 +1,77 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "faq": {
+      "type": "collapsible-content",
+      "settings": {
+        "heading": "Frequently asked questions",
+        "subheading": "Everything you need to know before you buy.",
+        "layout": "two-column",
+        "icon": "plus"
+      },
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "heading": "How long does shipping take?",
+            "content": "Standard shipping takes 5-7 business days within the US. International shipping takes 10-14 business days."
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "heading": "What is your return policy?",
+            "content": "We offer a 30-day return policy on all unworn items with tags attached. Sale items are final sale."
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "heading": "How do the sizes fit?",
+            "content": "Our pieces run true to size with a relaxed fit. We recommend sizing up if you prefer an oversized look."
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "heading": "Will there be restocks?",
+            "content": "Most items are limited edition and will not be restocked. Join our newsletter to be notified of future drops."
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "heading": "Where are your products made?",
+            "content": "All products are designed in-house and manufactured in ethical, fair-wage facilities across the US and Portugal."
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "heading": "How can I track my order?",
+            "content": "You'll receive a tracking number via email once your order ships. You can also track it in your account."
+          }
+        }
+      ]
+    },
+    "contact": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "Still have questions?",
+        "text": "Our team is here to help. Reach out and we'll get back to you within 24 hours.",
+        "button_text": "Contact us",
+        "button_link": "/pages/contact",
+        "align": "center",
+        "style": "minimal"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "faq",
+    "contact"
+  ]
+}

@@ -1,11 +1,16 @@
 {
   "sections": {
-    "Collections": {
+    "main": {
       "type": "main-list-collections",
-      "settings": {}
+      "settings": {
+        "heading": "Collections",
+        "grid_columns": 3,
+        "image_ratio": "3/4",
+        "show_product_count": true
+      }
     }
   },
   "order": [
-    "Collections"
+    "main"
   ]
 }

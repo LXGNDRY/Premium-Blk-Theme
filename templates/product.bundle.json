@@ -5,13 +5,29 @@
       "settings": {
         "gallery_style": "stacked",
         "show_vendor": true,
-        "show_sku": false,
+        "show_sku": true,
         "show_shipping": true,
         "show_return_policy": true,
         "show_share": false,
         "show_badges": true,
         "show_quantity": true,
         "sticky_add_to_cart": true
+      }
+    },
+    "bundle": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "",
+        "heading": "Complete the look",
+        "subheading": "Pair it with these pieces to save 15% on bundles.",
+        "products_per_row": 4,
+        "products_to_show": 4,
+        "image_ratio": "3/4",
+        "show_secondary_image": true,
+        "show_badges": true,
+        "show_view_all": false,
+        "view_all_text": "",
+        "align": "left"
       }
     },
     "related": {
@@ -23,17 +39,6 @@
         "image_ratio": "3/4",
         "show_vendor": false,
         "show_badges": true
-      }
-    },
-    "reviews": {
-      "type": "product-reviews",
-      "settings": {
-        "heading": "Customer reviews",
-        "source": "metafield",
-        "metafield_rating": "reviews.avg_rating",
-        "metafield_count": "reviews.rating_count",
-        "enable_rating": true,
-        "show_review_form": false
       }
     },
     "recently-viewed": {
@@ -50,8 +55,8 @@
   },
   "order": [
     "main",
+    "bundle",
     "related",
-    "reviews",
     "recently-viewed"
   ]
 }
